@@ -29,6 +29,7 @@ export default {
   entry: resolve('./fable-repl.fsproj'),
   dest: resolve('./out/bundle.js'),
   format: 'iife', // 'amd', 'cjs', 'es', 'iife', 'umd'
+  globals: { monaco: "monaco" },
   moduleName: 'Bundle',
   //sourceMap: 'inline',
   plugins: [

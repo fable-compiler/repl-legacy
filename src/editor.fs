@@ -406,3 +406,12 @@ md.onDidChangeContent(fun k -> md |> parseEditor |> ignore) |> ignore
 
 // todo on resize:
 //     ed.layout()
+
+// FCS references to avoid treeshaking
+let parseAndCheck source =
+    let references = [|"FSharp.Core";"mscorlib";"System";"System.Core";"System.Data";"System.IO";"System.Xml";"System.Numerics";"Fable.Core"|]
+    let readAllBytes: string -> byte[] = jsNative
+    let fileName = "stdin.fsx"
+    let checker = Fable.FCS.createChecker references readAllBytes
+    let results = Fable.FCS.parseFSharpProject checker fileName source
+    results

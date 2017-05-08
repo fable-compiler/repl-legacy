@@ -10,7 +10,7 @@
 
 ## Requirements
 
-NodeJS and .NET Core installed
+Node.js and .NET Core installed
 
 ## Features
  
