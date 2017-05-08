@@ -1,12 +1,18 @@
 ﻿<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Version>1.0.0-alpha</Version>
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <!--<DefineConstants>$(DefineConstants);TRACE</DefineConstants>-->
+    <!--<DefineConstants>FABLE_COMPILER</DefineConstants>-->
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../FSharp.Compiler.Service_fable/src/fsharp/fcs-fable/fcs-fable.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="src/fcs.fs" />
     <Compile Include="src/monaco.fs" />
     <Compile Include="src/editor.fs" />
   </ItemGroup>

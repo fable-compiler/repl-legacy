@@ -1,6 +1,6 @@
 // source: https://github.com/ionide/ionide-web/blob/master/src/editor.fsx
 
-module Fable.Repl
+module Fable.Editor
 
 open Fable.Core
 open Fable.Core.JsInterop

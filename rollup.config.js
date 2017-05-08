@@ -12,7 +12,17 @@ function resolve(filePath) {
 var fableOptions = {
   //babel: babelOptions,
   //plugins: [],
-  //define: []
+  define: [
+    "COMPILER_SERVICE",
+    "FX_NO_CORHOST_SIGNER",
+    "FX_NO_LINKEDRESOURCES",
+    "FX_NO_PDB_READER",
+    "FX_NO_PDB_WRITER",
+    "FX_NO_WEAKTABLE",
+    "NO_COMPILER_BACKEND",
+    "NO_INLINE_IL_PARSER",
+    "TRACE"
+  ]
 };
 
 export default {

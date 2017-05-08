@@ -7,14 +7,15 @@
   "license": "MIT",
   "scripts": {
     "preinstall": "dotnet restore",
-    "prebuild": "webpack -p --entry=./src/babel-standalone.js --output-path=./out --output-filename=babel-standalone.js --output-library=Babel",
-    "build": "dotnet fable npm-run rollup",
+    "_prebuild": "webpack -p --entry=./src/babel-standalone.js --output-path=./out --output-filename=babel-standalone.js --output-library=Babel",
+    "build": "dotnet fable npm-run webpack",
+    "devbuild": "dotnet fable npm-run rollup",
     "webpack": "webpack -p",
     "rollup": "rollup -c",
     "start": "http-server -c-1 ./ -p 8888 -o"
   },
   "dependencies": {
-    "fable-core": "^1.0.0-narumi-912",
+    "fable-core": "^1.0.0-narumi-914",
     "monaco-editor": "^0.8.3",
     "requirejs": "^2.3.3"
   },
@@ -28,6 +29,6 @@
     "http-server": "^0.10.0",
     "rollup": "^0.41.6",
     "rollup-plugin-fable": "^1.0.3",
-    "webpack": "^2.5.0"
+    "webpack": "^2.5.1"
   }
 }
