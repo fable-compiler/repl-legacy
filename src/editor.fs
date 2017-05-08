@@ -2,11 +2,9 @@
 
 module Fable.Repl
 
-open Fable.Core  
+open Fable.Core
 open Fable.Core.JsInterop
 open Fable.Import
-open Fable.Import.Browser
-open Fable.Import.monaco
 
 //---------------------------------------------------
 // DTOs
@@ -26,22 +24,14 @@ module DTO =
         Comment: string
     }
     type Error = {
-        /// 1-indexed first line of the error block
-        StartLine: int
-        /// 1-indexed first column of the error block
-        StartColumn: int
-        /// 1-indexed last line of the error block
-        EndLine: int
-        /// 1-indexed last column of the error block
-        EndColumn: int
-        /// Description of the error
-        Message: string
-        ///Severity of the error - warning or error
-        Severity: string
-        /// Type of the Error
-        Subcategory: string
-        ///File Name
-        FileName: string
+        StartLine: int      // 1-indexed first line of the error block
+        StartColumn: int    // 1-indexed first column of the error block
+        EndLine: int        // 1-indexed last line of the error block
+        EndColumn: int      // 1-indexed last column of the error block
+        Message: string     // Description of the error
+        Severity: string    // Severity of the error - warning or error
+        Subcategory: string // Type of the Error
+        FileName: string    // File Name
     }
     type Declaration = {
         File: string
@@ -128,39 +118,23 @@ module DTO =
     type DeclarationResult = Result<Symbols[]>
 
 //---------------------------------------------------
-// Initialization
-//---------------------------------------------------
-
-[<Emit("_monaco = monaco")>]
-let hack: unit = jsNative
-hack
-
-let dom = Browser.document.getElementsByClassName("container").[0]
-
-let options = createEmpty<editor.IEditorConstructionOptions>
-options.value <- Some "let t = 1"
-options.language <- Some "fsharp"
-
-let services = createEmpty<editor.IEditorOverrideServices>
-
-//---------------------------------------------------
 // PromisesExt (by Dave)
 //---------------------------------------------------
 module Promise =
-    let success (a: 'T -> 'R) (pr: Promise<'T>): Promise<'R> =
-        pr?``then`` $ a |> unbox 
-
-    let bind (a: 'T -> Promise<'R>) (pr: Promise<'T>): Promise<'R> =
+    let success (a: 'T -> 'R) (pr: monaco.Promise<'T>): monaco.Promise<'R> =
         pr?``then`` $ a |> unbox
 
-    let lift<'T> (a: 'T): Promise<'T> =
-        Promise<'T>.wrap(a)
+    let bind (a: 'T -> monaco.Promise<'R>) (pr: monaco.Promise<'T>): monaco.Promise<'R> =
+        pr?``then`` $ a |> unbox
+
+    let lift<'T> (a: 'T): monaco.Promise<'T> =
+        monaco.Promise<'T>.wrap(a)
 
 type PromiseBuilder() =
         member inline x.Bind(m,f) = Promise.bind f m
         member inline x.Return(a) = Promise.lift a
-        member inline x.ReturnFrom(a) = a
-        member inline x.Zero() = Fable.Import.JS.Promise.resolve()
+        //member inline x.ReturnFrom(a) = a
+        //member inline x.Zero() = Promise.lift ()
 
 [<AutoOpen>]
 module PromiseBuilderImp =
@@ -169,14 +143,16 @@ module PromiseBuilderImp =
 //---------------------------------------------------
 // Communication
 //---------------------------------------------------
-let request<'a, 'b> (obj: 'a) endpoint _id = 
+let request<'a, 'b> (obj: 'a) endpoint _id =
+    printfn "endpoint: %s" endpoint
     // let hn = Browser.window.location.hostname
     // let ep = sprintf "http://%s:81/%s" hn endpoint
     // Globals.axios.post (ep, obj)
     //|> Promise.success(fun r -> (r.data |> unbox<string[]>).[id] |> JS.JSON.parse |> unbox<'b>)
     promise {
-        let json = "aaa"
-        let res = json |> JS.JSON.parse |> unbox<'b>
+        //let json = "TODO"
+        //let res = json |> JS.JSON.parse |> unbox<'b>
+        let res = createEmpty<'b> |> unbox<'b>
         return res
     }
 
@@ -184,7 +160,7 @@ let parse s = request<ParseRequest, ParseResult> s "parse" 0
 let completion s = request<CompletionRequest, CompletionResult> s "completion" 1
 let tooltip s = request<PositionRequest, TooltipResult> s "tooltip" 0
 let helptext s = request<HelptextRequest, HelptextResult> s "helptext" 0
-let methods s = request<PositionRequest, MethodResult> s "methods" 0 
+let methods s = request<PositionRequest, MethodResult> s "methods" 0
 let symbolUse s = request<PositionRequest, SymbolUseResult> s "symboluse" 0
 let declaration s = request<PositionRequest, FindDeclarationResult> s "finddeclaration" 0
 
@@ -194,18 +170,19 @@ let declaration s = request<PositionRequest, FindDeclarationResult> s "finddecla
 //---------------------------------------------------
 
 let hoverProvider = {
-    new languages.HoverProvider with
-        member this.provideHover(model, position, token) = 
+    new monaco.languages.HoverProvider with
+
+        member __.provideHover(model, position, token) =
             promise {
                 let! o = tooltip { FileName = "test.fsx"; Line = position.lineNumber |> unbox; Column = position.column |> unbox; Filter = "" }
                 let res = (o.Data |> Array.fold (fun acc n -> (n |> Array.toList) @ acc ) []).Head
 
-                let h = createEmpty<languages.Hover>
-                let ctn = Some res.Signature |> MarkedString.Case1
-                
+                let h = createEmpty<monaco.languages.Hover>
+                let ctn = res.Signature |> U2.Case1
+
                 let w = model.getWordAtPosition(position |> unbox)
 
-                let range = createEmpty<IRange>
+                let range = createEmpty<monaco.IRange>
                 range.startLineNumber <- position.lineNumber
                 range.endLineNumber <- position.lineNumber
                 range.startColumn <- w.startColumn
@@ -220,21 +197,21 @@ let hoverProvider = {
 
 let convertToInt code =
     match code with
-    | "C" -> languages.CompletionItemKind.Class
-    | "E" -> languages.CompletionItemKind.Enum
-    | "S" -> languages.CompletionItemKind.Value
-    | "I" -> languages.CompletionItemKind.Interface
-    | "N" -> languages.CompletionItemKind.Module
-    | "M" -> languages.CompletionItemKind.Method
-    | "P" -> languages.CompletionItemKind.Property
-    | "F" -> languages.CompletionItemKind.Field
-    | "T" -> languages.CompletionItemKind.Class
-    | _   -> languages.CompletionItemKind.Text
+    | "C" -> monaco.languages.CompletionItemKind.Class
+    | "E" -> monaco.languages.CompletionItemKind.Enum
+    | "S" -> monaco.languages.CompletionItemKind.Value
+    | "I" -> monaco.languages.CompletionItemKind.Interface
+    | "N" -> monaco.languages.CompletionItemKind.Module
+    | "M" -> monaco.languages.CompletionItemKind.Method
+    | "P" -> monaco.languages.CompletionItemKind.Property
+    | "F" -> monaco.languages.CompletionItemKind.Field
+    | "T" -> monaco.languages.CompletionItemKind.Class
+    | _   -> monaco.languages.CompletionItemKind.Text
 
 let completionProvider = {
-    new languages.CompletionItemProvider with
+    new monaco.languages.CompletionItemProvider with
 
-        member this.provideCompletionItems(model, position, token) = 
+        member __.provideCompletionItems(model, position, token) =
             promise {
                 let! o = completion {
                     FileName = "test.fsx"
@@ -244,8 +221,8 @@ let completionProvider = {
                     Filter = "Contains"
                 }
                 return
-                    o.Data |> Array.map (fun d -> 
-                        let ci = createEmpty<languages.CompletionItem>
+                    o.Data |> Array.map (fun d ->
+                        let ci = createEmpty<monaco.languages.CompletionItem>
                         ci.kind <- d.GlyphChar |> convertToInt |> unbox
                         ci.label <- d.Name
                         ci.insertText <- Some (d.ReplacementText |> U2.Case1)
@@ -253,7 +230,7 @@ let completionProvider = {
                     |> ResizeArray
             } |> U4.Case2
 
-        member this.resolveCompletionItem(item, token) = 
+        member __.resolveCompletionItem(item, token) =
             promise {
                 let! o = helptext { Symbol = item.label }
                 let res = (o.Data.Overloads |> Array.fold (fun acc n -> (n |> Array.toList) @ acc ) []).Head
@@ -262,12 +239,12 @@ let completionProvider = {
                 return item
             } |> U2.Case2
 
-        member this.triggerCharacters with get () = ResizeArray(["."]) |> Some
+        member __.triggerCharacters with get () = ResizeArray(["."]) |> Some
 }
 
-let parseEditor (model: editor.IModel) =
+let parseEditor (model: monaco.editor.IModel) =
     promise {
-        let content = model.getValue (editor.EndOfLinePreference.TextDefined, true)
+        let content = model.getValue (monaco.editor.EndOfLinePreference.TextDefined, true)
         let! res = parse {
             FileName = "test.fsx"
             IsAsync = true
@@ -277,11 +254,11 @@ let parseEditor (model: editor.IModel) =
     }
 
 let signatureProvider = {
-    new languages.SignatureHelpProvider with
+    new monaco.languages.SignatureHelpProvider with
 
-        member this.signatureHelpTriggerCharacters with get () = ResizeArray(["("; ","])
+        member __.signatureHelpTriggerCharacters with get () = ResizeArray(["("; ","])
 
-        member this.provideSignatureHelp(model, position, token) = 
+        member __.provideSignatureHelp(model, position, token) =
             promise {
                 let! o = methods {
                     FileName = "test.fsx"
@@ -289,15 +266,15 @@ let signatureProvider = {
                     Column = position.column |> unbox
                     Filter = ""
                 }
-                let res = createEmpty<languages.SignatureHelp>
+                let res = createEmpty<monaco.languages.SignatureHelp>
                 let sigs = o.Data.Overloads |> Array.map (fun c ->
                     let tip = c.Tip.[0].[0]
-                    let si = createEmpty<languages.SignatureInformation>
+                    let si = createEmpty<monaco.languages.SignatureInformation>
                     si.label <- tip.Signature
                     si.documentation <- Some tip.Comment
                     si.parameters <- ResizeArray ()
                     c.Parameters |> Array.iter (fun p ->
-                        let pi = createEmpty<languages.ParameterInformation>
+                        let pi = createEmpty<monaco.languages.ParameterInformation>
                         pi.label <- p.Name
                         pi.documentation <- Some p.CanonicalTypeTextForSorting
                         si.parameters.Add(pi )
@@ -305,10 +282,10 @@ let signatureProvider = {
                     si)
 
                 res.activeParameter <- float (o.Data.CurrentParameter)
-                res.activeSignature <- 
-                    sigs 
-                    |> Array.sortBy (fun n -> n.parameters.Count) 
-                    |> Array.findIndex (fun s -> s.parameters.Count >= o.Data.CurrentParameter ) 
+                res.activeSignature <-
+                    sigs
+                    |> Array.sortBy (fun n -> n.parameters.Count)
+                    |> Array.findIndex (fun s -> s.parameters.Count >= o.Data.CurrentParameter )
                     |> (+) 1
                     |> float
                 res.signatures <- ResizeArray sigs
@@ -318,9 +295,9 @@ let signatureProvider = {
 }
 
 let highlighterProvider = {
-    new languages.DocumentHighlightProvider with
+    new monaco.languages.DocumentHighlightProvider with
 
-        member this.provideDocumentHighlights(model, position, token) = 
+        member __.provideDocumentHighlights(model, position, token) =
             promise {
                 let! o = symbolUse {
                     FileName = "test.fsx"
@@ -330,8 +307,8 @@ let highlighterProvider = {
                 }
                 return
                     o.Data.Uses |> Array.map (fun d ->
-                        let res = createEmpty<languages.DocumentHighlight> 
-                        res.range <- Range (float d.StartLine, float d.StartColumn, float d.EndLine, float d.EndColumn) |> unbox
+                        let res = createEmpty<monaco.languages.DocumentHighlight>
+                        res.range <- monaco.Range (float d.StartLine, float d.StartColumn, float d.EndLine, float d.EndColumn) |> unbox
                         res.kind <- (0 |> unbox)
                         res)
                     |> ResizeArray
@@ -339,9 +316,9 @@ let highlighterProvider = {
 }
 
 let renameProvider = {
-    new languages.RenameProvider with
+    new monaco.languages.RenameProvider with
 
-        member this.provideRenameEdits(model, position, newName, token) = 
+        member __.provideRenameEdits(model, position, newName, token) =
             promise {
                 let! o = symbolUse {
                     FileName = "test.fsx"
@@ -349,11 +326,11 @@ let renameProvider = {
                     Column = position.column |> unbox
                     Filter = ""
                 }
-                let we = createEmpty<languages.WorkspaceEdit>
+                let we = createEmpty<monaco.languages.WorkspaceEdit>
                 we.edits <-
                     o.Data.Uses |> Array.map (fun s ->
-                        let range = Range(float s.StartLine, (float s.EndColumn) - (float o.Data.Name.Length), float s.EndLine, float s.EndColumn)
-                        let re = createEmpty<languages.IResourceEdit>
+                        let range = monaco.Range(float s.StartLine, (float s.EndColumn) - (float o.Data.Name.Length), float s.EndLine, float s.EndColumn)
+                        let re = createEmpty<monaco.languages.IResourceEdit>
                         re.newText <- newName
                         re.resource <- model.uri
                         re.range <- range |> unbox
@@ -364,9 +341,9 @@ let renameProvider = {
 }
 
 let definitionProvider = {
-    new languages.DefinitionProvider with
+    new monaco.languages.DefinitionProvider with
 
-        member this.provideDefinition(model, position, token) = 
+        member __.provideDefinition(model, position, token) =
             promise {
                 let! o = declaration {
                     FileName = "test.fsx"
@@ -374,17 +351,17 @@ let definitionProvider = {
                     Column = position.column |> unbox
                     Filter = ""
                 }
-                let d = createEmpty<languages.Location>
-                d.range <- Range(float o.Data.Line, float o.Data.Column, float o.Data.Line, float o.Data.Column) |> unbox
+                let d = createEmpty<monaco.languages.Location>
+                d.range <- monaco.Range(float o.Data.Line, float o.Data.Column, float o.Data.Line, float o.Data.Column) |> unbox
                 d.uri <- model.uri
                 return d |> U2.Case1
             } |> U2.Case2
 }
 
 let referenceProvider = {
-    new languages.ReferenceProvider with
+    new monaco.languages.ReferenceProvider with
 
-        member this.provideReferences(model, position, ctx, token) = 
+        member __.provideReferences(model, position, ctx, token) =
             promise {
                 let! o = symbolUse {
                     FileName = "test.fsx"
@@ -394,25 +371,38 @@ let referenceProvider = {
                 }
                 return
                     o.Data.Uses |> Array.map (fun d ->
-                        let res = createEmpty<languages.Location> 
-                        res.range <- Range (float d.StartLine - 1., float d.StartColumn, float d.EndLine - 1., float d.EndColumn) |> unbox
+                        let res = createEmpty<monaco.languages.Location>
+                        res.range <- monaco.Range (float d.StartLine - 1., float d.StartColumn, float d.EndLine - 1., float d.EndColumn) |> unbox
                         res)
                     |> ResizeArray
             } |> U2.Case2
 }
 
 //---------------------------------------------------
+// Register providers
+//---------------------------------------------------
+// monaco.languages.Globals.registerHoverProvider("fsharp", hoverProvider) |> ignore
+// monaco.languages.Globals.registerCompletionItemProvider("fsharp", completionProvider) |> ignore
+// monaco.languages.Globals.registerSignatureHelpProvider("fsharp", signatureProvider) |> ignore
+// monaco.languages.Globals.registerDocumentHighlightProvider("fsharp", highlighterProvider) |> ignore
+// monaco.languages.Globals.registerRenameProvider("fsharp", renameProvider) |> ignore
+// monaco.languages.Globals.registerDefinitionProvider("fsharp", definitionProvider) |> ignore
+// monaco.languages.Globals.registerReferenceProvider("fsharp", referenceProvider) |> ignore
+
+//---------------------------------------------------
 // Create editor
 //---------------------------------------------------
+let domEditor = Browser.document.getElementById("editor")
 
-monaco.languages.Globals.registerHoverProvider("fsharp", hoverProvider) |> ignore
-monaco.languages.Globals.registerCompletionItemProvider("fsharp", completionProvider) |> ignore
-monaco.languages.Globals.registerSignatureHelpProvider("fsharp", signatureProvider) |> ignore
-monaco.languages.Globals.registerDocumentHighlightProvider("fsharp", highlighterProvider) |> ignore
-monaco.languages.Globals.registerRenameProvider("fsharp", renameProvider) |> ignore
-monaco.languages.Globals.registerDefinitionProvider("fsharp", definitionProvider) |> ignore
-monaco.languages.Globals.registerReferenceProvider("fsharp", referenceProvider) |> ignore
+let options = createEmpty<monaco.editor.IEditorConstructionOptions>
+options.language <- Some "fsharp"
+options.theme <- Some "vs-dark"
+options.value <- Some "let t = 1"
 
-let ed = monaco.editor.Globals.create(dom |> unbox, options, services )
+let services = createEmpty<monaco.editor.IEditorOverrideServices>
+let ed = monaco.editor.Globals.create(domEditor |> unbox, options, services)
 let md = ed.getModel()
 md.onDidChangeContent(fun k -> md |> parseEditor |> ignore) |> ignore
+
+// todo on resize:
+//     ed.layout()

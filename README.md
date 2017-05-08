@@ -1,18 +1,26 @@
 # fable-repl
 
-Bringing power of [Ionide](https://ionide.io) to the web browsers. Powered by [monaco](https://github.com/Microsoft/monaco-editor) - editor part of VS Code and VS Online, [Fable](https://github.com/fsprojects/Fable) - modern F# to JS compiler, [FsAutoComplete](https://github.com/fsharp/FsAutoComplete) - interface for F# Compiler Services, and [Suave](https://suave.io/) - lightweight, non-blocking web server.
+### Powered by:
 
-# Requirements
+* [monaco](https://github.com/Microsoft/monaco-editor) - the editor of VS Code and VS Online
+* [FCS](https://github.com/fsharp/FSharp.Compiler.Service) - F# Compiler Services
+* [Fable](https://github.com/fsprojects/Fable) - modern F# to JS compiler
+* [ionide-web](https://github.com/ionide/ionide-web) - bringing [Ionide](https://ionide.io) to the web browsers
+* [FsAutoComplete](https://github.com/fsharp/FsAutoComplete) - interface for F# Compiler Services
 
-Node and mono/.Net with F# installed
+## Requirements
 
+NodeJS and .NET Core installed
 
-# Features
+## Features
  
-Many features of Ionide are already ported including:
+### Work In Progress
 
  * AutoComplete
  * Tooltips
+
+### Planned features
+
  * Functions overloads
  * Highlighting references
  * Finding usages
@@ -20,25 +28,15 @@ Many features of Ionide are already ported including:
  * Peak view
  * Rename
 
-# Planned features
+## How to build
 
- * Error highlighting
- * Better syntax highlighting 
- * Multiple file support
- * Paket support
- * Executing code
+In project folder run `npm install` and `npm run build` to build.
 
-# How to run
+## How to run
 
-From project folder run `npm start`. It will start both FSAC and application server. Editor will be hosted on `localhost:8888`
+In project folder run `npm start` to start the dev http server. The REPL will be hosted on `localhost:8888`
 
-# How to hack
-
-From project folder run `npm watch`. It will start both FSAC and application server. Editor will be hosted on `localhost:8888`.
-
-Any changes to `src\editor.fsx` file will automaticly recompile it. Browser refresh required.
-
-# Contributing and copyright
+## Contributing and copyright
 
 The project is hosted on GitHub where you can report issues, fork the project and submit pull requests.
 

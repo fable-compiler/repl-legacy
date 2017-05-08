@@ -1,3 +1,5 @@
+// generated with ts2fable from /node_modules/monaco-editor/monaco.d.ts
+
 namespace Fable.Import
 
 open System
@@ -215,9 +217,7 @@ module monaco =
         member __.getKeyCode(): KeyCode = jsNative
 
     and MarkedString =
-        // U2<string, obj>
-        | Case1 of string option
-        | Case2 of language: string * value: string
+        U2<string, string * string>
 
     and [<AllowNullLiteral>] IKeyboardEvent =
         abstract browserEvent: KeyboardEvent with get, set
@@ -826,7 +826,6 @@ module monaco =
 
         and [<AllowNullLiteral>] ITextModelWithMarkers =
             inherit ITextModel
-
 
         and TrackedRangeStickiness =
             | AlwaysGrowsWhenTypingAtEdges = 0

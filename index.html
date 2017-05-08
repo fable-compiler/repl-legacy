@@ -1,24 +1,39 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <link data-name="vs/editor/editor.main" rel="stylesheet" href="node_modules/monaco-editor/min/vs/editor/editor.main.css">
 </head>
+
 <body>
- 
-<div class="container" style="width:800px;height:600px;border:1px solid grey"></div>
- 
-<script src="node_modules/requirejs/require.js"></script>
-<script>
-	require.config({ 
-		paths: { 'vs': 'node_modules/monaco-editor/dev/vs' },
-		map: {
-			"*": {
-				"monaco": "vs/editor/editor.main",
-				"fable-core": "node_modules/fable-core/fable-core"
-			}
-    }})
-	require(["out/bundle"])
-</script>
+    <div class="editor-frame">
+        <div id="editor" style="width:800px;height:600px;"></div>
+    </div>
+
+    <!--
+    <script src="node_modules/requirejs/require.js"></script>
+    <script>
+        require.config({
+            paths: { 'vs': 'node_modules/monaco-editor/dev/vs' },
+            map: {
+                "*": {
+                    "monaco": "vs/editor/editor.main",
+                    "fable-core": "node_modules/fable-core/fable-core"
+                }
+            }
+        });
+        let monaco = require(["monaco"]);
+        require(["out/bundle"]);
+    </script>
+    -->
+
+    <script>var require = { paths: { 'vs': 'node_modules/monaco-editor/min/vs' } };</script>
+    <script src="node_modules/monaco-editor/min/vs/loader.js"></script>
+    <script src="node_modules/monaco-editor/min/vs/editor/editor.main.nls.js"></script>
+    <script src="node_modules/monaco-editor/min/vs/editor/editor.main.js"></script>
+    <script src="out/bundle.js"></script>
 </body>
-</html> 
+
+</html>

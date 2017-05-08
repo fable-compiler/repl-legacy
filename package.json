@@ -11,7 +11,7 @@
     "build": "dotnet fable npm-run rollup",
     "webpack": "webpack -p",
     "rollup": "rollup -c",
-    "start": "http-server -c-1 ./ -p 8080 -o"
+    "start": "http-server -c-1 ./ -p 8888 -o"
   },
   "dependencies": {
     "fable-core": "^1.0.0-narumi-912",
