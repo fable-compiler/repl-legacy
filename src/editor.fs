@@ -239,7 +239,9 @@ let completionProvider = {
                 return item
             } |> U2.Case2
 
-        member __.triggerCharacters with get () = ResizeArray(["."]) |> Some
+        member __.triggerCharacters
+            with get () = ResizeArray(["."]) |> Some
+            and set v = ()
 }
 
 let parseEditor (model: monaco.editor.IModel) =
@@ -256,7 +258,9 @@ let parseEditor (model: monaco.editor.IModel) =
 let signatureProvider = {
     new monaco.languages.SignatureHelpProvider with
 
-        member __.signatureHelpTriggerCharacters with get () = ResizeArray(["("; ","])
+        member __.signatureHelpTriggerCharacters
+            with get () = ResizeArray(["("; ","])
+            and set v = ()
 
         member __.provideSignatureHelp(model, position, token) =
             promise {

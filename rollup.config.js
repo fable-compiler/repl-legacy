@@ -1,4 +1,5 @@
 import fable from 'rollup-plugin-fable';
+
 var path = require('path');
 
 function resolve(filePath) {
@@ -10,8 +11,8 @@ function resolve(filePath) {
 // };
 
 var fableOptions = {
-  //babel: babelOptions,
-  //plugins: [],
+  // babel: babelOptions,
+  fableCore: "../../../Fable/build/fable-core",
   define: [
     "COMPILER_SERVICE",
     "FX_NO_CORHOST_SIGNER",
@@ -31,7 +32,6 @@ export default {
   format: 'iife', // 'amd', 'cjs', 'es', 'iife', 'umd'
   globals: { monaco: "monaco" },
   moduleName: 'Bundle',
-  //sourceMap: 'inline',
   plugins: [
     fable(fableOptions),
   ],

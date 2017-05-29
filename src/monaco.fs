@@ -9,15 +9,16 @@ open Fable.Import.JS
 open Fable.Import.Browser
 
 module monaco =
-    type [<AllowNullLiteral>] Thenable<'T> =
-        abstract ``then``: ?onfulfilled: Func<'T, U2<'TResult, Thenable<'TResult>>> * ?onrejected: Func<obj, U2<'TResult, Thenable<'TResult>>> -> Thenable<'TResult>
-        abstract ``then``: ?onfulfilled: Func<'T, U2<'TResult, Thenable<'TResult>>> * ?onrejected: Func<obj, unit> -> Thenable<'TResult>
+    type Thenable<'T> = Promise<'T>
+    // type [<AllowNullLiteral>] Thenable<'T> =
+    //     abstract ``then``: ?onfulfilled: ('T -> U2<'TResult, Thenable<'TResult>>) * ?onrejected: (obj -> U2<'TResult, Thenable<'TResult>>) -> Thenable<'TResult>
+    //     abstract ``then``: ?onfulfilled: ('T -> U2<'TResult, Thenable<'TResult>>) * ?onrejected: (obj -> unit) -> Thenable<'TResult>
 
     and [<AllowNullLiteral>] IDisposable =
         abstract dispose: unit -> unit
 
     and [<AllowNullLiteral>] IEvent<'T> =
-        [<Emit("$0($1...)")>] abstract Invoke: listener: Func<'T, obj> * ?thisArg: obj -> IDisposable
+        [<Emit("$0($1...)")>] abstract Invoke: listener: ('T -> obj) * ?thisArg: obj -> IDisposable
 
     and [<AllowNullLiteral>] [<Import("Emitter","monaco")>] Emitter<'T>() =
         member __.``event`` with get(): IEvent<'T> = jsNative and set(v: IEvent<'T>): unit = jsNative
@@ -36,26 +37,26 @@ module monaco =
     and [<AllowNullLiteral>] ProgressCallback =
         [<Emit("$0($1...)")>] abstract Invoke: progress: obj -> obj
 
-    and [<AllowNullLiteral>] [<Import("Promise","monaco")>] Promise<'V>(init: Func<TValueCallback<'V>, Func<obj, unit>, ProgressCallback, unit>, ?oncancel: obj) =
-        member __.``then``(?success: Func<'V, Promise<'U>>, ?error: Func<obj, Promise<'U>>, ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: Func<'V, Promise<'U>>, ?error: Func<obj, U2<Promise<'U>, 'U>>, ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: Func<'V, Promise<'U>>, ?error: Func<obj, 'U>, ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: Func<'V, Promise<'U>>, ?error: Func<obj, unit>, ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: Func<'V, U2<Promise<'U>, 'U>>, ?error: Func<obj, Promise<'U>>, ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: Func<'V, U2<Promise<'U>, 'U>>, ?error: Func<obj, U2<Promise<'U>, 'U>>, ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: Func<'V, U2<Promise<'U>, 'U>>, ?error: Func<obj, 'U>, ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: Func<'V, U2<Promise<'U>, 'U>>, ?error: Func<obj, unit>, ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: Func<'V, 'U>, ?error: Func<obj, Promise<'U>>, ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: Func<'V, 'U>, ?error: Func<obj, U2<Promise<'U>, 'U>>, ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: Func<'V, 'U>, ?error: Func<obj, 'U>, ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: Func<'V, 'U>, ?error: Func<obj, unit>, ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``done``(?success: Func<'V, unit>, ?error: Func<obj, obj>, ?progress: ProgressCallback): unit = jsNative
+    and [<AllowNullLiteral>] [<Import("Promise","monaco")>] Promise<'V>(init: (TValueCallback<'V> -> (obj -> unit) -> ProgressCallback -> unit), ?oncancel: obj) =
+        member __.``then``(?success: ('V -> Promise<'U>), ?error: (obj -> Promise<'U>), ?progress: ProgressCallback): Promise<'U> = jsNative
+        member __.``then``(?success: ('V -> Promise<'U>), ?error: (obj -> U2<Promise<'U>, 'U>), ?progress: ProgressCallback): Promise<'U> = jsNative
+        member __.``then``(?success: ('V -> Promise<'U>), ?error: (obj -> 'U), ?progress: ProgressCallback): Promise<'U> = jsNative
+        member __.``then``(?success: ('V -> Promise<'U>), ?error: (obj -> unit), ?progress: ProgressCallback): Promise<'U> = jsNative
+        member __.``then``(?success: ('V -> U2<Promise<'U>, 'U>), ?error: (obj -> Promise<'U>), ?progress: ProgressCallback): Promise<'U> = jsNative
+        member __.``then``(?success: ('V -> U2<Promise<'U>, 'U>), ?error: (obj -> U2<Promise<'U>, 'U>), ?progress: ProgressCallback): Promise<'U> = jsNative
+        member __.``then``(?success: ('V -> U2<Promise<'U>, 'U>), ?error: (obj -> 'U), ?progress: ProgressCallback): Promise<'U> = jsNative
+        member __.``then``(?success: ('V -> U2<Promise<'U>, 'U>), ?error: (obj -> unit), ?progress: ProgressCallback): Promise<'U> = jsNative
+        member __.``then``(?success: ('V -> 'U), ?error: (obj -> Promise<'U>), ?progress: ProgressCallback): Promise<'U> = jsNative
+        member __.``then``(?success: ('V -> 'U), ?error: (obj -> U2<Promise<'U>, 'U>), ?progress: ProgressCallback): Promise<'U> = jsNative
+        member __.``then``(?success: ('V -> 'U), ?error: (obj -> 'U), ?progress: ProgressCallback): Promise<'U> = jsNative
+        member __.``then``(?success: ('V -> 'U), ?error: (obj -> unit), ?progress: ProgressCallback): Promise<'U> = jsNative
+        member __.``done``(?success: ('V -> unit), ?error: (obj -> obj), ?progress: ProgressCallback): unit = jsNative
         member __.cancel(): unit = jsNative
         static member ``as``(value: 'ValueType): Promise<'ValueType> = jsNative
         static member is(value: obj): obj = jsNative
         static member timeout(delay: float): Promise<unit> = jsNative
         static member join(promises: ResizeArray<Promise<'ValueType>>): Promise<ResizeArray<'ValueType>> = jsNative
-        static member join(promises: ResizeArray<Thenable<'ValueType>>): Thenable<ResizeArray<'ValueType>> = jsNative
+        // static member join(promises: ResizeArray<Thenable<'ValueType>>): Thenable<ResizeArray<'ValueType>> = jsNative
         static member join(promises: obj): Promise<obj> = jsNative
         static member any(promises: ResizeArray<Promise<'ValueType>>): Promise<obj> = jsNative
         static member wrap(value: Thenable<'ValueType>): Promise<'ValueType> = jsNative
@@ -464,7 +465,7 @@ module monaco =
             | Indent = 2
 
         and LineNumbersOption =
-            U4<obj, obj, obj, Func<float, string>>
+            U4<obj, obj, obj, (float -> string)>
 
         and [<AllowNullLiteral>] IEditorOptions =
             abstract experimentalScreenReader: bool option with get, set
@@ -573,7 +574,7 @@ module monaco =
             member __.rulers with get(): ResizeArray<float> = jsNative and set(v: ResizeArray<float>): unit = jsNative
             member __.ariaLabel with get(): string = jsNative and set(v: string): unit = jsNative
             member __.renderLineNumbers with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.renderCustomLineNumbers with get(): Func<float, string> = jsNative and set(v: Func<float, string>): unit = jsNative
+            member __.renderCustomLineNumbers with get(): (float -> string) = jsNative and set(v: (float -> string)): unit = jsNative
             member __.renderRelativeLineNumbers with get(): bool = jsNative and set(v: bool): unit = jsNative
             member __.selectOnLineNumbers with get(): bool = jsNative and set(v: bool): unit = jsNative
             member __.glyphMargin with get(): bool = jsNative and set(v: bool): unit = jsNative
@@ -827,6 +828,7 @@ module monaco =
         and [<AllowNullLiteral>] ITextModelWithMarkers =
             inherit ITextModel
 
+
         and TrackedRangeStickiness =
             | AlwaysGrowsWhenTypingAtEdges = 0
             | NeverGrowsWhenTypingAtEdges = 1
@@ -860,11 +862,11 @@ module monaco =
             inherit ITextModelWithDecorations
             inherit IEditorModel
             abstract id: string with get, set
-            abstract onDidChangeContent: listener: Func<IModelContentChangedEvent2, unit> -> IDisposable
-            abstract onDidChangeDecorations: listener: Func<IModelDecorationsChangedEvent, unit> -> IDisposable
-            abstract onDidChangeOptions: listener: Func<IModelOptionsChangedEvent, unit> -> IDisposable
-            abstract onDidChangeLanguage: listener: Func<IModelLanguageChangedEvent, unit> -> IDisposable
-            abstract onWillDispose: listener: Func<unit, unit> -> IDisposable
+            abstract onDidChangeContent: listener: (IModelContentChangedEvent2 -> unit) -> IDisposable
+            abstract onDidChangeDecorations: listener: (IModelDecorationsChangedEvent -> unit) -> IDisposable
+            abstract onDidChangeOptions: listener: (IModelOptionsChangedEvent -> unit) -> IDisposable
+            abstract onDidChangeLanguage: listener: (IModelLanguageChangedEvent -> unit) -> IDisposable
+            abstract onWillDispose: listener: (unit -> unit) -> IDisposable
             abstract dispose: unit -> unit
 
         and [<AllowNullLiteral>] IModelLanguageChangedEvent =
@@ -1042,13 +1044,13 @@ module monaco =
             abstract run: unit -> Promise<unit>
 
         and [<AllowNullLiteral>] IEditor =
-            abstract onDidChangeModelContent: listener: Func<IModelContentChangedEvent2, unit> -> IDisposable
-            abstract onDidChangeModelLanguage: listener: Func<IModelLanguageChangedEvent, unit> -> IDisposable
-            abstract onDidChangeModelOptions: listener: Func<IModelOptionsChangedEvent, unit> -> IDisposable
-            abstract onDidChangeConfiguration: listener: Func<IConfigurationChangedEvent, unit> -> IDisposable
-            abstract onDidChangeCursorPosition: listener: Func<ICursorPositionChangedEvent, unit> -> IDisposable
-            abstract onDidChangeCursorSelection: listener: Func<ICursorSelectionChangedEvent, unit> -> IDisposable
-            abstract onDidDispose: listener: Func<unit, unit> -> IDisposable
+            abstract onDidChangeModelContent: listener: (IModelContentChangedEvent2 -> unit) -> IDisposable
+            abstract onDidChangeModelLanguage: listener: (IModelLanguageChangedEvent -> unit) -> IDisposable
+            abstract onDidChangeModelOptions: listener: (IModelOptionsChangedEvent -> unit) -> IDisposable
+            abstract onDidChangeConfiguration: listener: (IConfigurationChangedEvent -> unit) -> IDisposable
+            abstract onDidChangeCursorPosition: listener: (ICursorPositionChangedEvent -> unit) -> IDisposable
+            abstract onDidChangeCursorSelection: listener: (ICursorSelectionChangedEvent -> unit) -> IDisposable
+            abstract onDidDispose: listener: (unit -> unit) -> IDisposable
             abstract dispose: unit -> unit
             abstract getId: unit -> string
             abstract getEditorType: unit -> string
@@ -1095,12 +1097,12 @@ module monaco =
 
         and [<AllowNullLiteral>] ICommonCodeEditor =
             inherit IEditor
-            abstract onDidChangeModel: listener: Func<IModelChangedEvent, unit> -> IDisposable
-            abstract onDidChangeModelDecorations: listener: Func<IModelDecorationsChangedEvent, unit> -> IDisposable
-            abstract onDidFocusEditorText: listener: Func<unit, unit> -> IDisposable
-            abstract onDidBlurEditorText: listener: Func<unit, unit> -> IDisposable
-            abstract onDidFocusEditor: listener: Func<unit, unit> -> IDisposable
-            abstract onDidBlurEditor: listener: Func<unit, unit> -> IDisposable
+            abstract onDidChangeModel: listener: (IModelChangedEvent -> unit) -> IDisposable
+            abstract onDidChangeModelDecorations: listener: (IModelDecorationsChangedEvent -> unit) -> IDisposable
+            abstract onDidFocusEditorText: listener: (unit -> unit) -> IDisposable
+            abstract onDidBlurEditorText: listener: (unit -> unit) -> IDisposable
+            abstract onDidFocusEditor: listener: (unit -> unit) -> IDisposable
+            abstract onDidBlurEditor: listener: (unit -> unit) -> IDisposable
             abstract hasWidgetFocus: unit -> bool
             abstract getContribution: id: string -> 'T
             abstract getModel: unit -> IModel
@@ -1125,7 +1127,7 @@ module monaco =
 
         and [<AllowNullLiteral>] ICommonDiffEditor =
             inherit IEditor
-            abstract onDidUpdateDiff: listener: Func<unit, unit> -> IDisposable
+            abstract onDidUpdateDiff: listener: (unit -> unit) -> IDisposable
             abstract getModel: unit -> IDiffEditorModel
             abstract getOriginalEditor: unit -> ICommonCodeEditor
             abstract getModifiedEditor: unit -> ICommonCodeEditor
@@ -1301,8 +1303,8 @@ module monaco =
             abstract heightInPx: float option with get, set
             abstract domNode: HTMLElement with get, set
             abstract marginDomNode: HTMLElement option with get, set
-            abstract onDomNodeTop: Func<float, unit> option with get, set
-            abstract onComputedHeight: Func<float, unit> option with get, set
+            abstract onDomNodeTop: (float -> unit) option with get, set
+            abstract onComputedHeight: (float -> unit) option with get, set
 
         and [<AllowNullLiteral>] IViewZoneChangeAccessor =
             abstract addZone: zone: IViewZone -> float
@@ -1352,15 +1354,15 @@ module monaco =
 
         and [<AllowNullLiteral>] ICodeEditor =
             inherit ICommonCodeEditor
-            abstract onMouseUp: listener: Func<IEditorMouseEvent, unit> -> IDisposable
-            abstract onMouseDown: listener: Func<IEditorMouseEvent, unit> -> IDisposable
-            abstract onContextMenu: listener: Func<IEditorMouseEvent, unit> -> IDisposable
-            abstract onMouseMove: listener: Func<IEditorMouseEvent, unit> -> IDisposable
-            abstract onMouseLeave: listener: Func<IEditorMouseEvent, unit> -> IDisposable
-            abstract onKeyUp: listener: Func<IKeyboardEvent, unit> -> IDisposable
-            abstract onKeyDown: listener: Func<IKeyboardEvent, unit> -> IDisposable
-            abstract onDidLayoutChange: listener: Func<EditorLayoutInfo, unit> -> IDisposable
-            abstract onDidScrollChange: listener: Func<IScrollEvent, unit> -> IDisposable
+            abstract onMouseUp: listener: (IEditorMouseEvent -> unit) -> IDisposable
+            abstract onMouseDown: listener: (IEditorMouseEvent -> unit) -> IDisposable
+            abstract onContextMenu: listener: (IEditorMouseEvent -> unit) -> IDisposable
+            abstract onMouseMove: listener: (IEditorMouseEvent -> unit) -> IDisposable
+            abstract onMouseLeave: listener: (IEditorMouseEvent -> unit) -> IDisposable
+            abstract onKeyUp: listener: (IKeyboardEvent -> unit) -> IDisposable
+            abstract onKeyDown: listener: (IKeyboardEvent -> unit) -> IDisposable
+            abstract onDidLayoutChange: listener: (EditorLayoutInfo -> unit) -> IDisposable
+            abstract onDidScrollChange: listener: (IScrollEvent -> unit) -> IDisposable
             abstract getDomNode: unit -> HTMLElement
             abstract addContentWidget: widget: IContentWidget -> unit
             abstract layoutContentWidget: widget: IContentWidget -> unit
@@ -1368,7 +1370,7 @@ module monaco =
             abstract addOverlayWidget: widget: IOverlayWidget -> unit
             abstract layoutOverlayWidget: widget: IOverlayWidget -> unit
             abstract removeOverlayWidget: widget: IOverlayWidget -> unit
-            abstract changeViewZones: callback: Func<IViewZoneChangeAccessor, unit> -> unit
+            abstract changeViewZones: callback: (IViewZoneChangeAccessor -> unit) -> unit
             abstract getCenteredRangeInViewport: unit -> Range
             abstract getOffsetForColumn: lineNumber: float * column: float -> float
             abstract render: unit -> unit
@@ -1407,7 +1409,7 @@ module monaco =
             static member RevealLineAtArgument with get(): RevealLineAtArgumentType = jsNative and set(v: RevealLineAtArgumentType): unit = jsNative
             static member Handler with get(): HandlerType = jsNative and set(v: HandlerType): unit = jsNative
             static member create(domElement: HTMLElement, ?options: IEditorConstructionOptions, ?``override``: IEditorOverrideServices): IStandaloneCodeEditor = jsNative
-            static member onDidCreateEditor(listener: Func<ICodeEditor, unit>): IDisposable = jsNative
+            static member onDidCreateEditor(listener: (ICodeEditor -> unit)): IDisposable = jsNative
             static member createDiffEditor(domElement: HTMLElement, ?options: IDiffEditorConstructionOptions, ?``override``: IEditorOverrideServices): IStandaloneDiffEditor = jsNative
             static member createDiffNavigator(diffEditor: IStandaloneDiffEditor, ?opts: IDiffNavigatorOptions): IDiffNavigator = jsNative
             static member createModel(value: string, ?language: string, ?uri: Uri): IModel = jsNative
@@ -1415,9 +1417,9 @@ module monaco =
             static member setModelMarkers(model: IModel, owner: string, markers: ResizeArray<IMarkerData>): unit = jsNative
             static member getModel(uri: Uri): IModel = jsNative
             static member getModels(): ResizeArray<IModel> = jsNative
-            static member onDidCreateModel(listener: Func<IModel, unit>): IDisposable = jsNative
-            static member onWillDisposeModel(listener: Func<IModel, unit>): IDisposable = jsNative
-            static member onDidChangeModelLanguage(listener: Func<obj, unit>): IDisposable = jsNative
+            static member onDidCreateModel(listener: (IModel -> unit)): IDisposable = jsNative
+            static member onWillDisposeModel(listener: (IModel -> unit)): IDisposable = jsNative
+            static member onDidChangeModelLanguage(listener: (obj -> unit)): IDisposable = jsNative
             static member createWebWorker(opts: IWebWorkerOptions): MonacoWebWorker<'T> = jsNative
             static member colorizeElement(domNode: HTMLElement, options: IColorizerElementOptions): Promise<unit> = jsNative
             static member colorize(text: string, languageId: string, options: IColorizerOptions): Promise<string> = jsNative
@@ -1444,7 +1446,7 @@ module monaco =
             abstract markers: ResizeArray<editor.IMarkerData> with get, set
 
         and [<AllowNullLiteral>] CodeActionProvider =
-            abstract provideCodeActions: model: editor.IReadOnlyModel * range: Range * context: CodeActionContext * token: CancellationToken -> U2<ResizeArray<CodeAction>, Promise<ResizeArray<CodeAction>>>
+            abstract provideCodeActions: model: editor.IReadOnlyModel * range: Range * context: CodeActionContext * token: CancellationToken -> U2<ResizeArray<CodeAction>, Thenable<ResizeArray<CodeAction>>>
 
         and CompletionItemKind =
             | Text = 0
@@ -1486,9 +1488,9 @@ module monaco =
             abstract items: ResizeArray<CompletionItem> with get, set
 
         and [<AllowNullLiteral>] CompletionItemProvider =
-            abstract triggerCharacters: ResizeArray<string> option with get //, set
-            abstract provideCompletionItems: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U4<ResizeArray<CompletionItem>, Promise<ResizeArray<CompletionItem>>, CompletionList, Promise<CompletionList>>
-            abstract resolveCompletionItem: item: CompletionItem * token: CancellationToken -> U2<CompletionItem, Promise<CompletionItem>>
+            abstract triggerCharacters: ResizeArray<string> option with get, set
+            abstract provideCompletionItems: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U4<ResizeArray<CompletionItem>, Thenable<ResizeArray<CompletionItem>>, CompletionList, Thenable<CompletionList>>
+            abstract resolveCompletionItem: item: CompletionItem * token: CancellationToken -> U2<CompletionItem, Thenable<CompletionItem>>
 
         and [<AllowNullLiteral>] CommentRule =
             abstract lineComment: string option with get, set
@@ -1554,7 +1556,7 @@ module monaco =
             abstract range: IRange with get, set
 
         and [<AllowNullLiteral>] HoverProvider =
-            abstract provideHover: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Hover, Promise<Hover>>
+            abstract provideHover: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Hover, Thenable<Hover>>
 
         and [<AllowNullLiteral>] CodeAction =
             abstract command: Command with get, set
@@ -1575,8 +1577,8 @@ module monaco =
             abstract activeParameter: float with get, set
 
         and [<AllowNullLiteral>] SignatureHelpProvider =
-            abstract signatureHelpTriggerCharacters: ResizeArray<string> with get //, set
-            abstract provideSignatureHelp: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<SignatureHelp, Promise<SignatureHelp>>
+            abstract signatureHelpTriggerCharacters: ResizeArray<string> with get, set
+            abstract provideSignatureHelp: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<SignatureHelp, Thenable<SignatureHelp>>
 
         and DocumentHighlightKind =
             | Text = 0
@@ -1588,13 +1590,13 @@ module monaco =
             abstract kind: DocumentHighlightKind with get, set
 
         and [<AllowNullLiteral>] DocumentHighlightProvider =
-            abstract provideDocumentHighlights: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<ResizeArray<DocumentHighlight>, Promise<ResizeArray<DocumentHighlight>>>
+            abstract provideDocumentHighlights: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<ResizeArray<DocumentHighlight>, Thenable<ResizeArray<DocumentHighlight>>>
 
         and [<AllowNullLiteral>] ReferenceContext =
             abstract includeDeclaration: bool with get, set
 
         and [<AllowNullLiteral>] ReferenceProvider =
-            abstract provideReferences: model: editor.IReadOnlyModel * position: Position * context: ReferenceContext * token: CancellationToken -> U2<ResizeArray<Location>, Promise<ResizeArray<Location>>>
+            abstract provideReferences: model: editor.IReadOnlyModel * position: Position * context: ReferenceContext * token: CancellationToken -> U2<ResizeArray<Location>, Thenable<ResizeArray<Location>>>
 
         and [<AllowNullLiteral>] Location =
             abstract uri: Uri with get, set
@@ -1604,10 +1606,10 @@ module monaco =
             U2<Location, ResizeArray<Location>>
 
         and [<AllowNullLiteral>] DefinitionProvider =
-            abstract provideDefinition: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Definition, Promise<Definition>>
+            abstract provideDefinition: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Definition, Thenable<Definition>>
 
         and [<AllowNullLiteral>] ImplementationProvider =
-            abstract provideImplementation: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Definition, Promise<Definition>>
+            abstract provideImplementation: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Definition, Thenable<Definition>>
 
         and SymbolKind =
             | File = 0
@@ -1639,29 +1641,29 @@ module monaco =
             abstract location: Location with get, set
 
         and [<AllowNullLiteral>] DocumentSymbolProvider =
-            abstract provideDocumentSymbols: model: editor.IReadOnlyModel * token: CancellationToken -> U2<ResizeArray<SymbolInformation>, Promise<ResizeArray<SymbolInformation>>>
+            abstract provideDocumentSymbols: model: editor.IReadOnlyModel * token: CancellationToken -> U2<ResizeArray<SymbolInformation>, Thenable<ResizeArray<SymbolInformation>>>
 
         and [<AllowNullLiteral>] FormattingOptions =
             abstract tabSize: float with get, set
             abstract insertSpaces: bool with get, set
 
         and [<AllowNullLiteral>] DocumentFormattingEditProvider =
-            abstract provideDocumentFormattingEdits: model: editor.IReadOnlyModel * options: FormattingOptions * token: CancellationToken -> U2<ResizeArray<editor.ISingleEditOperation>, Promise<ResizeArray<editor.ISingleEditOperation>>>
+            abstract provideDocumentFormattingEdits: model: editor.IReadOnlyModel * options: FormattingOptions * token: CancellationToken -> U2<ResizeArray<editor.ISingleEditOperation>, Thenable<ResizeArray<editor.ISingleEditOperation>>>
 
         and [<AllowNullLiteral>] DocumentRangeFormattingEditProvider =
-            abstract provideDocumentRangeFormattingEdits: model: editor.IReadOnlyModel * range: Range * options: FormattingOptions * token: CancellationToken -> U2<ResizeArray<editor.ISingleEditOperation>, Promise<ResizeArray<editor.ISingleEditOperation>>>
+            abstract provideDocumentRangeFormattingEdits: model: editor.IReadOnlyModel * range: Range * options: FormattingOptions * token: CancellationToken -> U2<ResizeArray<editor.ISingleEditOperation>, Thenable<ResizeArray<editor.ISingleEditOperation>>>
 
         and [<AllowNullLiteral>] OnTypeFormattingEditProvider =
             abstract autoFormatTriggerCharacters: ResizeArray<string> with get, set
-            abstract provideOnTypeFormattingEdits: model: editor.IReadOnlyModel * position: Position * ch: string * options: FormattingOptions * token: CancellationToken -> U2<ResizeArray<editor.ISingleEditOperation>, Promise<ResizeArray<editor.ISingleEditOperation>>>
+            abstract provideOnTypeFormattingEdits: model: editor.IReadOnlyModel * position: Position * ch: string * options: FormattingOptions * token: CancellationToken -> U2<ResizeArray<editor.ISingleEditOperation>, Thenable<ResizeArray<editor.ISingleEditOperation>>>
 
         and [<AllowNullLiteral>] ILink =
             abstract range: IRange with get, set
             abstract url: string with get, set
 
         and [<AllowNullLiteral>] LinkProvider =
-            abstract resolveLink: Func<ILink, CancellationToken, U2<ILink, Promise<ILink>>> option with get, set
-            abstract provideLinks: model: editor.IReadOnlyModel * token: CancellationToken -> U2<ResizeArray<ILink>, Promise<ResizeArray<ILink>>>
+            abstract resolveLink: (ILink -> CancellationToken -> U2<ILink, Thenable<ILink>>) option with get, set
+            abstract provideLinks: model: editor.IReadOnlyModel * token: CancellationToken -> U2<ResizeArray<ILink>, Thenable<ResizeArray<ILink>>>
 
         and [<AllowNullLiteral>] IResourceEdit =
             abstract resource: Uri with get, set
@@ -1673,7 +1675,7 @@ module monaco =
             abstract rejectReason: string option with get, set
 
         and [<AllowNullLiteral>] RenameProvider =
-            abstract provideRenameEdits: model: editor.IReadOnlyModel * position: Position * newName: string * token: CancellationToken -> U2<WorkspaceEdit, Promise<WorkspaceEdit>>
+            abstract provideRenameEdits: model: editor.IReadOnlyModel * position: Position * newName: string * token: CancellationToken -> U2<WorkspaceEdit, Thenable<WorkspaceEdit>>
 
         and [<AllowNullLiteral>] Command =
             abstract id: string with get, set
@@ -1687,8 +1689,8 @@ module monaco =
 
         and [<AllowNullLiteral>] CodeLensProvider =
             abstract onDidChange: IEvent<obj> option with get, set
-            abstract provideCodeLenses: model: editor.IReadOnlyModel * token: CancellationToken -> U2<ResizeArray<ICodeLensSymbol>, Promise<ResizeArray<ICodeLensSymbol>>>
-            abstract resolveCodeLens: model: editor.IReadOnlyModel * codeLens: ICodeLensSymbol * token: CancellationToken -> U2<ICodeLensSymbol, Promise<ICodeLensSymbol>>
+            abstract provideCodeLenses: model: editor.IReadOnlyModel * token: CancellationToken -> U2<ResizeArray<ICodeLensSymbol>, Thenable<ResizeArray<ICodeLensSymbol>>>
+            abstract resolveCodeLens: model: editor.IReadOnlyModel * codeLens: ICodeLensSymbol * token: CancellationToken -> U2<ICodeLensSymbol, Thenable<ICodeLensSymbol>>
 
         and [<AllowNullLiteral>] ILanguageExtensionPoint =
             abstract id: string with get, set
@@ -1732,7 +1734,7 @@ module monaco =
         type [<Import("languages","monaco")>] Globals =
             static member register(language: ILanguageExtensionPoint): unit = jsNative
             static member getLanguages(): ResizeArray<ILanguageExtensionPoint> = jsNative
-            static member onLanguage(languageId: string, callback: Func<unit, unit>): IDisposable = jsNative
+            static member onLanguage(languageId: string, callback: (unit -> unit)): IDisposable = jsNative
             static member setLanguageConfiguration(languageId: string, configuration: LanguageConfiguration): IDisposable = jsNative
             static member setTokensProvider(languageId: string, provider: TokensProvider): IDisposable = jsNative
             static member setMonarchTokensProvider(languageId: string, languageDef: IMonarchLanguage): IDisposable = jsNative
@@ -1862,8 +1864,8 @@ module monaco =
             type [<Import("languages.typescript","monaco")>] Globals =
                 static member typescriptDefaults with get(): LanguageServiceDefaults = jsNative and set(v: LanguageServiceDefaults): unit = jsNative
                 static member javascriptDefaults with get(): LanguageServiceDefaults = jsNative and set(v: LanguageServiceDefaults): unit = jsNative
-                static member getTypeScriptWorker with get(): Func<unit, Promise<obj>> = jsNative and set(v: Func<unit, Promise<obj>>): unit = jsNative
-                static member getJavaScriptWorker with get(): Func<unit, Promise<obj>> = jsNative and set(v: Func<unit, Promise<obj>>): unit = jsNative
+                static member getTypeScriptWorker with get(): (unit -> Promise<obj>) = jsNative and set(v: (unit -> Promise<obj>)): unit = jsNative
+                static member getJavaScriptWorker with get(): (unit -> Promise<obj>) = jsNative and set(v: (unit -> Promise<obj>)): unit = jsNative
 
 
 
