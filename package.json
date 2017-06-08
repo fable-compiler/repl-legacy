@@ -26,7 +26,7 @@
     "babel-template": "^6.24.1",
     "fable-loader": "^1.0.2",
     "http-server": "^0.10.0",
-    "rollup": "^0.41.6",
+    "rollup": "^0.42.0",
     "rollup-plugin-fable": "^1.0.4",
     "webpack": "^2.6.1"
   }
