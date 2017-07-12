@@ -1,6 +1,6 @@
 // generated with ts2fable from /node_modules/monaco-editor/monaco.d.ts
 
-namespace Fable.Import
+namespace rec Fable.Import
 
 open System
 open System.Text.RegularExpressions
@@ -14,30 +14,30 @@ module monaco =
     //     abstract ``then``: ?onfulfilled: ('T -> U2<'TResult, Thenable<'TResult>>) * ?onrejected: (obj -> U2<'TResult, Thenable<'TResult>>) -> Thenable<'TResult>
     //     abstract ``then``: ?onfulfilled: ('T -> U2<'TResult, Thenable<'TResult>>) * ?onrejected: (obj -> unit) -> Thenable<'TResult>
 
-    and [<AllowNullLiteral>] IDisposable =
+    type [<AllowNullLiteral>] IDisposable =
         abstract dispose: unit -> unit
 
-    and [<AllowNullLiteral>] IEvent<'T> =
+    type [<AllowNullLiteral>] IEvent<'T> =
         [<Emit("$0($1...)")>] abstract Invoke: listener: ('T -> obj) * ?thisArg: obj -> IDisposable
 
-    and [<AllowNullLiteral>] [<Import("Emitter","monaco")>] Emitter<'T>() =
+    type [<AllowNullLiteral>] [<Import("Emitter","monaco")>] Emitter<'T>() =
         member __.``event`` with get(): IEvent<'T> = jsNative and set(v: IEvent<'T>): unit = jsNative
         member __.fire(?``event``: 'T): unit = jsNative
         member __.dispose(): unit = jsNative
 
-    and Severity =
+    type Severity =
         | Ignore = 0
         | Info = 1
         | Warning = 2
         | Error = 3
 
-    and [<AllowNullLiteral>] TValueCallback<'T> =
+    type [<AllowNullLiteral>] TValueCallback<'T> =
         [<Emit("$0($1...)")>] abstract Invoke: value: 'T -> unit
 
-    and [<AllowNullLiteral>] ProgressCallback =
+    type [<AllowNullLiteral>] ProgressCallback =
         [<Emit("$0($1...)")>] abstract Invoke: progress: obj -> obj
 
-    and [<AllowNullLiteral>] [<Import("Promise","monaco")>] Promise<'V>(init: (TValueCallback<'V> -> (obj -> unit) -> ProgressCallback -> unit), ?oncancel: obj) =
+    type [<AllowNullLiteral>] [<Import("Promise","monaco")>] Promise<'V>(init: (TValueCallback<'V> -> (obj -> unit) -> ProgressCallback -> unit), ?oncancel: obj) =
         member __.``then``(?success: ('V -> Promise<'U>), ?error: (obj -> Promise<'U>), ?progress: ProgressCallback): Promise<'U> = jsNative
         member __.``then``(?success: ('V -> Promise<'U>), ?error: (obj -> U2<Promise<'U>, 'U>), ?progress: ProgressCallback): Promise<'U> = jsNative
         member __.``then``(?success: ('V -> Promise<'U>), ?error: (obj -> 'U), ?progress: ProgressCallback): Promise<'U> = jsNative
@@ -52,27 +52,30 @@ module monaco =
         member __.``then``(?success: ('V -> 'U), ?error: (obj -> unit), ?progress: ProgressCallback): Promise<'U> = jsNative
         member __.``done``(?success: ('V -> unit), ?error: (obj -> obj), ?progress: ProgressCallback): unit = jsNative
         member __.cancel(): unit = jsNative
+        static member ``as``(value: obj): Promise<obj> = jsNative
+        // static member ``as``(value: Promise<'ValueType>): Promise<'ValueType> = jsNative
+        static member ``as``(value: Thenable<'ValueType>): Thenable<'ValueType> = jsNative
         static member ``as``(value: 'ValueType): Promise<'ValueType> = jsNative
         static member is(value: obj): obj = jsNative
         static member timeout(delay: float): Promise<unit> = jsNative
-        static member join(promises: ResizeArray<Promise<'ValueType>>): Promise<ResizeArray<'ValueType>> = jsNative
-        // static member join(promises: ResizeArray<Thenable<'ValueType>>): Thenable<ResizeArray<'ValueType>> = jsNative
+        // static member join(promises: ResizeArray<Promise<'ValueType>>): Promise<ResizeArray<'ValueType>> = jsNative
+        static member join(promises: ResizeArray<Thenable<'ValueType>>): Thenable<ResizeArray<'ValueType>> = jsNative
         static member join(promises: obj): Promise<obj> = jsNative
         static member any(promises: ResizeArray<Promise<'ValueType>>): Promise<obj> = jsNative
         static member wrap(value: Thenable<'ValueType>): Promise<'ValueType> = jsNative
         static member wrap(value: 'ValueType): Promise<'ValueType> = jsNative
-        static member wrapError(error: obj): Promise<'ValueType> = jsNative
+        static member wrapError(error: Error): Promise<'ValueType> = jsNative
 
-    and [<AllowNullLiteral>] [<Import("CancellationTokenSource","monaco")>] CancellationTokenSource() =
+    type [<AllowNullLiteral>] [<Import("CancellationTokenSource","monaco")>] CancellationTokenSource() =
         member __.token with get(): CancellationToken = jsNative and set(v: CancellationToken): unit = jsNative
         member __.cancel(): unit = jsNative
         member __.dispose(): unit = jsNative
 
-    and [<AllowNullLiteral>] CancellationToken =
+    type [<AllowNullLiteral>] CancellationToken =
         abstract isCancellationRequested: bool with get, set
         abstract onCancellationRequested: IEvent<obj> with get, set
 
-    and [<AllowNullLiteral>] [<Import("Uri","monaco")>] Uri() =
+    type [<AllowNullLiteral>] [<Import("Uri","monaco")>] Uri() =
         member __.scheme with get(): string = jsNative and set(v: string): unit = jsNative
         member __.authority with get(): string = jsNative and set(v: string): unit = jsNative
         member __.path with get(): string = jsNative and set(v: string): unit = jsNative
@@ -88,7 +91,7 @@ module monaco =
         member __.toJSON(): obj = jsNative
         static member revive(data: obj): Uri = jsNative
 
-    and KeyCode =
+    type KeyCode =
         | Unknown = 0
         | Backspace = 1
         | Tab = 2
@@ -198,29 +201,22 @@ module monaco =
         | NUMPAD_SUBTRACT = 106
         | NUMPAD_DECIMAL = 107
         | NUMPAD_DIVIDE = 108
-        | MAX_VALUE = 109
+        | KEY_IN_COMPOSITION = 109
+        | ABNT_C1 = 110
+        | ABNT_C2 = 111
+        | MAX_VALUE = 112
 
-    and [<AllowNullLiteral>] [<Import("KeyMod","monaco")>] KeyMod() =
+    type [<AllowNullLiteral>] [<Import("KeyMod","monaco")>] KeyMod() =
         static member CtrlCmd with get(): float = jsNative and set(v: float): unit = jsNative
         static member Shift with get(): float = jsNative and set(v: float): unit = jsNative
         static member Alt with get(): float = jsNative and set(v: float): unit = jsNative
         static member WinCtrl with get(): float = jsNative and set(v: float): unit = jsNative
         static member chord(firstPart: float, secondPart: float): float = jsNative
 
-    and [<AllowNullLiteral>] [<Import("Keybinding","monaco")>] Keybinding(keybinding: float) =
-        member __.value with get(): float = jsNative and set(v: float): unit = jsNative
-        member __.equals(other: Keybinding): bool = jsNative
-        member __.hasCtrlCmd(): bool = jsNative
-        member __.hasShift(): bool = jsNative
-        member __.hasAlt(): bool = jsNative
-        member __.hasWinCtrl(): bool = jsNative
-        member __.isModifierKey(): bool = jsNative
-        member __.getKeyCode(): KeyCode = jsNative
+    type MarkedString =
+        U2<string, obj>
 
-    and MarkedString =
-        U2<string, string * string>
-
-    and [<AllowNullLiteral>] IKeyboardEvent =
+    type [<AllowNullLiteral>] IKeyboardEvent =
         abstract browserEvent: KeyboardEvent with get, set
         abstract target: HTMLElement with get, set
         abstract ctrlKey: bool with get, set
@@ -228,12 +224,12 @@ module monaco =
         abstract altKey: bool with get, set
         abstract metaKey: bool with get, set
         abstract keyCode: KeyCode with get, set
-        abstract toKeybinding: unit -> Keybinding
+        abstract code: string with get, set
         abstract equals: keybinding: float -> bool
         abstract preventDefault: unit -> unit
         abstract stopPropagation: unit -> unit
 
-    and [<AllowNullLiteral>] IMouseEvent =
+    type [<AllowNullLiteral>] IMouseEvent =
         abstract browserEvent: MouseEvent with get, set
         abstract leftButton: bool with get, set
         abstract middleButton: bool with get, set
@@ -250,7 +246,7 @@ module monaco =
         abstract preventDefault: unit -> unit
         abstract stopPropagation: unit -> unit
 
-    and [<AllowNullLiteral>] IScrollEvent =
+    type [<AllowNullLiteral>] IScrollEvent =
         abstract scrollTop: float with get, set
         abstract scrollLeft: float with get, set
         abstract scrollWidth: float with get, set
@@ -260,23 +256,11 @@ module monaco =
         abstract scrollWidthChanged: bool with get, set
         abstract scrollHeightChanged: bool with get, set
 
-    and [<AllowNullLiteral>] IPosition =
+    type [<AllowNullLiteral>] IPosition =
         abstract lineNumber: float with get, set
         abstract column: float with get, set
 
-    and [<AllowNullLiteral>] IRange =
-        abstract startLineNumber: float with get, set
-        abstract startColumn: float with get, set
-        abstract endLineNumber: float with get, set
-        abstract endColumn: float with get, set
-
-    and [<AllowNullLiteral>] ISelection =
-        abstract selectionStartLineNumber: float with get, set
-        abstract selectionStartColumn: float with get, set
-        abstract positionLineNumber: float with get, set
-        abstract positionColumn: float with get, set
-
-    and [<AllowNullLiteral>] [<Import("Position","monaco")>] Position(lineNumber: float, column: float) =
+    type [<AllowNullLiteral>] [<Import("Position","monaco")>] Position(lineNumber: float, column: float) =
         member __.lineNumber with get(): float = jsNative and set(v: float): unit = jsNative
         member __.column with get(): float = jsNative and set(v: float): unit = jsNative
         member __.equals(other: IPosition): bool = jsNative
@@ -291,7 +275,13 @@ module monaco =
         static member lift(pos: IPosition): Position = jsNative
         static member isIPosition(obj: obj): obj = jsNative
 
-    and [<AllowNullLiteral>] [<Import("Range","monaco")>] Range(startLineNumber: float, startColumn: float, endLineNumber: float, endColumn: float) =
+    type [<AllowNullLiteral>] IRange =
+        abstract startLineNumber: float with get, set
+        abstract startColumn: float with get, set
+        abstract endLineNumber: float with get, set
+        abstract endColumn: float with get, set
+
+    type [<AllowNullLiteral>] [<Import("Range","monaco")>] Range(startLineNumber: float, startColumn: float, endLineNumber: float, endColumn: float) =
         member __.startLineNumber with get(): float = jsNative and set(v: float): unit = jsNative
         member __.startColumn with get(): float = jsNative and set(v: float): unit = jsNative
         member __.endLineNumber with get(): float = jsNative and set(v: float): unit = jsNative
@@ -316,6 +306,7 @@ module monaco =
         member __.setStartPosition(startLineNumber: float, startColumn: float): Range = jsNative
         member __.collapseToStart(): Range = jsNative
         static member collapseToStart(range: IRange): Range = jsNative
+        static member fromPositions(start: IPosition, ?``end``: IPosition): Range = jsNative
         static member lift(range: IRange): Range = jsNative
         static member isIRange(obj: obj): obj = jsNative
         static member areIntersectingOrTouching(a: IRange, b: IRange): bool = jsNative
@@ -323,7 +314,13 @@ module monaco =
         static member compareRangesUsingEnds(a: IRange, b: IRange): float = jsNative
         static member spansMultipleLines(range: IRange): bool = jsNative
 
-    and [<AllowNullLiteral>] [<Import("Selection","monaco")>] Selection(selectionStartLineNumber: float, selectionStartColumn: float, positionLineNumber: float, positionColumn: float) =
+    type [<AllowNullLiteral>] ISelection =
+        abstract selectionStartLineNumber: float with get, set
+        abstract selectionStartColumn: float with get, set
+        abstract positionLineNumber: float with get, set
+        abstract positionColumn: float with get, set
+
+    type [<AllowNullLiteral>] [<Import("Selection","monaco")>] Selection(selectionStartLineNumber: float, selectionStartColumn: float, positionLineNumber: float, positionColumn: float) =
         inherit Range(selectionStartLineNumber, selectionStartColumn, positionLineNumber, positionColumn)
         member __.selectionStartLineNumber with get(): float = jsNative and set(v: float): unit = jsNative
         member __.selectionStartColumn with get(): float = jsNative and set(v: float): unit = jsNative
@@ -335,17 +332,19 @@ module monaco =
         static member selectionsEqual(a: ISelection, b: ISelection): bool = jsNative
         member __.getDirection(): SelectionDirection = jsNative
         member __.setEndPosition(endLineNumber: float, endColumn: float): Selection = jsNative
+        member __.getPosition(): Position = jsNative
         member __.setStartPosition(startLineNumber: float, startColumn: float): Selection = jsNative
+        static member fromPositions(start: IPosition, ?``end``: IPosition): Selection = jsNative
         static member liftSelection(sel: ISelection): Selection = jsNative
         static member selectionsArrEqual(a: ResizeArray<ISelection>, b: ResizeArray<ISelection>): bool = jsNative
         static member isISelection(obj: obj): obj = jsNative
         static member createWithDirection(startLineNumber: float, startColumn: float, endLineNumber: float, endColumn: float, direction: SelectionDirection): Selection = jsNative
 
-    and SelectionDirection =
+    type SelectionDirection =
         | LTR = 0
         | RTL = 1
 
-    and [<AllowNullLiteral>] [<Import("Token","monaco")>] Token(offset: float, ``type``: string, language: string) =
+    type [<AllowNullLiteral>] [<Import("Token","monaco")>] Token(offset: float, ``type``: string, language: string) =
         member __._tokenBrand with get(): unit = jsNative and set(v: unit): unit = jsNative
         member __.offset with get(): float = jsNative and set(v: float): unit = jsNative
         member __.``type`` with get(): string = jsNative and set(v: string): unit = jsNative
@@ -360,51 +359,58 @@ module monaco =
             abstract previous: unit -> unit
             abstract dispose: unit -> unit
 
-        and [<AllowNullLiteral>] IDiffNavigatorOptions =
+        type [<AllowNullLiteral>] IDiffNavigatorOptions =
             abstract followsCaret: bool option with get, set
             abstract ignoreCharChanges: bool option with get, set
             abstract alwaysRevealFirst: bool option with get, set
 
-        and BuiltinTheme =
+        type BuiltinTheme =
             U3<obj, obj, obj>
 
-        and [<AllowNullLiteral>] ITheme =
+        type [<AllowNullLiteral>] IStandaloneThemeData =
             abstract ``base``: BuiltinTheme with get, set
             abstract ``inherit``: bool with get, set
-            abstract rules: ResizeArray<IThemeRule> with get, set
+            abstract rules: ResizeArray<ITokenThemeRule> with get, set
+            abstract colors: IColors with get, set
 
-        and [<AllowNullLiteral>] IThemeRule =
+        type IColors =
+            obj
+
+        type [<AllowNullLiteral>] ITokenThemeRule =
             abstract token: string with get, set
             abstract foreground: string option with get, set
             abstract background: string option with get, set
             abstract fontStyle: string option with get, set
 
-        and [<AllowNullLiteral>] MonacoWebWorker<'T> =
+        type [<AllowNullLiteral>] MonacoWebWorker<'T> =
             abstract dispose: unit -> unit
             abstract getProxy: unit -> Promise<'T>
             abstract withSyncedResources: resources: ResizeArray<Uri> -> Promise<'T>
 
-        and [<AllowNullLiteral>] IWebWorkerOptions =
+        type [<AllowNullLiteral>] IWebWorkerOptions =
             abstract moduleId: string with get, set
             abstract createData: obj option with get, set
             abstract label: string option with get, set
 
-        and [<AllowNullLiteral>] IEditorConstructionOptions =
-            inherit ICodeEditorWidgetCreationOptions
+        type [<AllowNullLiteral>] IEditorConstructionOptions =
+            inherit IEditorOptions
+            abstract model: IModel option with get, set
             abstract value: string option with get, set
             abstract language: string option with get, set
+            abstract theme: string option with get, set
+            abstract accessibilityHelpUrl: string option with get, set
 
-        and [<AllowNullLiteral>] IDiffEditorConstructionOptions =
+        type [<AllowNullLiteral>] IDiffEditorConstructionOptions =
             inherit IDiffEditorOptions
+            abstract theme: string option with get, set
 
-
-        and [<AllowNullLiteral>] IStandaloneCodeEditor =
+        type [<AllowNullLiteral>] IStandaloneCodeEditor =
             inherit ICodeEditor
             abstract addCommand: keybinding: float * handler: ICommandHandler * context: string -> string
             abstract createContextKey: key: string * defaultValue: 'T -> IContextKey<'T>
             abstract addAction: descriptor: IActionDescriptor -> IDisposable
 
-        and [<AllowNullLiteral>] IStandaloneDiffEditor =
+        type [<AllowNullLiteral>] IStandaloneDiffEditor =
             inherit IDiffEditor
             abstract addCommand: keybinding: float * handler: ICommandHandler * context: string -> string
             abstract createContextKey: key: string * defaultValue: 'T -> IContextKey<'T>
@@ -412,18 +418,18 @@ module monaco =
             abstract getOriginalEditor: unit -> IStandaloneCodeEditor
             abstract getModifiedEditor: unit -> IStandaloneCodeEditor
 
-        and [<AllowNullLiteral>] ICommandHandler =
+        type [<AllowNullLiteral>] ICommandHandler =
             [<Emit("$0($1...)")>] abstract Invoke: [<ParamArray>] args: obj[] -> unit
 
-        and [<AllowNullLiteral>] IContextKey<'T> =
+        type [<AllowNullLiteral>] IContextKey<'T> =
             abstract set: value: 'T -> unit
             abstract reset: unit -> unit
             abstract get: unit -> 'T
 
-        and [<AllowNullLiteral>] IEditorOverrideServices =
-            interface end
+        type [<AllowNullLiteral>] IEditorOverrideServices =
+            [<Emit("$0[$1]{{=$2}}")>] abstract Item: index: string -> obj with get, set
 
-        and [<AllowNullLiteral>] IMarkerData =
+        type [<AllowNullLiteral>] IMarkerData =
             abstract code: string option with get, set
             abstract severity: Severity with get, set
             abstract message: string with get, set
@@ -433,265 +439,40 @@ module monaco =
             abstract endLineNumber: float with get, set
             abstract endColumn: float with get, set
 
-        and [<AllowNullLiteral>] IColorizerOptions =
+        type [<AllowNullLiteral>] IColorizerOptions =
             abstract tabSize: float option with get, set
 
-        and [<AllowNullLiteral>] IColorizerElementOptions =
+        type [<AllowNullLiteral>] IColorizerElementOptions =
             inherit IColorizerOptions
             abstract theme: string option with get, set
             abstract mimeType: string option with get, set
 
-        and ScrollbarVisibility =
+        type ScrollbarVisibility =
             | Auto = 1
             | Hidden = 2
             | Visible = 3
 
-        and [<AllowNullLiteral>] IEditorScrollbarOptions =
-            abstract arrowSize: float option with get, set
-            abstract vertical: string option with get, set
-            abstract horizontal: string option with get, set
-            abstract useShadows: bool option with get, set
-            abstract verticalHasArrows: bool option with get, set
-            abstract horizontalHasArrows: bool option with get, set
-            abstract handleMouseWheel: bool option with get, set
-            abstract horizontalScrollbarSize: float option with get, set
-            abstract verticalScrollbarSize: float option with get, set
-            abstract verticalSliderSize: float option with get, set
-            abstract horizontalSliderSize: float option with get, set
+        type [<AllowNullLiteral>] ThemeColor =
+            abstract id: string with get, set
 
-        and WrappingIndent =
-            | None = 0
-            | Same = 1
-            | Indent = 2
-
-        and LineNumbersOption =
-            U4<obj, obj, obj, (float -> string)>
-
-        and [<AllowNullLiteral>] IEditorOptions =
-            abstract experimentalScreenReader: bool option with get, set
-            abstract ariaLabel: string option with get, set
-            abstract rulers: ResizeArray<float> option with get, set
-            abstract wordSeparators: string option with get, set
-            abstract selectionClipboard: bool option with get, set
-            abstract lineNumbers: LineNumbersOption option with get, set
-            abstract selectOnLineNumbers: bool option with get, set
-            abstract lineNumbersMinChars: float option with get, set
-            abstract glyphMargin: bool option with get, set
-            abstract lineDecorationsWidth: U2<float, string> option with get, set
-            abstract revealHorizontalRightPadding: float option with get, set
-            abstract roundedSelection: bool option with get, set
-            abstract theme: string option with get, set
-            abstract readOnly: bool option with get, set
-            abstract scrollbar: IEditorScrollbarOptions option with get, set
-            abstract fixedOverflowWidgets: bool option with get, set
-            abstract overviewRulerLanes: float option with get, set
-            abstract cursorBlinking: string option with get, set
-            abstract mouseWheelZoom: bool option with get, set
-            abstract cursorStyle: string option with get, set
-            abstract fontLigatures: bool option with get, set
-            abstract disableTranslate3d: bool option with get, set
-            abstract disableMonospaceOptimizations: bool option with get, set
-            abstract hideCursorInOverviewRuler: bool option with get, set
-            abstract scrollBeyondLastLine: bool option with get, set
-            abstract automaticLayout: bool option with get, set
-            abstract wrappingColumn: float option with get, set
-            abstract wordWrap: bool option with get, set
-            abstract wrappingIndent: string option with get, set
-            abstract wordWrapBreakBeforeCharacters: string option with get, set
-            abstract wordWrapBreakAfterCharacters: string option with get, set
-            abstract wordWrapBreakObtrusiveCharacters: string option with get, set
-            abstract stopRenderingLineAfter: float option with get, set
-            abstract hover: bool option with get, set
-            abstract contextmenu: bool option with get, set
-            abstract mouseWheelScrollSensitivity: float option with get, set
-            abstract quickSuggestions: bool option with get, set
-            abstract quickSuggestionsDelay: float option with get, set
-            abstract parameterHints: bool option with get, set
-            abstract iconsInSuggestions: bool option with get, set
-            abstract autoClosingBrackets: bool option with get, set
-            abstract formatOnType: bool option with get, set
-            abstract formatOnPaste: bool option with get, set
-            abstract suggestOnTriggerCharacters: bool option with get, set
-            abstract acceptSuggestionOnEnter: bool option with get, set
-            abstract acceptSuggestionOnCommitCharacter: bool option with get, set
-            abstract snippetSuggestions: U4<obj, obj, obj, obj> option with get, set
-            abstract emptySelectionClipboard: bool option with get, set
-            abstract tabCompletion: bool option with get, set
-            abstract wordBasedSuggestions: bool option with get, set
-            abstract suggestFontSize: float option with get, set
-            abstract suggestLineHeight: float option with get, set
-            abstract selectionHighlight: bool option with get, set
-            abstract codeLens: bool option with get, set
-            abstract folding: bool option with get, set
-            abstract renderWhitespace: U3<obj, obj, obj> option with get, set
-            abstract renderControlCharacters: bool option with get, set
-            abstract renderIndentGuides: bool option with get, set
-            abstract renderLineHighlight: U4<obj, obj, obj, obj> option with get, set
-            abstract useTabStops: bool option with get, set
-            abstract fontFamily: string option with get, set
-            abstract fontWeight: obj option with get, set
-            abstract fontSize: float option with get, set
-            abstract lineHeight: float option with get, set
-
-        and [<AllowNullLiteral>] IDiffEditorOptions =
-            inherit IEditorOptions
-            abstract enableSplitViewResizing: bool option with get, set
-            abstract renderSideBySide: bool option with get, set
-            abstract ignoreTrimWhitespace: bool option with get, set
-            abstract renderIndicators: bool option with get, set
-            abstract originalEditable: bool option with get, set
-
-        and [<AllowNullLiteral>] [<Import("editor.InternalEditorScrollbarOptions","monaco")>] InternalEditorScrollbarOptions() =
-            member __._internalEditorScrollbarOptionsBrand with get(): unit = jsNative and set(v: unit): unit = jsNative
-            member __.arrowSize with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.vertical with get(): ScrollbarVisibility = jsNative and set(v: ScrollbarVisibility): unit = jsNative
-            member __.horizontal with get(): ScrollbarVisibility = jsNative and set(v: ScrollbarVisibility): unit = jsNative
-            member __.useShadows with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.verticalHasArrows with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.horizontalHasArrows with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.handleMouseWheel with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.horizontalScrollbarSize with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.horizontalSliderSize with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.verticalScrollbarSize with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.verticalSliderSize with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.mouseWheelScrollSensitivity with get(): float = jsNative and set(v: float): unit = jsNative
-
-        and [<AllowNullLiteral>] [<Import("editor.EditorWrappingInfo","monaco")>] EditorWrappingInfo() =
-            member __._editorWrappingInfoBrand with get(): unit = jsNative and set(v: unit): unit = jsNative
-            member __.isViewportWrapping with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.wrappingColumn with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.wrappingIndent with get(): WrappingIndent = jsNative and set(v: WrappingIndent): unit = jsNative
-            member __.wordWrapBreakBeforeCharacters with get(): string = jsNative and set(v: string): unit = jsNative
-            member __.wordWrapBreakAfterCharacters with get(): string = jsNative and set(v: string): unit = jsNative
-            member __.wordWrapBreakObtrusiveCharacters with get(): string = jsNative and set(v: string): unit = jsNative
-
-        and [<AllowNullLiteral>] [<Import("editor.InternalEditorViewOptions","monaco")>] InternalEditorViewOptions() =
-            member __._internalEditorViewOptionsBrand with get(): unit = jsNative and set(v: unit): unit = jsNative
-            member __.theme with get(): string = jsNative and set(v: string): unit = jsNative
-            member __.canUseTranslate3d with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.disableMonospaceOptimizations with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.experimentalScreenReader with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.rulers with get(): ResizeArray<float> = jsNative and set(v: ResizeArray<float>): unit = jsNative
-            member __.ariaLabel with get(): string = jsNative and set(v: string): unit = jsNative
-            member __.renderLineNumbers with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.renderCustomLineNumbers with get(): (float -> string) = jsNative and set(v: (float -> string)): unit = jsNative
-            member __.renderRelativeLineNumbers with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.selectOnLineNumbers with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.glyphMargin with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.revealHorizontalRightPadding with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.roundedSelection with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.overviewRulerLanes with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.cursorBlinking with get(): TextEditorCursorBlinkingStyle = jsNative and set(v: TextEditorCursorBlinkingStyle): unit = jsNative
-            member __.mouseWheelZoom with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.cursorStyle with get(): TextEditorCursorStyle = jsNative and set(v: TextEditorCursorStyle): unit = jsNative
-            member __.hideCursorInOverviewRuler with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.scrollBeyondLastLine with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.editorClassName with get(): string = jsNative and set(v: string): unit = jsNative
-            member __.stopRenderingLineAfter with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.renderWhitespace with get(): U3<obj, obj, obj> = jsNative and set(v: U3<obj, obj, obj>): unit = jsNative
-            member __.renderControlCharacters with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.renderIndentGuides with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.renderLineHighlight with get(): U4<obj, obj, obj, obj> = jsNative and set(v: U4<obj, obj, obj, obj>): unit = jsNative
-            member __.scrollbar with get(): InternalEditorScrollbarOptions = jsNative and set(v: InternalEditorScrollbarOptions): unit = jsNative
-            member __.fixedOverflowWidgets with get(): bool = jsNative and set(v: bool): unit = jsNative
-
-        and [<AllowNullLiteral>] IViewConfigurationChangedEvent =
-            abstract theme: bool with get, set
-            abstract canUseTranslate3d: bool with get, set
-            abstract disableMonospaceOptimizations: bool with get, set
-            abstract experimentalScreenReader: bool with get, set
-            abstract rulers: bool with get, set
-            abstract ariaLabel: bool with get, set
-            abstract renderLineNumbers: bool with get, set
-            abstract renderCustomLineNumbers: bool with get, set
-            abstract renderRelativeLineNumbers: bool with get, set
-            abstract selectOnLineNumbers: bool with get, set
-            abstract glyphMargin: bool with get, set
-            abstract revealHorizontalRightPadding: bool with get, set
-            abstract roundedSelection: bool with get, set
-            abstract overviewRulerLanes: bool with get, set
-            abstract cursorBlinking: bool with get, set
-            abstract mouseWheelZoom: bool with get, set
-            abstract cursorStyle: bool with get, set
-            abstract hideCursorInOverviewRuler: bool with get, set
-            abstract scrollBeyondLastLine: bool with get, set
-            abstract editorClassName: bool with get, set
-            abstract stopRenderingLineAfter: bool with get, set
-            abstract renderWhitespace: bool with get, set
-            abstract renderControlCharacters: bool with get, set
-            abstract renderIndentGuides: bool with get, set
-            abstract renderLineHighlight: bool with get, set
-            abstract scrollbar: bool with get, set
-            abstract fixedOverflowWidgets: bool with get, set
-
-        and [<AllowNullLiteral>] [<Import("editor.EditorContribOptions","monaco")>] EditorContribOptions() =
-            member __.selectionClipboard with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.hover with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.contextmenu with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.quickSuggestions with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.quickSuggestionsDelay with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.parameterHints with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.iconsInSuggestions with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.formatOnType with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.formatOnPaste with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.suggestOnTriggerCharacters with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.acceptSuggestionOnEnter with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.acceptSuggestionOnCommitCharacter with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.snippetSuggestions with get(): U4<obj, obj, obj, obj> = jsNative and set(v: U4<obj, obj, obj, obj>): unit = jsNative
-            member __.emptySelectionClipboard with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.tabCompletion with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.wordBasedSuggestions with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.suggestFontSize with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.suggestLineHeight with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.selectionHighlight with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.codeLens with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.folding with get(): bool = jsNative and set(v: bool): unit = jsNative
-
-        and [<AllowNullLiteral>] [<Import("editor.InternalEditorOptions","monaco")>] InternalEditorOptions() =
-            member __._internalEditorOptionsBrand with get(): unit = jsNative and set(v: unit): unit = jsNative
-            member __.lineHeight with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.readOnly with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.wordSeparators with get(): string = jsNative and set(v: string): unit = jsNative
-            member __.autoClosingBrackets with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.useTabStops with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.tabFocusMode with get(): bool = jsNative and set(v: bool): unit = jsNative
-            member __.layoutInfo with get(): EditorLayoutInfo = jsNative and set(v: EditorLayoutInfo): unit = jsNative
-            member __.fontInfo with get(): FontInfo = jsNative and set(v: FontInfo): unit = jsNative
-            member __.viewInfo with get(): InternalEditorViewOptions = jsNative and set(v: InternalEditorViewOptions): unit = jsNative
-            member __.wrappingInfo with get(): EditorWrappingInfo = jsNative and set(v: EditorWrappingInfo): unit = jsNative
-            member __.contribInfo with get(): EditorContribOptions = jsNative and set(v: EditorContribOptions): unit = jsNative
-
-        and [<AllowNullLiteral>] IConfigurationChangedEvent =
-            abstract lineHeight: bool with get, set
-            abstract readOnly: bool with get, set
-            abstract wordSeparators: bool with get, set
-            abstract autoClosingBrackets: bool with get, set
-            abstract useTabStops: bool with get, set
-            abstract tabFocusMode: bool with get, set
-            abstract layoutInfo: bool with get, set
-            abstract fontInfo: bool with get, set
-            abstract viewInfo: IViewConfigurationChangedEvent with get, set
-            abstract wrappingInfo: bool with get, set
-            abstract contribInfo: bool with get, set
-
-        and OverviewRulerLane =
+        type OverviewRulerLane =
             | Left = 1
             | Center = 2
             | Right = 4
             | Full = 7
 
-        and [<AllowNullLiteral>] IModelDecorationOverviewRulerOptions =
-            abstract color: string with get, set
-            abstract darkColor: string with get, set
+        type [<AllowNullLiteral>] IModelDecorationOverviewRulerOptions =
+            abstract color: U2<string, ThemeColor> with get, set
+            abstract darkColor: U2<string, ThemeColor> with get, set
+            abstract hcColor: U2<string, ThemeColor> option with get, set
             abstract position: OverviewRulerLane with get, set
 
-        and [<AllowNullLiteral>] IModelDecorationOptions =
+        type [<AllowNullLiteral>] IModelDecorationOptions =
             abstract stickiness: TrackedRangeStickiness option with get, set
             abstract className: string option with get, set
             abstract glyphMarginHoverMessage: U2<MarkedString, ResizeArray<MarkedString>> option with get, set
             abstract hoverMessage: U2<MarkedString, ResizeArray<MarkedString>> option with get, set
             abstract isWholeLine: bool option with get, set
-            abstract showInOverviewRuler: string option with get, set
             abstract overviewRuler: IModelDecorationOverviewRulerOptions option with get, set
             abstract glyphMarginClassName: string option with get, set
             abstract linesDecorationsClassName: string option with get, set
@@ -700,84 +481,80 @@ module monaco =
             abstract beforeContentClassName: string option with get, set
             abstract afterContentClassName: string option with get, set
 
-        and [<AllowNullLiteral>] IModelDeltaDecoration =
+        type [<AllowNullLiteral>] IModelDeltaDecoration =
             abstract range: IRange with get, set
             abstract options: IModelDecorationOptions with get, set
 
-        and [<AllowNullLiteral>] IModelDecoration =
+        type [<AllowNullLiteral>] IModelDecoration =
             abstract id: string with get, set
             abstract ownerId: float with get, set
             abstract range: Range with get, set
             abstract options: IModelDecorationOptions with get, set
             abstract isForValidation: bool with get, set
 
-        and [<AllowNullLiteral>] IWordAtPosition =
+        type [<AllowNullLiteral>] IWordAtPosition =
             abstract word: string with get, set
             abstract startColumn: float with get, set
             abstract endColumn: float with get, set
 
-        and EndOfLinePreference =
+        type EndOfLinePreference =
             | TextDefined = 0
             | LF = 1
             | CRLF = 2
 
-        and DefaultEndOfLine =
+        type DefaultEndOfLine =
             | LF = 1
             | CRLF = 2
 
-        and EndOfLineSequence =
+        type EndOfLineSequence =
             | LF = 0
             | CRLF = 1
 
-        and [<AllowNullLiteral>] ISingleEditOperationIdentifier =
+        type [<AllowNullLiteral>] ISingleEditOperationIdentifier =
             abstract major: float with get, set
             abstract minor: float with get, set
 
-        and [<AllowNullLiteral>] IEditOperationBuilder =
+        type [<AllowNullLiteral>] IEditOperationBuilder =
             abstract addEditOperation: range: Range * text: string -> unit
+            abstract addTrackedEditOperation: range: Range * text: string -> unit
             abstract trackSelection: selection: Selection * ?trackPreviousOnEmpty: bool -> string
 
-        and [<AllowNullLiteral>] ICursorStateComputerData =
+        type [<AllowNullLiteral>] ICursorStateComputerData =
             abstract getInverseEditOperations: unit -> ResizeArray<IIdentifiedSingleEditOperation>
             abstract getTrackedSelection: id: string -> Selection
 
-        and [<AllowNullLiteral>] ICommand =
+        type [<AllowNullLiteral>] ICommand =
             abstract getEditOperations: model: ITokenizedModel * builder: IEditOperationBuilder -> unit
             abstract computeCursorState: model: ITokenizedModel * helper: ICursorStateComputerData -> Selection
 
-        and [<AllowNullLiteral>] ISingleEditOperation =
+        type [<AllowNullLiteral>] ISingleEditOperation =
             abstract range: IRange with get, set
             abstract text: string with get, set
             abstract forceMoveMarkers: bool option with get, set
 
-        and [<AllowNullLiteral>] IIdentifiedSingleEditOperation =
+        type [<AllowNullLiteral>] IIdentifiedSingleEditOperation =
             abstract identifier: ISingleEditOperationIdentifier with get, set
             abstract range: Range with get, set
             abstract text: string with get, set
             abstract forceMoveMarkers: bool with get, set
             abstract isAutoWhitespaceEdit: bool option with get, set
 
-        and [<AllowNullLiteral>] ICursorStateComputer =
+        type [<AllowNullLiteral>] ICursorStateComputer =
             [<Emit("$0($1...)")>] abstract Invoke: inverseEditOperations: ResizeArray<IIdentifiedSingleEditOperation> -> ResizeArray<Selection>
 
-        and [<AllowNullLiteral>] [<Import("editor.TextModelResolvedOptions","monaco")>] TextModelResolvedOptions() =
+        type [<AllowNullLiteral>] [<Import("editor.TextModelResolvedOptions","monaco")>] TextModelResolvedOptions() =
             member __._textModelResolvedOptionsBrand with get(): unit = jsNative and set(v: unit): unit = jsNative
             member __.tabSize with get(): float = jsNative and set(v: float): unit = jsNative
             member __.insertSpaces with get(): bool = jsNative and set(v: bool): unit = jsNative
             member __.defaultEOL with get(): DefaultEndOfLine = jsNative and set(v: DefaultEndOfLine): unit = jsNative
             member __.trimAutoWhitespace with get(): bool = jsNative and set(v: bool): unit = jsNative
 
-        and [<AllowNullLiteral>] ITextModelUpdateOptions =
+        type [<AllowNullLiteral>] ITextModelUpdateOptions =
             abstract tabSize: float option with get, set
             abstract insertSpaces: bool option with get, set
             abstract trimAutoWhitespace: bool option with get, set
 
-        and [<AllowNullLiteral>] IModelOptionsChangedEvent =
-            abstract tabSize: bool with get, set
-            abstract insertSpaces: bool with get, set
-            abstract trimAutoWhitespace: bool with get, set
-
-        and [<AllowNullLiteral>] ITextModel =
+        type [<AllowNullLiteral>] ITextModel =
             abstract getOptions: unit -> TextModelResolvedOptions
             abstract getVersionId: unit -> float
             abstract getAlternativeVersionId: unit -> float
@@ -802,40 +579,40 @@ module monaco =
             abstract getPositionAt: offset: float -> Position
             abstract getFullModelRange: unit -> Range
             abstract isDisposed: unit -> bool
-            abstract findMatches: searchString: string * searchOnlyEditableRange: bool * isRegex: bool * matchCase: bool * wholeWord: bool * captureMatches: bool * ?limitResultCount: float -> ResizeArray<FindMatch>
-            abstract findMatches: searchString: string * searchScope: IRange * isRegex: bool * matchCase: bool * wholeWord: bool * captureMatches: bool * ?limitResultCount: float -> ResizeArray<FindMatch>
-            abstract findNextMatch: searchString: string * searchStart: IPosition * isRegex: bool * matchCase: bool * wholeWord: bool * captureMatches: bool -> FindMatch
-            abstract findPreviousMatch: searchString: string * searchStart: IPosition * isRegex: bool * matchCase: bool * wholeWord: bool * captureMatches: bool -> FindMatch
+            abstract findMatches: searchString: string * searchOnlyEditableRange: bool * isRegex: bool * matchCase: bool * wordSeparators: string * captureMatches: bool * ?limitResultCount: float -> ResizeArray<FindMatch>
+            abstract findMatches: searchString: string * searchScope: IRange * isRegex: bool * matchCase: bool * wordSeparators: string * captureMatches: bool * ?limitResultCount: float -> ResizeArray<FindMatch>
+            abstract findNextMatch: searchString: string * searchStart: IPosition * isRegex: bool * matchCase: bool * wordSeparators: string * captureMatches: bool -> FindMatch
+            abstract findPreviousMatch: searchString: string * searchStart: IPosition * isRegex: bool * matchCase: bool * wordSeparators: string * captureMatches: bool -> FindMatch
 
-        and [<AllowNullLiteral>] [<Import("editor.FindMatch","monaco")>] FindMatch() =
+        type [<AllowNullLiteral>] [<Import("editor.FindMatch","monaco")>] FindMatch() =
             member __._findMatchBrand with get(): unit = jsNative and set(v: unit): unit = jsNative
             member __.range with get(): Range = jsNative and set(v: Range): unit = jsNative
             member __.matches with get(): ResizeArray<string> = jsNative and set(v: ResizeArray<string>): unit = jsNative
 
-        and [<AllowNullLiteral>] IReadOnlyModel =
+        type [<AllowNullLiteral>] IReadOnlyModel =
             inherit ITextModel
             abstract uri: Uri with get, set
             abstract getModeId: unit -> string
             abstract getWordAtPosition: position: IPosition -> IWordAtPosition
             abstract getWordUntilPosition: position: IPosition -> IWordAtPosition
 
-        and [<AllowNullLiteral>] ITokenizedModel =
+        type [<AllowNullLiteral>] ITokenizedModel =
             inherit ITextModel
             abstract getModeId: unit -> string
             abstract getWordAtPosition: position: IPosition -> IWordAtPosition
             abstract getWordUntilPosition: position: IPosition -> IWordAtPosition
 
-        and [<AllowNullLiteral>] ITextModelWithMarkers =
+        type [<AllowNullLiteral>] ITextModelWithMarkers =
             inherit ITextModel
 
 
-        and TrackedRangeStickiness =
+        type TrackedRangeStickiness =
             | AlwaysGrowsWhenTypingAtEdges = 0
             | NeverGrowsWhenTypingAtEdges = 1
             | GrowsOnlyWhenTypingBefore = 2
             | GrowsOnlyWhenTypingAfter = 3
 
-        and [<AllowNullLiteral>] ITextModelWithDecorations =
+        type [<AllowNullLiteral>] ITextModelWithDecorations =
             abstract deltaDecorations: oldDecorations: ResizeArray<string> * newDecorations: ResizeArray<IModelDeltaDecoration> * ?ownerId: float -> ResizeArray<string>
             abstract getDecorationOptions: id: string -> IModelDecorationOptions
             abstract getDecorationRange: id: string -> Range
@@ -844,7 +621,7 @@ module monaco =
             abstract getDecorationsInRange: range: IRange * ?ownerId: float * ?filterOutValidation: bool -> ResizeArray<IModelDecoration>
             abstract getAllDecorations: ?ownerId: float * ?filterOutValidation: bool -> ResizeArray<IModelDecoration>
 
-        and [<AllowNullLiteral>] IEditableTextModel =
+        type [<AllowNullLiteral>] IEditableTextModel =
             inherit ITextModelWithMarkers
             abstract normalizeIndentation: str: string -> string
             abstract getOneIndent: unit -> string
@@ -854,179 +631,57 @@ module monaco =
             abstract pushEditOperations: beforeCursorState: ResizeArray<Selection> * editOperations: ResizeArray<IIdentifiedSingleEditOperation> * cursorStateComputer: ICursorStateComputer -> ResizeArray<Selection>
             abstract applyEdits: operations: ResizeArray<IIdentifiedSingleEditOperation> -> ResizeArray<IIdentifiedSingleEditOperation>
 
-        and [<AllowNullLiteral>] IModel =
+        type [<AllowNullLiteral>] IModel =
             inherit IReadOnlyModel
             inherit IEditableTextModel
             inherit ITextModelWithMarkers
             inherit ITokenizedModel
             inherit ITextModelWithDecorations
-            inherit IEditorModel
             abstract id: string with get, set
-            abstract onDidChangeContent: listener: (IModelContentChangedEvent2 -> unit) -> IDisposable
+            abstract onDidChangeContent: listener: (IModelContentChangedEvent -> unit) -> IDisposable
             abstract onDidChangeDecorations: listener: (IModelDecorationsChangedEvent -> unit) -> IDisposable
             abstract onDidChangeOptions: listener: (IModelOptionsChangedEvent -> unit) -> IDisposable
             abstract onDidChangeLanguage: listener: (IModelLanguageChangedEvent -> unit) -> IDisposable
             abstract onWillDispose: listener: (unit -> unit) -> IDisposable
             abstract dispose: unit -> unit
 
-        and [<AllowNullLiteral>] IModelLanguageChangedEvent =
-            abstract oldLanguage: string with get, set
-            abstract newLanguage: string with get, set
-
-        and [<AllowNullLiteral>] IModelContentChangedEvent2 =
-            abstract range: IRange with get, set
-            abstract rangeLength: float with get, set
-            abstract text: string with get, set
-            abstract eol: string with get, set
-            abstract versionId: float with get, set
-            abstract isUndoing: bool with get, set
-            abstract isRedoing: bool with get, set
-
-        and [<AllowNullLiteral>] IModelDecorationsChangedEvent =
-            abstract addedDecorations: ResizeArray<string> with get, set
-            abstract changedDecorations: ResizeArray<string> with get, set
-            abstract removedDecorations: ResizeArray<string> with get, set
-
-        and [<AllowNullLiteral>] IModelTokensChangedEvent =
-            abstract ranges: ResizeArray<obj> with get, set
-
-        and CursorChangeReason =
-            | NotSet = 0
-            | ContentFlush = 1
-            | RecoverFromMarkers = 2
-            | Explicit = 3
-            | Paste = 4
-            | Undo = 5
-            | Redo = 6
-
-        and [<AllowNullLiteral>] ICursorPositionChangedEvent =
-            abstract position: Position with get, set
-            abstract viewPosition: Position with get, set
-            abstract secondaryPositions: ResizeArray<Position> with get, set
-            abstract secondaryViewPositions: ResizeArray<Position> with get, set
-            abstract reason: CursorChangeReason with get, set
-            abstract source: string with get, set
-            abstract isInEditableRange: bool with get, set
-
-        and [<AllowNullLiteral>] ICursorSelectionChangedEvent =
-            abstract selection: Selection with get, set
-            abstract viewSelection: Selection with get, set
-            abstract secondarySelections: ResizeArray<Selection> with get, set
-            abstract secondaryViewSelections: ResizeArray<Selection> with get, set
-            abstract source: string with get, set
-            abstract reason: CursorChangeReason with get, set
-
-        and [<AllowNullLiteral>] IModelChangedEvent =
-            abstract oldModelUrl: Uri with get, set
-            abstract newModelUrl: Uri with get, set
-
-        and [<AllowNullLiteral>] [<Import("editor.OverviewRulerPosition","monaco")>] OverviewRulerPosition() =
-            member __._overviewRulerPositionBrand with get(): unit = jsNative and set(v: unit): unit = jsNative
-            member __.width with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.height with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.top with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.right with get(): float = jsNative and set(v: float): unit = jsNative
-
-        and [<AllowNullLiteral>] [<Import("editor.EditorLayoutInfo","monaco")>] EditorLayoutInfo() =
-            member __._editorLayoutInfoBrand with get(): unit = jsNative and set(v: unit): unit = jsNative
-            member __.width with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.height with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.glyphMarginLeft with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.glyphMarginWidth with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.glyphMarginHeight with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.lineNumbersLeft with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.lineNumbersWidth with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.lineNumbersHeight with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.decorationsLeft with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.decorationsWidth with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.decorationsHeight with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.contentLeft with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.contentWidth with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.contentHeight with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.verticalScrollbarWidth with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.horizontalScrollbarHeight with get(): float = jsNative and set(v: float): unit = jsNative
-            member __.overviewRuler with get(): OverviewRulerPosition = jsNative and set(v: OverviewRulerPosition): unit = jsNative
-
-        and [<AllowNullLiteral>] ICodeEditorWidgetCreationOptions =
-            inherit IEditorOptions
-            abstract model: IModel option with get, set
-
-        and [<AllowNullLiteral>] IEditorModel =
-            interface end
-
-        and [<AllowNullLiteral>] IEditorViewState =
-            interface end
-
-        and [<AllowNullLiteral>] IDimension =
-            abstract width: float with get, set
-            abstract height: float with get, set
-
-        and [<AllowNullLiteral>] ICursorState =
-            abstract inSelectionMode: bool with get, set
-            abstract selectionStart: IPosition with get, set
-            abstract position: IPosition with get, set
-
-        and [<AllowNullLiteral>] IViewState =
-            abstract scrollTop: float with get, set
-            abstract scrollTopWithoutViewZones: float with get, set
-            abstract scrollLeft: float with get, set
-
-        and [<AllowNullLiteral>] ICodeEditorViewState =
-            inherit IEditorViewState
-            abstract cursorState: ResizeArray<ICursorState> with get, set
-            abstract viewState: IViewState with get, set
-            abstract contributionsState: obj with get, set
-
-        and MouseTargetType =
-            | UNKNOWN = 0
-            | TEXTAREA = 1
-            | GUTTER_GLYPH_MARGIN = 2
-            | GUTTER_LINE_NUMBERS = 3
-            | GUTTER_LINE_DECORATIONS = 4
-            | GUTTER_VIEW_ZONE = 5
-            | CONTENT_TEXT = 6
-            | CONTENT_EMPTY = 7
-            | CONTENT_VIEW_ZONE = 8
-            | CONTENT_WIDGET = 9
-            | OVERVIEW_RULER = 10
-            | SCROLLBAR = 11
-            | OVERLAY_WIDGET = 12
-
-        and [<AllowNullLiteral>] IDiffEditorModel =
-            inherit IEditorModel
+        type [<AllowNullLiteral>] IDiffEditorModel =
             abstract original: IModel with get, set
             abstract modified: IModel with get, set
 
-        and [<AllowNullLiteral>] IDiffEditorViewState =
-            inherit IEditorViewState
-            abstract original: ICodeEditorViewState with get, set
-            abstract modified: ICodeEditorViewState with get, set
+        type [<AllowNullLiteral>] IModelChangedEvent =
+            abstract oldModelUrl: Uri with get, set
+            abstract newModelUrl: Uri with get, set
 
-        and [<AllowNullLiteral>] IChange =
+        type [<AllowNullLiteral>] IDimension =
+            abstract width: float with get, set
+            abstract height: float with get, set
+
+        type [<AllowNullLiteral>] IChange =
             abstract originalStartLineNumber: float with get, set
             abstract originalEndLineNumber: float with get, set
             abstract modifiedStartLineNumber: float with get, set
             abstract modifiedEndLineNumber: float with get, set
 
-        and [<AllowNullLiteral>] ICharChange =
+        type [<AllowNullLiteral>] ICharChange =
             inherit IChange
             abstract originalStartColumn: float with get, set
             abstract originalEndColumn: float with get, set
             abstract modifiedStartColumn: float with get, set
             abstract modifiedEndColumn: float with get, set
 
-        and [<AllowNullLiteral>] ILineChange =
+        type [<AllowNullLiteral>] ILineChange =
             inherit IChange
             abstract charChanges: ResizeArray<ICharChange> with get, set
 
-        and [<AllowNullLiteral>] IDiffLineInformation =
+        type [<AllowNullLiteral>] IDiffLineInformation =
             abstract equivalentLineNumber: float with get, set
 
-        and [<AllowNullLiteral>] INewScrollPosition =
+        type [<AllowNullLiteral>] INewScrollPosition =
             abstract scrollLeft: float option with get, set
             abstract scrollTop: float option with get, set
 
-        and [<AllowNullLiteral>] IActionDescriptor =
+        type [<AllowNullLiteral>] IActionDescriptor =
             abstract id: string with get, set
             abstract label: string with get, set
             abstract precondition: string option with get, set
@@ -1036,20 +691,39 @@ module monaco =
             abstract contextMenuOrder: float option with get, set
             abstract run: editor: ICommonCodeEditor -> U2<unit, Promise<unit>>
 
-        and [<AllowNullLiteral>] IEditorAction =
+        type [<AllowNullLiteral>] IEditorAction =
             abstract id: string with get, set
             abstract label: string with get, set
             abstract alias: string with get, set
             abstract isSupported: unit -> bool
             abstract run: unit -> Promise<unit>
 
-        and [<AllowNullLiteral>] IEditor =
-            abstract onDidChangeModelContent: listener: (IModelContentChangedEvent2 -> unit) -> IDisposable
-            abstract onDidChangeModelLanguage: listener: (IModelLanguageChangedEvent -> unit) -> IDisposable
-            abstract onDidChangeModelOptions: listener: (IModelOptionsChangedEvent -> unit) -> IDisposable
-            abstract onDidChangeConfiguration: listener: (IConfigurationChangedEvent -> unit) -> IDisposable
-            abstract onDidChangeCursorPosition: listener: (ICursorPositionChangedEvent -> unit) -> IDisposable
-            abstract onDidChangeCursorSelection: listener: (ICursorSelectionChangedEvent -> unit) -> IDisposable
+        type IEditorModel =
+            U2<IModel, IDiffEditorModel>
+
+        type [<AllowNullLiteral>] ICursorState =
+            abstract inSelectionMode: bool with get, set
+            abstract selectionStart: IPosition with get, set
+            abstract position: IPosition with get, set
+
+        type [<AllowNullLiteral>] IViewState =
+            abstract scrollTop: float with get, set
+            abstract scrollTopWithoutViewZones: float with get, set
+            abstract scrollLeft: float with get, set
+
+        type [<AllowNullLiteral>] ICodeEditorViewState =
+            abstract cursorState: ResizeArray<ICursorState> with get, set
+            abstract viewState: IViewState with get, set
+            abstract contributionsState: obj with get, set
+
+        type [<AllowNullLiteral>] IDiffEditorViewState =
+            abstract original: ICodeEditorViewState with get, set
+            abstract modified: ICodeEditorViewState with get, set
+
+        type IEditorViewState =
+            U2<ICodeEditorViewState, IDiffEditorViewState>
+
+        type [<AllowNullLiteral>] IEditor =
             abstract onDidDispose: listener: (unit -> unit) -> IDisposable
             abstract dispose: unit -> unit
             abstract getId: unit -> string
@@ -1068,7 +742,7 @@ module monaco =
             abstract revealLine: lineNumber: float -> unit
             abstract revealLineInCenter: lineNumber: float -> unit
             abstract revealLineInCenterIfOutsideViewport: lineNumber: float -> unit
-            abstract revealPosition: position: IPosition -> unit
+            abstract revealPosition: position: IPosition * ?revealVerticalInCenter: bool * ?revealHorizontal: bool -> unit
             abstract revealPositionInCenter: position: IPosition -> unit
             abstract revealPositionInCenterIfOutsideViewport: position: IPosition -> unit
             abstract getSelection: unit -> Selection
@@ -1089,20 +763,28 @@ module monaco =
             abstract getModel: unit -> IEditorModel
             abstract setModel: model: IEditorModel -> unit
 
-        and [<AllowNullLiteral>] IEditorContribution =
+        type [<AllowNullLiteral>] IEditorContribution =
             abstract getId: unit -> string
             abstract dispose: unit -> unit
             abstract saveViewState: unit -> obj
             abstract restoreViewState: state: obj -> unit
 
-        and [<AllowNullLiteral>] ICommonCodeEditor =
+        type [<AllowNullLiteral>] ICommonCodeEditor =
             inherit IEditor
+            abstract onDidChangeModelContent: listener: (IModelContentChangedEvent -> unit) -> IDisposable
+            abstract onDidChangeModelLanguage: listener: (IModelLanguageChangedEvent -> unit) -> IDisposable
+            abstract onDidChangeModelOptions: listener: (IModelOptionsChangedEvent -> unit) -> IDisposable
+            abstract onDidChangeConfiguration: listener: (IConfigurationChangedEvent -> unit) -> IDisposable
+            abstract onDidChangeCursorPosition: listener: (ICursorPositionChangedEvent -> unit) -> IDisposable
+            abstract onDidChangeCursorSelection: listener: (ICursorSelectionChangedEvent -> unit) -> IDisposable
             abstract onDidChangeModel: listener: (IModelChangedEvent -> unit) -> IDisposable
             abstract onDidChangeModelDecorations: listener: (IModelDecorationsChangedEvent -> unit) -> IDisposable
             abstract onDidFocusEditorText: listener: (unit -> unit) -> IDisposable
             abstract onDidBlurEditorText: listener: (unit -> unit) -> IDisposable
             abstract onDidFocusEditor: listener: (unit -> unit) -> IDisposable
             abstract onDidBlurEditor: listener: (unit -> unit) -> IDisposable
+            abstract saveViewState: unit -> ICodeEditorViewState
+            abstract restoreViewState: state: ICodeEditorViewState -> unit
             abstract hasWidgetFocus: unit -> bool
             abstract getContribution: id: string -> 'T
             abstract getModel: unit -> IModel
@@ -1125,9 +807,11 @@ module monaco =
             abstract deltaDecorations: oldDecorations: ResizeArray<string> * newDecorations: ResizeArray<IModelDeltaDecoration> -> ResizeArray<string>
             abstract getLayoutInfo: unit -> EditorLayoutInfo
 
-        and [<AllowNullLiteral>] ICommonDiffEditor =
+        type [<AllowNullLiteral>] ICommonDiffEditor =
             inherit IEditor
             abstract onDidUpdateDiff: listener: (unit -> unit) -> IDisposable
+            abstract saveViewState: unit -> IDiffEditorViewState
+            abstract restoreViewState: state: IDiffEditorViewState -> unit
             abstract getModel: unit -> IDiffEditorModel
             abstract getOriginalEditor: unit -> ICommonCodeEditor
             abstract getModifiedEditor: unit -> ICommonCodeEditor
@@ -1136,158 +820,182 @@ module monaco =
             abstract getDiffLineInformationForModified: lineNumber: float -> IDiffLineInformation
             abstract getValue: ?options: obj -> string
 
-        and [<AllowNullLiteral>] EditorTypeType =
+        type [<AllowNullLiteral>] EditorTypeType =
             abstract ICodeEditor: string with get, set
             abstract IDiffEditor: string with get, set
 
-        and [<AllowNullLiteral>] CursorMovePositionType =
-            abstract Left: string with get, set
-            abstract Right: string with get, set
-            abstract Up: string with get, set
-            abstract Down: string with get, set
-            abstract WrappedLineStart: string with get, set
-            abstract WrappedLineFirstNonWhitespaceCharacter: string with get, set
-            abstract WrappedLineColumnCenter: string with get, set
-            abstract WrappedLineEnd: string with get, set
-            abstract WrappedLineLastNonWhitespaceCharacter: string with get, set
-            abstract ViewPortTop: string with get, set
-            abstract ViewPortCenter: string with get, set
-            abstract ViewPortBottom: string with get, set
-            abstract ViewPortIfOutside: string with get, set
+        type [<AllowNullLiteral>] IModelLanguageChangedEvent =
+            abstract oldLanguage: string with get, set
+            abstract newLanguage: string with get, set
 
-        and [<AllowNullLiteral>] CursorMoveByUnitType =
-            abstract Line: string with get, set
-            abstract WrappedLine: string with get, set
-            abstract Character: string with get, set
-            abstract HalfLine: string with get, set
+        type [<AllowNullLiteral>] IModelContentChange =
+            abstract range: IRange with get, set
+            abstract rangeLength: float with get, set
+            abstract text: string with get, set
 
-        and [<AllowNullLiteral>] CursorMoveArguments =
-            abstract ``to``: string with get, set
-            abstract select: bool option with get, set
-            abstract by: string option with get, set
-            abstract value: float option with get, set
+        type [<AllowNullLiteral>] IModelContentChangedEvent =
+            abstract changes: ResizeArray<IModelContentChange> with get, set
+            abstract eol: string with get, set
+            abstract versionId: float with get, set
+            abstract isUndoing: bool with get, set
+            abstract isRedoing: bool with get, set
+            abstract isFlush: bool with get, set
 
-        and [<AllowNullLiteral>] EditorScrollDirectionType =
-            abstract Up: string with get, set
-            abstract Down: string with get, set
+        type [<AllowNullLiteral>] IModelDecorationsChangedEvent =
+            abstract addedDecorations: ResizeArray<string> with get, set
+            abstract changedDecorations: ResizeArray<string> with get, set
+            abstract removedDecorations: ResizeArray<string> with get, set
 
-        and [<AllowNullLiteral>] EditorScrollByUnitType =
-            abstract Line: string with get, set
-            abstract WrappedLine: string with get, set
-            abstract Page: string with get, set
-            abstract HalfPage: string with get, set
+        type [<AllowNullLiteral>] IModelTokensChangedEvent =
+            abstract ranges: ResizeArray<obj> with get, set
 
-        and [<AllowNullLiteral>] EditorScrollArguments =
-            abstract ``to``: string with get, set
-            abstract by: string option with get, set
-            abstract value: float option with get, set
-            abstract revealCursor: bool option with get, set
+        type [<AllowNullLiteral>] IModelOptionsChangedEvent =
+            abstract tabSize: bool with get, set
+            abstract insertSpaces: bool with get, set
+            abstract trimAutoWhitespace: bool with get, set
 
-        and [<AllowNullLiteral>] RevealLineArguments =
-            abstract lineNumber: float option with get, set
-            abstract at: string option with get, set
+        type CursorChangeReason =
+            | NotSet = 0
+            | ContentFlush = 1
+            | RecoverFromMarkers = 2
+            | Explicit = 3
+            | Paste = 4
+            | Undo = 5
+            | Redo = 6
 
-        and [<AllowNullLiteral>] RevealLineAtArgumentType =
-            abstract Top: string with get, set
-            abstract Center: string with get, set
-            abstract Bottom: string with get, set
+        type [<AllowNullLiteral>] ICursorPositionChangedEvent =
+            abstract position: Position with get, set
+            abstract secondaryPositions: ResizeArray<Position> with get, set
+            abstract reason: CursorChangeReason with get, set
+            abstract source: string with get, set
 
-        and [<AllowNullLiteral>] HandlerType =
-            abstract ExecuteCommand: string with get, set
-            abstract ExecuteCommands: string with get, set
-            abstract CursorLeft: string with get, set
-            abstract CursorLeftSelect: string with get, set
-            abstract CursorWordLeft: string with get, set
-            abstract CursorWordStartLeft: string with get, set
-            abstract CursorWordEndLeft: string with get, set
-            abstract CursorWordLeftSelect: string with get, set
-            abstract CursorWordStartLeftSelect: string with get, set
-            abstract CursorWordEndLeftSelect: string with get, set
-            abstract CursorRight: string with get, set
-            abstract CursorRightSelect: string with get, set
-            abstract CursorWordRight: string with get, set
-            abstract CursorWordStartRight: string with get, set
-            abstract CursorWordEndRight: string with get, set
-            abstract CursorWordRightSelect: string with get, set
-            abstract CursorWordStartRightSelect: string with get, set
-            abstract CursorWordEndRightSelect: string with get, set
-            abstract CursorUp: string with get, set
-            abstract CursorUpSelect: string with get, set
-            abstract CursorDown: string with get, set
-            abstract CursorDownSelect: string with get, set
-            abstract CursorPageUp: string with get, set
-            abstract CursorPageUpSelect: string with get, set
-            abstract CursorPageDown: string with get, set
-            abstract CursorPageDownSelect: string with get, set
-            abstract CursorHome: string with get, set
-            abstract CursorHomeSelect: string with get, set
-            abstract CursorEnd: string with get, set
-            abstract CursorEndSelect: string with get, set
-            abstract ExpandLineSelection: string with get, set
-            abstract CursorTop: string with get, set
-            abstract CursorTopSelect: string with get, set
-            abstract CursorBottom: string with get, set
-            abstract CursorBottomSelect: string with get, set
-            abstract CursorColumnSelectLeft: string with get, set
-            abstract CursorColumnSelectRight: string with get, set
-            abstract CursorColumnSelectUp: string with get, set
-            abstract CursorColumnSelectPageUp: string with get, set
-            abstract CursorColumnSelectDown: string with get, set
-            abstract CursorColumnSelectPageDown: string with get, set
-            abstract CursorMove: string with get, set
-            abstract AddCursorDown: string with get, set
-            abstract AddCursorUp: string with get, set
-            abstract CursorUndo: string with get, set
-            abstract MoveTo: string with get, set
-            abstract MoveToSelect: string with get, set
-            abstract ColumnSelect: string with get, set
-            abstract CreateCursor: string with get, set
-            abstract LastCursorMoveToSelect: string with get, set
-            abstract Type: string with get, set
-            abstract ReplacePreviousChar: string with get, set
-            abstract CompositionStart: string with get, set
-            abstract CompositionEnd: string with get, set
-            abstract Paste: string with get, set
-            abstract Tab: string with get, set
-            abstract Indent: string with get, set
-            abstract Outdent: string with get, set
-            abstract DeleteLeft: string with get, set
-            abstract DeleteRight: string with get, set
-            abstract DeleteWordLeft: string with get, set
-            abstract DeleteWordStartLeft: string with get, set
-            abstract DeleteWordEndLeft: string with get, set
-            abstract DeleteWordRight: string with get, set
-            abstract DeleteWordStartRight: string with get, set
-            abstract DeleteWordEndRight: string with get, set
-            abstract RemoveSecondaryCursors: string with get, set
-            abstract CancelSelection: string with get, set
-            abstract Cut: string with get, set
-            abstract Undo: string with get, set
-            abstract Redo: string with get, set
-            abstract WordSelect: string with get, set
-            abstract WordSelectDrag: string with get, set
-            abstract LastCursorWordSelect: string with get, set
-            abstract LineSelect: string with get, set
-            abstract LineSelectDrag: string with get, set
-            abstract LastCursorLineSelect: string with get, set
-            abstract LastCursorLineSelectDrag: string with get, set
-            abstract LineInsertBefore: string with get, set
-            abstract LineInsertAfter: string with get, set
-            abstract LineBreakInsert: string with get, set
-            abstract SelectAll: string with get, set
-            abstract EditorScroll: string with get, set
-            abstract ScrollLineUp: string with get, set
-            abstract ScrollLineDown: string with get, set
-            abstract ScrollPageUp: string with get, set
-            abstract ScrollPageDown: string with get, set
-            abstract RevealLine: string with get, set
+        type [<AllowNullLiteral>] ICursorSelectionChangedEvent =
+            abstract selection: Selection with get, set
+            abstract secondarySelections: ResizeArray<Selection> with get, set
+            abstract source: string with get, set
+            abstract reason: CursorChangeReason with get, set
 
-        and TextEditorCursorStyle =
-            | Line = 1
-            | Block = 2
-            | Underline = 3
+        type [<AllowNullLiteral>] IEditorScrollbarOptions =
+            abstract arrowSize: float option with get, set
+            abstract vertical: string option with get, set
+            abstract horizontal: string option with get, set
+            abstract useShadows: bool option with get, set
+            abstract verticalHasArrows: bool option with get, set
+            abstract horizontalHasArrows: bool option with get, set
+            abstract handleMouseWheel: bool option with get, set
+            abstract horizontalScrollbarSize: float option with get, set
+            abstract verticalScrollbarSize: float option with get, set
+            abstract verticalSliderSize: float option with get, set
+            abstract horizontalSliderSize: float option with get, set
 
-        and TextEditorCursorBlinkingStyle =
+        type [<AllowNullLiteral>] IEditorFindOptions =
+            abstract seedSearchStringFromSelection: bool option with get, set
+            abstract autoFindInSelection: bool with get, set
+
+        type [<AllowNullLiteral>] IEditorMinimapOptions =
+            abstract enabled: bool option with get, set
+            abstract showSlider: U2<obj, obj> option with get, set
+            abstract renderCharacters: bool option with get, set
+            abstract maxColumn: float option with get, set
+
+        type [<AllowNullLiteral>] IEditorOptions =
+            abstract ariaLabel: string option with get, set
+            abstract rulers: ResizeArray<float> option with get, set
+            abstract wordSeparators: string option with get, set
+            abstract selectionClipboard: bool option with get, set
+            abstract lineNumbers: U4<obj, obj, obj, (float -> string)> option with get, set
+            abstract selectOnLineNumbers: bool option with get, set
+            abstract lineNumbersMinChars: float option with get, set
+            abstract glyphMargin: bool option with get, set
+            abstract lineDecorationsWidth: U2<float, string> option with get, set
+            abstract revealHorizontalRightPadding: float option with get, set
+            abstract roundedSelection: bool option with get, set
+            abstract extraEditorClassName: string option with get, set
+            abstract readOnly: bool option with get, set
+            abstract scrollbar: IEditorScrollbarOptions option with get, set
+            abstract minimap: IEditorMinimapOptions option with get, set
+            abstract find: IEditorFindOptions option with get, set
+            abstract fixedOverflowWidgets: bool option with get, set
+            abstract overviewRulerLanes: float option with get, set
+            abstract overviewRulerBorder: bool option with get, set
+            abstract cursorBlinking: string option with get, set
+            abstract mouseWheelZoom: bool option with get, set
+            abstract cursorStyle: string option with get, set
+            abstract fontLigatures: bool option with get, set
+            abstract disableLayerHinting: bool option with get, set
+            abstract disableMonospaceOptimizations: bool option with get, set
+            abstract hideCursorInOverviewRuler: bool option with get, set
+            abstract scrollBeyondLastLine: bool option with get, set
+            abstract automaticLayout: bool option with get, set
+            abstract wordWrap: U4<obj, obj, obj, obj> option with get, set
+            abstract wordWrapColumn: float option with get, set
+            abstract wordWrapMinified: bool option with get, set
+            abstract wrappingIndent: string option with get, set
+            abstract wordWrapBreakBeforeCharacters: string option with get, set
+            abstract wordWrapBreakAfterCharacters: string option with get, set
+            abstract wordWrapBreakObtrusiveCharacters: string option with get, set
+            abstract stopRenderingLineAfter: float option with get, set
+            abstract hover: bool option with get, set
+            abstract links: bool option with get, set
+            abstract contextmenu: bool option with get, set
+            abstract mouseWheelScrollSensitivity: float option with get, set
+            abstract multiCursorModifier: U2<obj, obj> option with get, set
+            abstract accessibilitySupport: U3<obj, obj, obj> option with get, set
+            abstract quickSuggestions: U2<bool, obj> option with get, set
+            abstract quickSuggestionsDelay: float option with get, set
+            abstract parameterHints: bool option with get, set
+            abstract iconsInSuggestions: bool option with get, set
+            abstract autoClosingBrackets: bool option with get, set
+            abstract autoIndent: bool option with get, set
+            abstract formatOnType: bool option with get, set
+            abstract formatOnPaste: bool option with get, set
+            abstract dragAndDrop: bool option with get, set
+            abstract suggestOnTriggerCharacters: bool option with get, set
+            abstract acceptSuggestionOnEnter: U3<obj, obj, obj> option with get, set
+            abstract acceptSuggestionOnCommitCharacter: bool option with get, set
+            abstract snippetSuggestions: U4<obj, obj, obj, obj> option with get, set
+            abstract emptySelectionClipboard: bool option with get, set
+            abstract wordBasedSuggestions: bool option with get, set
+            abstract suggestFontSize: float option with get, set
+            abstract suggestLineHeight: float option with get, set
+            abstract selectionHighlight: bool option with get, set
+            abstract occurrencesHighlight: bool option with get, set
+            abstract codeLens: bool option with get, set
+            abstract folding: bool option with get, set
+            abstract showFoldingControls: U2<obj, obj> option with get, set
+            abstract matchBrackets: bool option with get, set
+            abstract renderWhitespace: U3<obj, obj, obj> option with get, set
+            abstract renderControlCharacters: bool option with get, set
+            abstract renderIndentGuides: bool option with get, set
+            abstract renderLineHighlight: U4<obj, obj, obj, obj> option with get, set
+            abstract useTabStops: bool option with get, set
+            abstract fontFamily: string option with get, set
+            abstract fontWeight: obj option with get, set
+            abstract fontSize: float option with get, set
+            abstract lineHeight: float option with get, set
+            abstract letterSpacing: float option with get, set
+
+        type [<AllowNullLiteral>] IDiffEditorOptions =
+            inherit IEditorOptions
+            abstract enableSplitViewResizing: bool option with get, set
+            abstract renderSideBySide: bool option with get, set
+            abstract ignoreTrimWhitespace: bool option with get, set
+            abstract renderIndicators: bool option with get, set
+            abstract originalEditable: bool option with get, set
+
+        type RenderMinimap =
+            | None = 0
+            | Small = 1
+            | Large = 2
+            | SmallBlocks = 3
+            | LargeBlocks = 4
+
+        type WrappingIndent =
+            | None = 0
+            | Same = 1
+            | Indent = 2
+
+        type TextEditorCursorBlinkingStyle =
             | Hidden = 0
             | Blink = 1
             | Smooth = 2
@@ -1295,7 +1003,175 @@ module monaco =
             | Expand = 4
             | Solid = 5
 
-        and [<AllowNullLiteral>] IViewZone =
+        type TextEditorCursorStyle =
+            | Line = 1
+            | Block = 2
+            | Underline = 3
+            | LineThin = 4
+            | BlockOutline = 5
+            | UnderlineThin = 6
+
+        type [<AllowNullLiteral>] InternalEditorScrollbarOptions =
+            abstract arrowSize: float with get, set
+            abstract vertical: ScrollbarVisibility with get, set
+            abstract horizontal: ScrollbarVisibility with get, set
+            abstract useShadows: bool with get, set
+            abstract verticalHasArrows: bool with get, set
+            abstract horizontalHasArrows: bool with get, set
+            abstract handleMouseWheel: bool with get, set
+            abstract horizontalScrollbarSize: float with get, set
+            abstract horizontalSliderSize: float with get, set
+            abstract verticalScrollbarSize: float with get, set
+            abstract verticalSliderSize: float with get, set
+            abstract mouseWheelScrollSensitivity: float with get, set
+
+        type [<AllowNullLiteral>] InternalEditorMinimapOptions =
+            abstract enabled: bool with get, set
+            abstract showSlider: U2<obj, obj> with get, set
+            abstract renderCharacters: bool with get, set
+            abstract maxColumn: float with get, set
+
+        type [<AllowNullLiteral>] InternalEditorFindOptions =
+            abstract seedSearchStringFromSelection: bool with get, set
+            abstract autoFindInSelection: bool with get, set
+
+        type [<AllowNullLiteral>] EditorWrappingInfo =
+            abstract inDiffEditor: bool with get, set
+            abstract isDominatedByLongLines: bool with get, set
+            abstract isWordWrapMinified: bool with get, set
+            abstract isViewportWrapping: bool with get, set
+            abstract wrappingColumn: float with get, set
+            abstract wrappingIndent: WrappingIndent with get, set
+            abstract wordWrapBreakBeforeCharacters: string with get, set
+            abstract wordWrapBreakAfterCharacters: string with get, set
+            abstract wordWrapBreakObtrusiveCharacters: string with get, set
+
+        type [<AllowNullLiteral>] InternalEditorViewOptions =
+            abstract extraEditorClassName: string with get, set
+            abstract disableMonospaceOptimizations: bool with get, set
+            abstract rulers: ResizeArray<float> with get, set
+            abstract ariaLabel: string with get, set
+            abstract renderLineNumbers: bool with get, set
+            abstract renderCustomLineNumbers: (float -> string) with get, set
+            abstract renderRelativeLineNumbers: bool with get, set
+            abstract selectOnLineNumbers: bool with get, set
+            abstract glyphMargin: bool with get, set
+            abstract revealHorizontalRightPadding: float with get, set
+            abstract roundedSelection: bool with get, set
+            abstract overviewRulerLanes: float with get, set
+            abstract overviewRulerBorder: bool with get, set
+            abstract cursorBlinking: TextEditorCursorBlinkingStyle with get, set
+            abstract mouseWheelZoom: bool with get, set
+            abstract cursorStyle: TextEditorCursorStyle with get, set
+            abstract hideCursorInOverviewRuler: bool with get, set
+            abstract scrollBeyondLastLine: bool with get, set
+            abstract stopRenderingLineAfter: float with get, set
+            abstract renderWhitespace: U3<obj, obj, obj> with get, set
+            abstract renderControlCharacters: bool with get, set
+            abstract fontLigatures: bool with get, set
+            abstract renderIndentGuides: bool with get, set
+            abstract renderLineHighlight: U4<obj, obj, obj, obj> with get, set
+            abstract scrollbar: InternalEditorScrollbarOptions with get, set
+            abstract minimap: InternalEditorMinimapOptions with get, set
+            abstract fixedOverflowWidgets: bool with get, set
+
+        type [<AllowNullLiteral>] EditorContribOptions =
+            abstract selectionClipboard: bool with get, set
+            abstract hover: bool with get, set
+            abstract links: bool with get, set
+            abstract contextmenu: bool with get, set
+            abstract quickSuggestions: U2<bool, obj> with get, set
+            abstract quickSuggestionsDelay: float with get, set
+            abstract parameterHints: bool with get, set
+            abstract iconsInSuggestions: bool with get, set
+            abstract formatOnType: bool with get, set
+            abstract formatOnPaste: bool with get, set
+            abstract suggestOnTriggerCharacters: bool with get, set
+            abstract acceptSuggestionOnEnter: U3<obj, obj, obj> with get, set
+            abstract acceptSuggestionOnCommitCharacter: bool with get, set
+            abstract snippetSuggestions: U4<obj, obj, obj, obj> with get, set
+            abstract wordBasedSuggestions: bool with get, set
+            abstract suggestFontSize: float with get, set
+            abstract suggestLineHeight: float with get, set
+            abstract selectionHighlight: bool with get, set
+            abstract occurrencesHighlight: bool with get, set
+            abstract codeLens: bool with get, set
+            abstract folding: bool with get, set
+            abstract showFoldingControls: U2<obj, obj> with get, set
+            abstract matchBrackets: bool with get, set
+            abstract find: InternalEditorFindOptions with get, set
+
+        type [<AllowNullLiteral>] [<Import("editor.InternalEditorOptions","monaco")>] InternalEditorOptions() =
+            member __._internalEditorOptionsBrand with get(): unit = jsNative and set(v: unit): unit = jsNative
+            member __.canUseLayerHinting with get(): bool = jsNative and set(v: bool): unit = jsNative
+            member __.pixelRatio with get(): float = jsNative and set(v: float): unit = jsNative
+            member __.editorClassName with get(): string = jsNative and set(v: string): unit = jsNative
+            member __.lineHeight with get(): float = jsNative and set(v: float): unit = jsNative
+            member __.readOnly with get(): bool = jsNative and set(v: bool): unit = jsNative
+            member __.multiCursorModifier with get(): U3<obj, obj, obj> = jsNative and set(v: U3<obj, obj, obj>): unit = jsNative
+            member __.wordSeparators with get(): string = jsNative and set(v: string): unit = jsNative
+            member __.autoClosingBrackets with get(): bool = jsNative and set(v: bool): unit = jsNative
+            member __.autoIndent with get(): bool = jsNative and set(v: bool): unit = jsNative
+            member __.useTabStops with get(): bool = jsNative and set(v: bool): unit = jsNative
+            member __.tabFocusMode with get(): bool = jsNative and set(v: bool): unit = jsNative
+            member __.dragAndDrop with get(): bool = jsNative and set(v: bool): unit = jsNative
+            member __.emptySelectionClipboard with get(): bool = jsNative and set(v: bool): unit = jsNative
+            member __.layoutInfo with get(): EditorLayoutInfo = jsNative and set(v: EditorLayoutInfo): unit = jsNative
+            member __.fontInfo with get(): FontInfo = jsNative and set(v: FontInfo): unit = jsNative
+            member __.viewInfo with get(): InternalEditorViewOptions = jsNative and set(v: InternalEditorViewOptions): unit = jsNative
+            member __.wrappingInfo with get(): EditorWrappingInfo = jsNative and set(v: EditorWrappingInfo): unit = jsNative
+            member __.contribInfo with get(): EditorContribOptions = jsNative and set(v: EditorContribOptions): unit = jsNative
+
+        type [<AllowNullLiteral>] OverviewRulerPosition =
+            abstract width: float with get, set
+            abstract height: float with get, set
+            abstract top: float with get, set
+            abstract right: float with get, set
+
+        type [<AllowNullLiteral>] EditorLayoutInfo =
+            abstract width: float with get, set
+            abstract height: float with get, set
+            abstract glyphMarginLeft: float with get, set
+            abstract glyphMarginWidth: float with get, set
+            abstract glyphMarginHeight: float with get, set
+            abstract lineNumbersLeft: float with get, set
+            abstract lineNumbersWidth: float with get, set
+            abstract lineNumbersHeight: float with get, set
+            abstract decorationsLeft: float with get, set
+            abstract decorationsWidth: float with get, set
+            abstract decorationsHeight: float with get, set
+            abstract contentLeft: float with get, set
+            abstract contentWidth: float with get, set
+            abstract contentHeight: float with get, set
+            abstract minimapWidth: float with get, set
+            abstract renderMinimap: RenderMinimap with get, set
+            abstract viewportColumn: float with get, set
+            abstract verticalScrollbarWidth: float with get, set
+            abstract horizontalScrollbarHeight: float with get, set
+            abstract overviewRuler: OverviewRulerPosition with get, set
+
+        type [<AllowNullLiteral>] IConfigurationChangedEvent =
+            abstract canUseLayerHinting: bool with get, set
+            abstract pixelRatio: bool with get, set
+            abstract editorClassName: bool with get, set
+            abstract lineHeight: bool with get, set
+            abstract readOnly: bool with get, set
+            abstract accessibilitySupport: bool with get, set
+            abstract multiCursorModifier: bool with get, set
+            abstract wordSeparators: bool with get, set
+            abstract autoClosingBrackets: bool with get, set
+            abstract autoIndent: bool with get, set
+            abstract useTabStops: bool with get, set
+            abstract tabFocusMode: bool with get, set
+            abstract dragAndDrop: bool with get, set
+            abstract emptySelectionClipboard: bool with get, set
+            abstract layoutInfo: bool with get, set
+            abstract fontInfo: bool with get, set
+            abstract viewInfo: bool with get, set
+            abstract wrappingInfo: bool with get, set
+            abstract contribInfo: bool with get, set
+
+        type [<AllowNullLiteral>] IViewZone =
             abstract afterLineNumber: float with get, set
             abstract afterColumn: float option with get, set
             abstract suppressMouseDown: bool option with get, set
@@ -1306,41 +1182,57 @@ module monaco =
             abstract onDomNodeTop: (float -> unit) option with get, set
             abstract onComputedHeight: (float -> unit) option with get, set
 
-        and [<AllowNullLiteral>] IViewZoneChangeAccessor =
+        type [<AllowNullLiteral>] IViewZoneChangeAccessor =
             abstract addZone: zone: IViewZone -> float
             abstract removeZone: id: float -> unit
             abstract layoutZone: id: float -> unit
 
-        and ContentWidgetPositionPreference =
+        type ContentWidgetPositionPreference =
             | EXACT = 0
             | ABOVE = 1
             | BELOW = 2
 
-        and [<AllowNullLiteral>] IContentWidgetPosition =
+        type [<AllowNullLiteral>] IContentWidgetPosition =
             abstract position: IPosition with get, set
             abstract preference: ResizeArray<ContentWidgetPositionPreference> with get, set
 
-        and [<AllowNullLiteral>] IContentWidget =
+        type [<AllowNullLiteral>] IContentWidget =
             abstract allowEditorOverflow: bool option with get, set
             abstract suppressMouseDown: bool option with get, set
             abstract getId: unit -> string
             abstract getDomNode: unit -> HTMLElement
             abstract getPosition: unit -> IContentWidgetPosition
 
-        and OverlayWidgetPositionPreference =
+        type OverlayWidgetPositionPreference =
             | TOP_RIGHT_CORNER = 0
             | BOTTOM_RIGHT_CORNER = 1
             | TOP_CENTER = 2
 
-        and [<AllowNullLiteral>] IOverlayWidgetPosition =
+        type [<AllowNullLiteral>] IOverlayWidgetPosition =
             abstract preference: OverlayWidgetPositionPreference with get, set
 
-        and [<AllowNullLiteral>] IOverlayWidget =
+        type [<AllowNullLiteral>] IOverlayWidget =
             abstract getId: unit -> string
             abstract getDomNode: unit -> HTMLElement
             abstract getPosition: unit -> IOverlayWidgetPosition
 
-        and [<AllowNullLiteral>] IMouseTarget =
+        type MouseTargetType =
+            | UNKNOWN = 0
+            | TEXTAREA = 1
+            | GUTTER_GLYPH_MARGIN = 2
+            | GUTTER_LINE_NUMBERS = 3
+            | GUTTER_LINE_DECORATIONS = 4
+            | GUTTER_VIEW_ZONE = 5
+            | CONTENT_TEXT = 6
+            | CONTENT_EMPTY = 7
+            | CONTENT_VIEW_ZONE = 8
+            | CONTENT_WIDGET = 9
+            | OVERVIEW_RULER = 10
+            | SCROLLBAR = 11
+            | OVERLAY_WIDGET = 12
+            | OUTSIDE_EDITOR = 13
+
+        type [<AllowNullLiteral>] IMouseTarget =
             abstract element: Element with get, set
             abstract ``type``: MouseTargetType with get, set
             abstract position: Position with get, set
@@ -1348,11 +1240,11 @@ module monaco =
             abstract range: Range with get, set
             abstract detail: obj with get, set
 
-        and [<AllowNullLiteral>] IEditorMouseEvent =
+        type [<AllowNullLiteral>] IEditorMouseEvent =
             abstract ``event``: IMouseEvent with get, set
             abstract target: IMouseTarget with get, set
 
-        and [<AllowNullLiteral>] ICodeEditor =
+        type [<AllowNullLiteral>] ICodeEditor =
             inherit ICommonCodeEditor
             abstract onMouseUp: listener: (IEditorMouseEvent -> unit) -> IDisposable
             abstract onMouseDown: listener: (IEditorMouseEvent -> unit) -> IDisposable
@@ -1380,34 +1272,31 @@ module monaco =
             abstract getScrolledVisiblePosition: position: IPosition -> obj
             abstract applyFontInfo: target: HTMLElement -> unit
 
-        and [<AllowNullLiteral>] IDiffEditor =
+        type [<AllowNullLiteral>] IDiffEditor =
             inherit ICommonDiffEditor
             abstract getDomNode: unit -> HTMLElement
 
-        and [<AllowNullLiteral>] [<Import("editor.FontInfo","monaco")>] FontInfo() =
+        type [<AllowNullLiteral>] [<Import("editor.FontInfo","monaco")>] FontInfo() =
             inherit BareFontInfo()
             member __._editorStylingBrand with get(): unit = jsNative and set(v: unit): unit = jsNative
+            member __.isTrusted with get(): bool = jsNative and set(v: bool): unit = jsNative
             member __.isMonospace with get(): bool = jsNative and set(v: bool): unit = jsNative
             member __.typicalHalfwidthCharacterWidth with get(): float = jsNative and set(v: float): unit = jsNative
             member __.typicalFullwidthCharacterWidth with get(): float = jsNative and set(v: float): unit = jsNative
             member __.spaceWidth with get(): float = jsNative and set(v: float): unit = jsNative
             member __.maxDigitWidth with get(): float = jsNative and set(v: float): unit = jsNative
 
-        and [<AllowNullLiteral>] [<Import("editor.BareFontInfo","monaco")>] BareFontInfo() =
+        type [<AllowNullLiteral>] [<Import("editor.BareFontInfo","monaco")>] BareFontInfo() =
             member __._bareFontInfoBrand with get(): unit = jsNative and set(v: unit): unit = jsNative
+            member __.zoomLevel with get(): float = jsNative and set(v: float): unit = jsNative
             member __.fontFamily with get(): string = jsNative and set(v: string): unit = jsNative
             member __.fontWeight with get(): string = jsNative and set(v: string): unit = jsNative
             member __.fontSize with get(): float = jsNative and set(v: float): unit = jsNative
             member __.lineHeight with get(): float = jsNative and set(v: float): unit = jsNative
+            member __.letterSpacing with get(): float = jsNative and set(v: float): unit = jsNative
 
         type [<Import("editor","monaco")>] Globals =
             static member EditorType with get(): EditorTypeType = jsNative and set(v: EditorTypeType): unit = jsNative
-            static member CursorMovePosition with get(): CursorMovePositionType = jsNative and set(v: CursorMovePositionType): unit = jsNative
-            static member CursorMoveByUnit with get(): CursorMoveByUnitType = jsNative and set(v: CursorMoveByUnitType): unit = jsNative
-            static member EditorScrollDirection with get(): EditorScrollDirectionType = jsNative and set(v: EditorScrollDirectionType): unit = jsNative
-            static member EditorScrollByUnit with get(): EditorScrollByUnitType = jsNative and set(v: EditorScrollByUnitType): unit = jsNative
-            static member RevealLineAtArgument with get(): RevealLineAtArgumentType = jsNative and set(v: RevealLineAtArgumentType): unit = jsNative
-            static member Handler with get(): HandlerType = jsNative and set(v: HandlerType): unit = jsNative
             static member create(domElement: HTMLElement, ?options: IEditorConstructionOptions, ?``override``: IEditorOverrideServices): IStandaloneCodeEditor = jsNative
             static member onDidCreateEditor(listener: (ICodeEditor -> unit)): IDisposable = jsNative
             static member createDiffEditor(domElement: HTMLElement, ?options: IDiffEditorConstructionOptions, ?``override``: IEditorOverrideServices): IStandaloneDiffEditor = jsNative
@@ -1425,7 +1314,8 @@ module monaco =
             static member colorize(text: string, languageId: string, options: IColorizerOptions): Promise<string> = jsNative
             static member colorizeModelLine(model: IModel, lineNumber: float, ?tabSize: float): string = jsNative
             static member tokenize(text: string, languageId: string): ResizeArray<ResizeArray<Token>> = jsNative
-            static member defineTheme(themeName: string, themeData: ITheme): unit = jsNative
+            static member defineTheme(themeName: string, themeData: IStandaloneThemeData): unit = jsNative
+            static member setTheme(themeName: string): unit = jsNative
 
 
 
@@ -1434,21 +1324,21 @@ module monaco =
             abstract startIndex: float with get, set
             abstract scopes: string with get, set
 
-        and [<AllowNullLiteral>] ILineTokens =
+        type [<AllowNullLiteral>] ILineTokens =
             abstract tokens: ResizeArray<IToken> with get, set
             abstract endState: IState with get, set
 
-        and [<AllowNullLiteral>] TokensProvider =
+        type [<AllowNullLiteral>] TokensProvider =
             abstract getInitialState: unit -> IState
             abstract tokenize: line: string * state: IState -> ILineTokens
 
-        and [<AllowNullLiteral>] CodeActionContext =
+        type [<AllowNullLiteral>] CodeActionContext =
             abstract markers: ResizeArray<editor.IMarkerData> with get, set
 
-        and [<AllowNullLiteral>] CodeActionProvider =
+        type [<AllowNullLiteral>] CodeActionProvider =
             abstract provideCodeActions: model: editor.IReadOnlyModel * range: Range * context: CodeActionContext * token: CancellationToken -> U2<ResizeArray<CodeAction>, Thenable<ResizeArray<CodeAction>>>
 
-        and CompletionItemKind =
+        type CompletionItemKind =
             | Text = 0
             | Method = 1
             | Function = 2
@@ -1469,10 +1359,10 @@ module monaco =
             | Reference = 17
             | Folder = 18
 
-        and [<AllowNullLiteral>] SnippetString =
+        type [<AllowNullLiteral>] SnippetString =
             abstract value: string with get, set
 
-        and [<AllowNullLiteral>] CompletionItem =
+        type [<AllowNullLiteral>] CompletionItem =
             abstract label: string with get, set
             abstract kind: CompletionItemKind with get, set
             abstract detail: string option with get, set
@@ -1483,20 +1373,20 @@ module monaco =
             abstract range: Range option with get, set
             abstract textEdit: editor.ISingleEditOperation option with get, set
 
-        and [<AllowNullLiteral>] CompletionList =
+        type [<AllowNullLiteral>] CompletionList =
             abstract isIncomplete: bool option with get, set
             abstract items: ResizeArray<CompletionItem> with get, set
 
-        and [<AllowNullLiteral>] CompletionItemProvider =
+        type [<AllowNullLiteral>] CompletionItemProvider =
             abstract triggerCharacters: ResizeArray<string> option with get, set
             abstract provideCompletionItems: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U4<ResizeArray<CompletionItem>, Thenable<ResizeArray<CompletionItem>>, CompletionList, Thenable<CompletionList>>
             abstract resolveCompletionItem: item: CompletionItem * token: CancellationToken -> U2<CompletionItem, Thenable<CompletionItem>>
 
-        and [<AllowNullLiteral>] CommentRule =
+        type [<AllowNullLiteral>] CommentRule =
             abstract lineComment: string option with get, set
             abstract blockComment: CharacterPair option with get, set
 
-        and [<AllowNullLiteral>] LanguageConfiguration =
+        type [<AllowNullLiteral>] LanguageConfiguration =
             abstract comments: CommentRule option with get, set
             abstract brackets: ResizeArray<CharacterPair> option with get, set
             abstract wordPattern: Regex option with get, set
@@ -1506,112 +1396,115 @@ module monaco =
             abstract surroundingPairs: ResizeArray<IAutoClosingPair> option with get, set
             abstract ___electricCharacterSupport: IBracketElectricCharacterContribution option with get, set
 
-        and [<AllowNullLiteral>] IndentationRule =
+        type [<AllowNullLiteral>] IndentationRule =
             abstract decreaseIndentPattern: Regex with get, set
             abstract increaseIndentPattern: Regex with get, set
             abstract indentNextLinePattern: Regex option with get, set
             abstract unIndentedLinePattern: Regex option with get, set
 
-        and [<AllowNullLiteral>] OnEnterRule =
+        type [<AllowNullLiteral>] OnEnterRule =
             abstract beforeText: Regex with get, set
             abstract afterText: Regex option with get, set
             abstract action: EnterAction with get, set
 
-        and [<AllowNullLiteral>] IBracketElectricCharacterContribution =
+        type [<AllowNullLiteral>] IBracketElectricCharacterContribution =
             abstract docComment: IDocComment option with get, set
 
-        and [<AllowNullLiteral>] IDocComment =
+        type [<AllowNullLiteral>] IDocComment =
             abstract ``open``: string with get, set
             abstract close: string with get, set
 
-        and CharacterPair =
+        type CharacterPair =
             string * string
 
-        and [<AllowNullLiteral>] IAutoClosingPair =
+        type [<AllowNullLiteral>] IAutoClosingPair =
             abstract ``open``: string with get, set
             abstract close: string with get, set
 
-        and [<AllowNullLiteral>] IAutoClosingPairConditional =
+        type [<AllowNullLiteral>] IAutoClosingPairConditional =
             inherit IAutoClosingPair
             abstract notIn: ResizeArray<string> option with get, set
 
-        and IndentAction =
+        type IndentAction =
             | None = 0
             | Indent = 1
             | IndentOutdent = 2
             | Outdent = 3
 
-        and [<AllowNullLiteral>] EnterAction =
+        type [<AllowNullLiteral>] EnterAction =
             abstract indentAction: IndentAction with get, set
             abstract outdentCurrentLine: bool option with get, set
             abstract appendText: string option with get, set
             abstract removeText: float option with get, set
 
-        and [<AllowNullLiteral>] IState =
+        type [<AllowNullLiteral>] IState =
             abstract clone: unit -> IState
             abstract equals: other: IState -> bool
 
-        and [<AllowNullLiteral>] Hover =
+        type [<AllowNullLiteral>] Hover =
             abstract contents: ResizeArray<MarkedString> with get, set
             abstract range: IRange with get, set
 
-        and [<AllowNullLiteral>] HoverProvider =
+        type [<AllowNullLiteral>] HoverProvider =
             abstract provideHover: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Hover, Thenable<Hover>>
 
-        and [<AllowNullLiteral>] CodeAction =
+        type [<AllowNullLiteral>] CodeAction =
             abstract command: Command with get, set
             abstract score: float with get, set
 
-        and [<AllowNullLiteral>] ParameterInformation =
+        type [<AllowNullLiteral>] ParameterInformation =
             abstract label: string with get, set
             abstract documentation: string option with get, set
 
-        and [<AllowNullLiteral>] SignatureInformation =
+        type [<AllowNullLiteral>] SignatureInformation =
             abstract label: string with get, set
             abstract documentation: string option with get, set
             abstract parameters: ResizeArray<ParameterInformation> with get, set
 
-        and [<AllowNullLiteral>] SignatureHelp =
+        type [<AllowNullLiteral>] SignatureHelp =
             abstract signatures: ResizeArray<SignatureInformation> with get, set
             abstract activeSignature: float with get, set
             abstract activeParameter: float with get, set
 
-        and [<AllowNullLiteral>] SignatureHelpProvider =
+        type [<AllowNullLiteral>] SignatureHelpProvider =
             abstract signatureHelpTriggerCharacters: ResizeArray<string> with get, set
             abstract provideSignatureHelp: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<SignatureHelp, Thenable<SignatureHelp>>
 
-        and DocumentHighlightKind =
+        type DocumentHighlightKind =
             | Text = 0
             | Read = 1
             | Write = 2
 
-        and [<AllowNullLiteral>] DocumentHighlight =
+        type [<AllowNullLiteral>] DocumentHighlight =
             abstract range: IRange with get, set
             abstract kind: DocumentHighlightKind with get, set
 
-        and [<AllowNullLiteral>] DocumentHighlightProvider =
+        type [<AllowNullLiteral>] DocumentHighlightProvider =
             abstract provideDocumentHighlights: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<ResizeArray<DocumentHighlight>, Thenable<ResizeArray<DocumentHighlight>>>
 
-        and [<AllowNullLiteral>] ReferenceContext =
+        type [<AllowNullLiteral>] ReferenceContext =
             abstract includeDeclaration: bool with get, set
 
-        and [<AllowNullLiteral>] ReferenceProvider =
+        type [<AllowNullLiteral>] ReferenceProvider =
             abstract provideReferences: model: editor.IReadOnlyModel * position: Position * context: ReferenceContext * token: CancellationToken -> U2<ResizeArray<Location>, Thenable<ResizeArray<Location>>>
 
-        and [<AllowNullLiteral>] Location =
+        type [<AllowNullLiteral>] Location =
             abstract uri: Uri with get, set
             abstract range: IRange with get, set
 
-        and Definition =
+        type Definition =
             U2<Location, ResizeArray<Location>>
 
-        and [<AllowNullLiteral>] DefinitionProvider =
+        type [<AllowNullLiteral>] DefinitionProvider =
             abstract provideDefinition: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Definition, Thenable<Definition>>
 
-        and [<AllowNullLiteral>] ImplementationProvider =
+        type [<AllowNullLiteral>] ImplementationProvider =
             abstract provideImplementation: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Definition, Thenable<Definition>>
 
-        and SymbolKind =
+        type [<AllowNullLiteral>] TypeDefinitionProvider =
+            abstract provideTypeDefinition: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Definition, Thenable<Definition>>
+
+        type SymbolKind =
             | File = 0
             | Module = 1
             | Namespace = 2
@@ -1633,66 +1526,77 @@ module monaco =
             | Object = 18
             | Key = 19
             | Null = 20
+            | EnumMember = 21
+            | Struct = 22
+            | Event = 23
+            | Operator = 24
+            | TypeParameter = 25
 
-        and [<AllowNullLiteral>] SymbolInformation =
+        type [<AllowNullLiteral>] SymbolInformation =
             abstract name: string with get, set
             abstract containerName: string option with get, set
             abstract kind: SymbolKind with get, set
             abstract location: Location with get, set
 
-        and [<AllowNullLiteral>] DocumentSymbolProvider =
+        type [<AllowNullLiteral>] DocumentSymbolProvider =
             abstract provideDocumentSymbols: model: editor.IReadOnlyModel * token: CancellationToken -> U2<ResizeArray<SymbolInformation>, Thenable<ResizeArray<SymbolInformation>>>
 
-        and [<AllowNullLiteral>] FormattingOptions =
+        type [<AllowNullLiteral>] TextEdit =
+            abstract range: IRange with get, set
+            abstract text: string with get, set
+            abstract eol: editor.EndOfLineSequence option with get, set
+
+        type [<AllowNullLiteral>] FormattingOptions =
             abstract tabSize: float with get, set
             abstract insertSpaces: bool with get, set
 
-        and [<AllowNullLiteral>] DocumentFormattingEditProvider =
-            abstract provideDocumentFormattingEdits: model: editor.IReadOnlyModel * options: FormattingOptions * token: CancellationToken -> U2<ResizeArray<editor.ISingleEditOperation>, Thenable<ResizeArray<editor.ISingleEditOperation>>>
+        type [<AllowNullLiteral>] DocumentFormattingEditProvider =
+            abstract provideDocumentFormattingEdits: model: editor.IReadOnlyModel * options: FormattingOptions * token: CancellationToken -> U2<ResizeArray<TextEdit>, Thenable<ResizeArray<TextEdit>>>
 
-        and [<AllowNullLiteral>] DocumentRangeFormattingEditProvider =
-            abstract provideDocumentRangeFormattingEdits: model: editor.IReadOnlyModel * range: Range * options: FormattingOptions * token: CancellationToken -> U2<ResizeArray<editor.ISingleEditOperation>, Thenable<ResizeArray<editor.ISingleEditOperation>>>
+        type [<AllowNullLiteral>] DocumentRangeFormattingEditProvider =
+            abstract provideDocumentRangeFormattingEdits: model: editor.IReadOnlyModel * range: Range * options: FormattingOptions * token: CancellationToken -> U2<ResizeArray<TextEdit>, Thenable<ResizeArray<TextEdit>>>
 
-        and [<AllowNullLiteral>] OnTypeFormattingEditProvider =
+        type [<AllowNullLiteral>] OnTypeFormattingEditProvider =
             abstract autoFormatTriggerCharacters: ResizeArray<string> with get, set
-            abstract provideOnTypeFormattingEdits: model: editor.IReadOnlyModel * position: Position * ch: string * options: FormattingOptions * token: CancellationToken -> U2<ResizeArray<editor.ISingleEditOperation>, Thenable<ResizeArray<editor.ISingleEditOperation>>>
+            abstract provideOnTypeFormattingEdits: model: editor.IReadOnlyModel * position: Position * ch: string * options: FormattingOptions * token: CancellationToken -> U2<ResizeArray<TextEdit>, Thenable<ResizeArray<TextEdit>>>
 
-        and [<AllowNullLiteral>] ILink =
+        type [<AllowNullLiteral>] ILink =
             abstract range: IRange with get, set
             abstract url: string with get, set
 
-        and [<AllowNullLiteral>] LinkProvider =
+        type [<AllowNullLiteral>] LinkProvider =
             abstract resolveLink: (ILink -> CancellationToken -> U2<ILink, Thenable<ILink>>) option with get, set
             abstract provideLinks: model: editor.IReadOnlyModel * token: CancellationToken -> U2<ResizeArray<ILink>, Thenable<ResizeArray<ILink>>>
 
-        and [<AllowNullLiteral>] IResourceEdit =
+        type [<AllowNullLiteral>] IResourceEdit =
             abstract resource: Uri with get, set
             abstract range: IRange with get, set
             abstract newText: string with get, set
 
-        and [<AllowNullLiteral>] WorkspaceEdit =
+        type [<AllowNullLiteral>] WorkspaceEdit =
             abstract edits: ResizeArray<IResourceEdit> with get, set
             abstract rejectReason: string option with get, set
 
-        and [<AllowNullLiteral>] RenameProvider =
+        type [<AllowNullLiteral>] RenameProvider =
             abstract provideRenameEdits: model: editor.IReadOnlyModel * position: Position * newName: string * token: CancellationToken -> U2<WorkspaceEdit, Thenable<WorkspaceEdit>>
 
-        and [<AllowNullLiteral>] Command =
+        type [<AllowNullLiteral>] Command =
             abstract id: string with get, set
             abstract title: string with get, set
+            abstract tooltip: string option with get, set
             abstract arguments: ResizeArray<obj> option with get, set
 
-        and [<AllowNullLiteral>] ICodeLensSymbol =
+        type [<AllowNullLiteral>] ICodeLensSymbol =
             abstract range: IRange with get, set
             abstract id: string option with get, set
             abstract command: Command option with get, set
 
-        and [<AllowNullLiteral>] CodeLensProvider =
+        type [<AllowNullLiteral>] CodeLensProvider =
             abstract onDidChange: IEvent<obj> option with get, set
             abstract provideCodeLenses: model: editor.IReadOnlyModel * token: CancellationToken -> U2<ResizeArray<ICodeLensSymbol>, Thenable<ResizeArray<ICodeLensSymbol>>>
             abstract resolveCodeLens: model: editor.IReadOnlyModel * codeLens: ICodeLensSymbol * token: CancellationToken -> U2<ICodeLensSymbol, Thenable<ICodeLensSymbol>>
 
-        and [<AllowNullLiteral>] ILanguageExtensionPoint =
+        type [<AllowNullLiteral>] ILanguageExtensionPoint =
             abstract id: string with get, set
             abstract extensions: ResizeArray<string> option with get, set
             abstract filenames: ResizeArray<string> option with get, set
@@ -1702,7 +1606,7 @@ module monaco =
             abstract mimetypes: ResizeArray<string> option with get, set
             abstract configuration: string option with get, set
 
-        and [<AllowNullLiteral>] IMonarchLanguage =
+        type [<AllowNullLiteral>] IMonarchLanguage =
             abstract tokenizer: obj with get, set
             abstract ignoreCase: bool option with get, set
             abstract defaultToken: string option with get, set
@@ -1710,12 +1614,12 @@ module monaco =
             abstract start: string option with get, set
             abstract tokenPostfix: string with get, set
 
-        and [<AllowNullLiteral>] IMonarchLanguageRule =
+        type [<AllowNullLiteral>] IMonarchLanguageRule =
             abstract regex: U2<string, Regex> option with get, set
             abstract action: IMonarchLanguageAction option with get, set
             abstract ``include``: string option with get, set
 
-        and [<AllowNullLiteral>] IMonarchLanguageAction =
+        type [<AllowNullLiteral>] IMonarchLanguageAction =
             abstract group: ResizeArray<IMonarchLanguageAction> option with get, set
             abstract cases: obj option with get, set
             abstract token: string option with get, set
@@ -1726,7 +1630,7 @@ module monaco =
             abstract nextEmbedded: string option with get, set
             abstract log: string option with get, set
 
-        and [<AllowNullLiteral>] IMonarchLanguageBracket =
+        type [<AllowNullLiteral>] IMonarchLanguageBracket =
             abstract ``open``: string with get, set
             abstract close: string with get, set
             abstract token: string with get, set
@@ -1746,6 +1650,7 @@ module monaco =
             static member registerDocumentHighlightProvider(languageId: string, provider: DocumentHighlightProvider): IDisposable = jsNative
             static member registerDefinitionProvider(languageId: string, provider: DefinitionProvider): IDisposable = jsNative
             static member registerImplementationProvider(languageId: string, provider: ImplementationProvider): IDisposable = jsNative
+            static member registerTypeDefinitionProvider(languageId: string, provider: TypeDefinitionProvider): IDisposable = jsNative
             static member registerCodeLensProvider(languageId: string, provider: CodeLensProvider): IDisposable = jsNative
             static member registerCodeActionProvider(languageId: string, provider: CodeActionProvider): IDisposable = jsNative
             static member registerDocumentFormattingEditProvider(languageId: string, provider: DocumentFormattingEditProvider): IDisposable = jsNative
@@ -1763,16 +1668,16 @@ module monaco =
                 | System = 4
                 | ES2015 = 5
 
-            and JsxEmit =
+            type JsxEmit =
                 | None = 0
                 | Preserve = 1
                 | React = 2
 
-            and NewLineKind =
+            type NewLineKind =
                 | CarriageReturnLineFeed = 0
                 | LineFeed = 1
 
-            and ScriptTarget =
+            type ScriptTarget =
                 | ES3 = 0
                 | ES5 = 1
                 | ES2015 = 2
@@ -1781,14 +1686,14 @@ module monaco =
                 | ESNext = 5
                 | Latest = 5
 
-            and ModuleResolutionKind =
+            type ModuleResolutionKind =
                 | Classic = 1
                 | NodeJs = 2
 
-            and CompilerOptionsValue =
+            type CompilerOptionsValue =
                 obj
 
-            and [<AllowNullLiteral>] CompilerOptions =
+            type [<AllowNullLiteral>] CompilerOptions =
                 abstract allowJs: bool option with get, set
                 abstract allowSyntheticDefaultImports: bool option with get, set
                 abstract allowUnreachableCode: bool option with get, set
@@ -1851,15 +1756,16 @@ module monaco =
                 abstract typeRoots: ResizeArray<string> option with get, set
                 [<Emit("$0[$1]{{=$2}}")>] abstract Item: option: string -> U2<CompilerOptionsValue, obj> with get, set
 
-            and [<AllowNullLiteral>] DiagnosticsOptions =
+            type [<AllowNullLiteral>] DiagnosticsOptions =
                 abstract noSemanticValidation: bool option with get, set
                 abstract noSyntaxValidation: bool option with get, set
 
-            and [<AllowNullLiteral>] LanguageServiceDefaults =
+            type [<AllowNullLiteral>] LanguageServiceDefaults =
                 abstract addExtraLib: content: string * ?filePath: string -> IDisposable
                 abstract setCompilerOptions: options: CompilerOptions -> unit
                 abstract setDiagnosticsOptions: options: DiagnosticsOptions -> unit
                 abstract setMaximunWorkerIdleTime: value: float -> unit
+                abstract setEagerModelSync: value: bool -> unit
 
             type [<Import("languages.typescript","monaco")>] Globals =
                 static member typescriptDefaults with get(): LanguageServiceDefaults = jsNative and set(v: LanguageServiceDefaults): unit = jsNative
@@ -1874,7 +1780,7 @@ module monaco =
                 abstract validate: bool option with get, set
                 abstract lint: obj option with get, set
 
-            and [<AllowNullLiteral>] LanguageServiceDefaults =
+            type [<AllowNullLiteral>] LanguageServiceDefaults =
                 abstract onDidChange: IEvent<LanguageServiceDefaults> with get, set
                 abstract diagnosticsOptions: DiagnosticsOptions with get, set
                 abstract setDiagnosticsOptions: options: DiagnosticsOptions -> unit
@@ -1892,7 +1798,7 @@ module monaco =
                 abstract allowComments: bool option with get, set
                 abstract schemas: ResizeArray<obj> option with get, set
 
-            and [<AllowNullLiteral>] LanguageServiceDefaults =
+            type [<AllowNullLiteral>] LanguageServiceDefaults =
                 abstract onDidChange: IEvent<LanguageServiceDefaults> with get, set
                 abstract diagnosticsOptions: DiagnosticsOptions with get, set
                 abstract setDiagnosticsOptions: options: DiagnosticsOptions -> unit
@@ -1917,14 +1823,14 @@ module monaco =
                 abstract extraLiners: string with get, set
                 abstract wrapAttributes: U4<obj, obj, obj, obj> with get, set
 
-            and [<AllowNullLiteral>] CompletionConfiguration =
+            type [<AllowNullLiteral>] CompletionConfiguration =
                 [<Emit("$0[$1]{{=$2}}")>] abstract Item: provider: string -> bool with get, set
 
-            and [<AllowNullLiteral>] Options =
+            type [<AllowNullLiteral>] Options =
                 abstract format: HTMLFormatConfiguration option with get, set
                 abstract suggest: CompletionConfiguration option with get, set
 
-            and [<AllowNullLiteral>] LanguageServiceDefaults =
+            type [<AllowNullLiteral>] LanguageServiceDefaults =
                 abstract onDidChange: IEvent<LanguageServiceDefaults> with get, set
                 abstract options: Options with get, set
                 abstract setOptions: options: Options -> unit
@@ -1942,7 +1848,7 @@ module monaco =
             abstract version: float with get, set
             abstract getValue: unit -> string
 
-        and [<AllowNullLiteral>] IWorkerContext =
+        type [<AllowNullLiteral>] IWorkerContext =
             abstract getMirrorModels: unit -> ResizeArray<IMirrorModel>
 
 

@@ -7,7 +7,7 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 
 
 let createChecker references readAllBytes =
-    InteractiveChecker(List.ofArray references, readAllBytes)
+    InteractiveChecker.Create(List.ofArray references, readAllBytes)
 
 let parseFSharpProject (checker: InteractiveChecker) fileName source =
     let _,_,checkProjectResults = checker.ParseAndCheckScript (fileName, source)
@@ -20,6 +20,7 @@ let parseFSharpProject (checker: InteractiveChecker) fileName source =
     let fileName = "test_script.fsx"
     let source = readAllText fileName
 
+    let checker = InteractiveChecker.Create(references, readAllBytes)
     // let parseResults = checker.ParseScript(fileName,source)
     let parseResults, typeCheckResults, projectResults = checker.ParseAndCheckScript(fileName,source)
     
@@ -41,7 +42,7 @@ let parseFSharpProject (checker: InteractiveChecker) fileName source =
     let inputLines = source.Split('\n')
     async {
         // Get tool tip at the specified location
-        let! tip = typeCheckResults.GetToolTipTextAlternate(4, 7, inputLines.[3], ["foo"], FSharpTokenTag.IDENT)
+        let! tip = typeCheckResults.GetToolTipTextAlternate(3, 7, inputLines.[2], ["foo"], FSharpTokenTag.IDENT)
         (sprintf "%A" tip).Replace("\n","") |> printfn "---> ToolTip Text = %A" // should be "FSharpToolTipText [...]"
     } |> Async.StartImmediate
     async {
