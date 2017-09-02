@@ -1,3 +1,4 @@
+// Type definitions for monaco-editor v0.10.0
 // generated with ts2fable from /node_modules/monaco-editor/monaco.d.ts
 
 namespace rec Fable.Import
@@ -32,7 +33,7 @@ module monaco =
         | Error = 3
 
     type [<AllowNullLiteral>] TValueCallback<'T> =
-        [<Emit("$0($1...)")>] abstract Invoke: value: 'T -> unit
+        [<Emit("$0($1...)")>] abstract Invoke: value: U2<'T, Thenable<'T>> -> unit
 
     type [<AllowNullLiteral>] ProgressCallback =
         [<Emit("$0($1...)")>] abstract Invoke: progress: obj -> obj
@@ -428,6 +429,18 @@ module monaco =
 
         type [<AllowNullLiteral>] IEditorOverrideServices =
             [<Emit("$0[$1]{{=$2}}")>] abstract Item: index: string -> obj with get, set
+
+        type [<AllowNullLiteral>] IMarker =
+            abstract owner: string with get, set
+            abstract resource: Uri with get, set
+            abstract severity: Severity with get, set
+            abstract code: string option with get, set
+            abstract message: string with get, set
+            abstract source: string option with get, set
+            abstract startLineNumber: float with get, set
+            abstract startColumn: float with get, set
+            abstract endLineNumber: float with get, set
+            abstract endColumn: float with get, set
 
         type [<AllowNullLiteral>] IMarkerData =
             abstract code: string option with get, set
@@ -1304,6 +1317,7 @@ module monaco =
             static member createModel(value: string, ?language: string, ?uri: Uri): IModel = jsNative
             static member setModelLanguage(model: IModel, language: string): unit = jsNative
             static member setModelMarkers(model: IModel, owner: string, markers: ResizeArray<IMarkerData>): unit = jsNative
+            static member getModelMarkers(filter: obj): ResizeArray<IMarker> = jsNative
             static member getModel(uri: Uri): IModel = jsNative
             static member getModels(): ResizeArray<IModel> = jsNative
             static member onDidCreateModel(listener: (IModel -> unit)): IDisposable = jsNative
@@ -1336,7 +1350,7 @@ module monaco =
             abstract markers: ResizeArray<editor.IMarkerData> with get, set
 
         type [<AllowNullLiteral>] CodeActionProvider =
-            abstract provideCodeActions: model: editor.IReadOnlyModel * range: Range * context: CodeActionContext * token: CancellationToken -> U2<ResizeArray<CodeAction>, Thenable<ResizeArray<CodeAction>>>
+            abstract provideCodeActions: model: editor.IReadOnlyModel * range: Range * context: CodeActionContext * token: CancellationToken -> U2<ResizeArray<Command>, Thenable<ResizeArray<Command>>>
 
         type CompletionItemKind =
             | Text = 0
@@ -1447,10 +1461,6 @@ module monaco =
 
         type [<AllowNullLiteral>] HoverProvider =
             abstract provideHover: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Hover, Thenable<Hover>>
-
-        type [<AllowNullLiteral>] CodeAction =
-            abstract command: Command with get, set
-            abstract score: float with get, set
 
         type [<AllowNullLiteral>] ParameterInformation =
             abstract label: string with get, set
