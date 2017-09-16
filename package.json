@@ -8,8 +8,8 @@
   "scripts": {
     "preinstall": "dotnet restore",
     "prebuild": "webpack -p --entry=./src/babel-standalone.js --output-path=./out --output-filename=babel-standalone.js --output-library=Babel",
-    "_build": "dotnet fable npm-run webpack",
-    "build": "dotnet fable npm-run rollup",
+    "build": "dotnet ../Fable/build/fable/dotnet-fable.dll npm-rollup --port free --verbose",
+    "watch": "dotnet ../Fable/build/fable/dotnet-fable.dll npm-rollup --port free --verbose -- -w",
     "webpack": "webpack",
     "rollup": "rollup -c",
     "start": "http-server -c-1 ./ -p 8888 -o"
