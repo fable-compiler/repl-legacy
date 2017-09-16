@@ -7,6 +7,7 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 
 type Checker = InteractiveChecker
 type Results = FSharpParseFileResults * FSharpCheckFileResults * FSharpCheckProjectResults
+type Glyph = FSharpGlyph
 
 let createChecker references readAllBytes =
     InteractiveChecker.Create(List.ofArray references, readAllBytes)
