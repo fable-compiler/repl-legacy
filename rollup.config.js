@@ -6,6 +6,7 @@ import fable from 'rollup-plugin-fable';
 
 var fableOptions = {
   // babel: babelOptions,
+  fableCore: "../Fable/build/fable-core",
   define: [
     "COMPILER_PUBLIC_API",
     "FX_NO_CORHOST_SIGNER",
