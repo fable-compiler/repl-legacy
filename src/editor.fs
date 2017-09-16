@@ -172,6 +172,32 @@ let mutable fcsResults: FCS.Results option = None
 //             } |> U2.Case2
 // }
 
+let convertGlyph glyph =
+    match glyph with
+    | FCS.Glyph.Class | FCS.Glyph.Struct | FCS.Glyph.Union
+    | FCS.Glyph.Type | FCS.Glyph.Typedef ->
+        monaco.languages.CompletionItemKind.Class
+    | FCS.Glyph.Enum | FCS.Glyph.EnumMember ->
+        monaco.languages.CompletionItemKind.Enum
+    | FCS.Glyph.Constant ->
+        monaco.languages.CompletionItemKind.Value
+    | FCS.Glyph.Variable ->
+        monaco.languages.CompletionItemKind.Variable
+    | FCS.Glyph.Interface ->
+        monaco.languages.CompletionItemKind.Interface
+    | FCS.Glyph.Module | FCS.Glyph.NameSpace ->
+        monaco.languages.CompletionItemKind.Module
+    | FCS.Glyph.Method | FCS.Glyph.OverridenMethod | FCS.Glyph.ExtensionMethod ->
+        monaco.languages.CompletionItemKind.Method
+    | FCS.Glyph.Property ->
+        monaco.languages.CompletionItemKind.Property
+    | FCS.Glyph.Field ->
+        monaco.languages.CompletionItemKind.Field
+    | FCS.Glyph.Delegate ->
+        monaco.languages.CompletionItemKind.Function
+    | FCS.Glyph.Error | FCS.Glyph.Exception | FCS.Glyph.Event ->
+        monaco.languages.CompletionItemKind.Text
+
 let convertToInt code =
     match code with
     | "C" -> monaco.languages.CompletionItemKind.Class
@@ -197,7 +223,7 @@ let completionProvider = {
                                     !!position.lineNumber !!position.column (model.getLineContent(position.lineNumber))
                     for d in decls.Items do
                         let ci = createEmpty<monaco.languages.CompletionItem>
-                        ci.kind <- d.Glyph.ToString() |> convertToInt
+                        ci.kind <- convertGlyph d.Glyph
                         ci.label <- d.Name
                         // ci.insertText <- Some !^d.ReplacementText
                         items.Add(ci)
@@ -207,6 +233,13 @@ let completionProvider = {
 
         member __.resolveCompletionItem(item, token) =
             !^item
+            // promise {
+            //     let! o = helptext { Symbol = item.label }
+            //     let res = (o.Data.Overloads |> Array.fold (fun acc n -> (n |> Array.toList) @ acc ) []).Head
+            //     item.documentation <- Some res.Comment
+            //     item.detail <- Some res.Signature
+            //     return item
+            // } |> U2.Case2            
 
         member __.triggerCharacters
             with get () = ResizeArray(["."]) |> Some
