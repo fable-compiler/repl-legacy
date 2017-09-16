@@ -9,7 +9,7 @@ var babelOptions = {
 };
 
 var fableOptions = {
-  babel: babelOptions,
+  // babel: babelOptions,
   //plugins: [],
   define: [
     "COMPILER_PUBLIC_API",
@@ -43,14 +43,14 @@ module.exports = {
           options: fableOptions
         }
       },
-      {
-        test: /\.js$/,
-        exclude: /node_modules\/(?!fable)/,
-        use: {
-          loader: "babel-loader",
-          options: babelOptions
-        },
-      }
+      // {
+      //   test: /\.js$/,
+      //   exclude: /node_modules\/(?!fable)/,
+      //   use: {
+      //     loader: "babel-loader",
+      //     options: babelOptions
+      //   },
+      // }
     ]
   },
 };

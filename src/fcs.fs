@@ -5,16 +5,25 @@ open System.Collections.Generic
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
+type Checker = InteractiveChecker
+type Results = FSharpParseFileResults * FSharpCheckFileResults * FSharpCheckProjectResults
 
 let createChecker references readAllBytes =
     InteractiveChecker.Create(List.ofArray references, readAllBytes)
 
 let parseFSharpProject (checker: InteractiveChecker) fileName source =
-    let _,_,checkProjectResults = checker.ParseAndCheckScript (fileName, source)
-    for er in checkProjectResults.Errors do
+    let parseResults, typeCheckResults, projectResults = checker.ParseAndCheckScript (fileName, source)
+    for er in projectResults.Errors do
         printfn "FSHARP: %s" er.Message
-    checkProjectResults
+    parseResults, typeCheckResults, projectResults
 
+/// Get tool tip at the specified location
+let getToolTipAtLocation (typeCheckResults: FSharpCheckFileResults) line col lineText =
+    typeCheckResults.GetToolTipText(line, col, lineText, [], FSharpTokenTag.IDENT)
+
+let getCompletionsAtLocation (parseResults: FSharpParseFileResults) (typeCheckResults: FSharpCheckFileResults)
+                                                                        line col lineText =
+    typeCheckResults.GetDeclarationListInfo(Some parseResults, line, col, lineText, [], "msg", (fun _ -> []), fun _ -> false)
 
 (*
     let fileName = "test_script.fsx"

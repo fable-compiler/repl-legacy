@@ -10,7 +10,7 @@
     "prebuild": "webpack -p --entry=./src/babel-standalone.js --output-path=./out --output-filename=babel-standalone.js --output-library=Babel",
     "_build": "dotnet fable npm-run webpack",
     "build": "dotnet fable npm-run rollup",
-    "webpack": "webpack -p",
+    "webpack": "webpack",
     "rollup": "rollup -c",
     "start": "http-server -c-1 ./ -p 8888 -o"
   },

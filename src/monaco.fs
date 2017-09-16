@@ -1393,7 +1393,7 @@ module monaco =
 
         type [<AllowNullLiteral>] CompletionItemProvider =
             abstract triggerCharacters: ResizeArray<string> option with get, set
-            abstract provideCompletionItems: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U4<ResizeArray<CompletionItem>, Thenable<ResizeArray<CompletionItem>>, CompletionList, Thenable<CompletionList>>
+            abstract provideCompletionItems: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U4<ResizeArray<CompletionItem>, JS.Promise<ResizeArray<CompletionItem>>, CompletionList, Thenable<CompletionList>>
             abstract resolveCompletionItem: item: CompletionItem * token: CancellationToken -> U2<CompletionItem, Thenable<CompletionItem>>
 
         type [<AllowNullLiteral>] CommentRule =

@@ -19,9 +19,9 @@
 
   <ItemGroup>
     <!-- <PackageReference Include="FSharp.Core" Version="4.2.*" /> -->
-    <PackageReference Include="Fable.Core" Version="1.2.0-*" />
-    <PackageReference Include="Fable.Import.Browser" Version="0.1.*" />
-    <DotNetCliToolReference Include="dotnet-fable" Version="1.2.0-*" />
+    <PackageReference Include="Fable.Core" Version="1.2.*" />
+    <PackageReference Include="Fable.Import.Browser" Version="*" />
+    <DotNetCliToolReference Include="dotnet-fable" Version="1.2.*" />
   </ItemGroup>
 
 </Project>
