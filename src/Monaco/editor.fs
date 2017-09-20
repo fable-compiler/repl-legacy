@@ -5,41 +5,43 @@ module Fable.Editor
 open Fable.Core
 open Fable.Core.JsInterop
 open Fable.Import
+open Fable.REPL.Interfaces
 
 //---------------------------------------------------
 // Features providers
 //---------------------------------------------------
 
-let getChecker(f: string[] -> (string->byte[]) -> FCS.Checker): FCS.Checker option =
+let [<Global>] FableREPL: IFableREPL = jsNative
+
+let getChecker(f: string[] -> (string->byte[]) -> IChecker): IChecker option =
     importMember "./util.js"
 
-let mutable fcsChecker: FCS.Checker option = None
-let mutable fcsResults: FCS.ParseResults option = None
+let mutable fcsChecker: IChecker option = None
+let mutable fcsResults: IParseResults option = None
 
 let convertGlyph glyph =
     match glyph with
-    | FCS.Glyph.Class | FCS.Glyph.Struct | FCS.Glyph.Union
-    | FCS.Glyph.Type | FCS.Glyph.Typedef ->
+    | Glyph.Class ->
         monaco.languages.CompletionItemKind.Class
-    | FCS.Glyph.Enum | FCS.Glyph.EnumMember ->
+    | Glyph.Enum ->
         monaco.languages.CompletionItemKind.Enum
-    | FCS.Glyph.Constant ->
+    | Glyph.Value ->
         monaco.languages.CompletionItemKind.Value
-    | FCS.Glyph.Variable ->
+    | Glyph.Variable ->
         monaco.languages.CompletionItemKind.Variable
-    | FCS.Glyph.Interface ->
+    | Glyph.Interface ->
         monaco.languages.CompletionItemKind.Interface
-    | FCS.Glyph.Module | FCS.Glyph.NameSpace ->
+    | Glyph.Module ->
         monaco.languages.CompletionItemKind.Module
-    | FCS.Glyph.Method | FCS.Glyph.OverridenMethod | FCS.Glyph.ExtensionMethod ->
+    | Glyph.Method ->
         monaco.languages.CompletionItemKind.Method
-    | FCS.Glyph.Property ->
+    | Glyph.Property ->
         monaco.languages.CompletionItemKind.Property
-    | FCS.Glyph.Field ->
+    | Glyph.Field ->
         monaco.languages.CompletionItemKind.Field
-    | FCS.Glyph.Delegate ->
+    | Glyph.Function ->
         monaco.languages.CompletionItemKind.Function
-    | FCS.Glyph.Error | FCS.Glyph.Exception | FCS.Glyph.Event ->
+    | Glyph.Error | Glyph.Event ->
         monaco.languages.CompletionItemKind.Text
 
 let completionProvider = {
@@ -50,9 +52,10 @@ let completionProvider = {
                 let items = ResizeArray()
                 match fcsResults with
                 | Some res ->
-                    let! decls = FCS.getCompletionsAtLocation res.ParseFile res.CheckFile
-                                    !!position.lineNumber !!position.column (model.getLineContent(position.lineNumber))
-                    for d in decls.Items do
+                    let! decls =
+                        model.getLineContent(position.lineNumber)
+                        |> FableREPL.GetCompletionsAtLocation res position.lineNumber position.column
+                    for d in decls do
                         let ci = createEmpty<monaco.languages.CompletionItem>
                         ci.kind <- convertGlyph d.Glyph
                         ci.label <- d.Name
@@ -80,23 +83,23 @@ let completionProvider = {
 let parseEditor (model: monaco.editor.IModel) =
     match fcsChecker with
     | None ->
-        fcsChecker <- getChecker FCS.createChecker
+        fcsChecker <- getChecker FableREPL.CreateChecker
     | Some fcsChecker ->
         let content = model.getValue (monaco.editor.EndOfLinePreference.TextDefined, true)
-        let res = FCS.parseFSharpProject fcsChecker "test.fsx" content
+        let res = FableREPL.ParseFSharpProject fcsChecker "test.fsx" content
         fcsResults <- Some res
         let markers = ResizeArray()
-        for err in res.CheckProject.Errors do
+        for err in res.Errors do
             let m = createEmpty<monaco.editor.IMarkerData>
-            m.startLineNumber <- float err.StartLineAlternate
-            m.endLineNumber <- float err.EndLineAlternate
-            m.startColumn <- float err.StartColumn
-            m.endColumn <- float err.EndColumn
+            m.startLineNumber <- err.StartLineAlternate
+            m.endLineNumber <- err.EndLineAlternate
+            m.startColumn <- err.StartColumn
+            m.endColumn <- err.EndColumn
             m.message <- err.Message
             m.severity <-
-                match err.Severity with
-                | FCS.Severity.Error -> monaco.Severity.Error 
-                | FCS.Severity.Warning -> monaco.Severity.Warning
+                match err.IsWarning with
+                | false -> monaco.Severity.Error 
+                | true -> monaco.Severity.Warning
             markers.Add(m)
         monaco.editor.Globals.setModelMarkers(model, "test", markers)
 
