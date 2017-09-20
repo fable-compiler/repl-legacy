@@ -5,6 +5,7 @@
   <ItemGroup>
     <Compile Include="monaco.fs" />
     <Compile Include="util.fs" />
+    <Compile Include="../Fable.REPL/interfaces.fs" />
     <Compile Include="editor.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />  

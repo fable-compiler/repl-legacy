@@ -258,12 +258,12 @@ module monaco =
         abstract scrollHeightChanged: bool with get, set
 
     type [<AllowNullLiteral>] IPosition =
-        abstract lineNumber: float with get, set
-        abstract column: float with get, set
+        abstract lineNumber: int with get, set
+        abstract column: int with get, set
 
-    type [<AllowNullLiteral>] [<Import("Position","monaco")>] Position(lineNumber: float, column: float) =
-        member __.lineNumber with get(): float = jsNative and set(v: float): unit = jsNative
-        member __.column with get(): float = jsNative and set(v: float): unit = jsNative
+    type [<AllowNullLiteral>] [<Import("Position","monaco")>] Position(lineNumber: int, column: int) =
+        member __.lineNumber with get(): int = jsNative and set(v: int): unit = jsNative
+        member __.column with get(): int = jsNative and set(v: int): unit = jsNative
         member __.equals(other: IPosition): bool = jsNative
         static member equals(a: IPosition, b: IPosition): bool = jsNative
         member __.isBefore(other: IPosition): bool = jsNative
@@ -447,10 +447,10 @@ module monaco =
             abstract severity: Severity with get, set
             abstract message: string with get, set
             abstract source: string option with get, set
-            abstract startLineNumber: float with get, set
-            abstract startColumn: float with get, set
-            abstract endLineNumber: float with get, set
-            abstract endColumn: float with get, set
+            abstract startLineNumber: int with get, set
+            abstract startColumn: int with get, set
+            abstract endLineNumber: int with get, set
+            abstract endColumn: int with get, set
 
         type [<AllowNullLiteral>] IColorizerOptions =
             abstract tabSize: float option with get, set
@@ -577,14 +577,14 @@ module monaco =
             abstract getValueInRange: range: IRange * ?eol: EndOfLinePreference -> string
             abstract getValueLengthInRange: range: IRange -> float
             abstract getLineCount: unit -> float
-            abstract getLineContent: lineNumber: float -> string
+            abstract getLineContent: lineNumber: int -> string
             abstract getLinesContent: unit -> ResizeArray<string>
             abstract getEOL: unit -> string
             abstract setEOL: eol: EndOfLineSequence -> unit
-            abstract getLineMinColumn: lineNumber: float -> float
-            abstract getLineMaxColumn: lineNumber: float -> float
-            abstract getLineFirstNonWhitespaceColumn: lineNumber: float -> float
-            abstract getLineLastNonWhitespaceColumn: lineNumber: float -> float
+            abstract getLineMinColumn: lineNumber: int -> float
+            abstract getLineMaxColumn: lineNumber: int -> float
+            abstract getLineFirstNonWhitespaceColumn: lineNumber: int -> float
+            abstract getLineLastNonWhitespaceColumn: lineNumber: int -> float
             abstract validatePosition: position: IPosition -> Position
             abstract modifyPosition: position: IPosition * offset: float -> Position
             abstract validateRange: range: IRange -> Range
@@ -629,7 +629,7 @@ module monaco =
             abstract deltaDecorations: oldDecorations: ResizeArray<string> * newDecorations: ResizeArray<IModelDeltaDecoration> * ?ownerId: float -> ResizeArray<string>
             abstract getDecorationOptions: id: string -> IModelDecorationOptions
             abstract getDecorationRange: id: string -> Range
-            abstract getLineDecorations: lineNumber: float * ?ownerId: float * ?filterOutValidation: bool -> ResizeArray<IModelDecoration>
+            abstract getLineDecorations: lineNumber: int * ?ownerId: float * ?filterOutValidation: bool -> ResizeArray<IModelDecoration>
             abstract getLinesDecorations: startLineNumber: float * endLineNumber: float * ?ownerId: float * ?filterOutValidation: bool -> ResizeArray<IModelDecoration>
             abstract getDecorationsInRange: range: IRange * ?ownerId: float * ?filterOutValidation: bool -> ResizeArray<IModelDecoration>
             abstract getAllDecorations: ?ownerId: float * ?filterOutValidation: bool -> ResizeArray<IModelDecoration>
@@ -752,9 +752,9 @@ module monaco =
             abstract getVisibleColumnFromPosition: position: IPosition -> float
             abstract getPosition: unit -> Position
             abstract setPosition: position: IPosition -> unit
-            abstract revealLine: lineNumber: float -> unit
-            abstract revealLineInCenter: lineNumber: float -> unit
-            abstract revealLineInCenterIfOutsideViewport: lineNumber: float -> unit
+            abstract revealLine: lineNumber: int -> unit
+            abstract revealLineInCenter: lineNumber: int -> unit
+            abstract revealLineInCenterIfOutsideViewport: lineNumber: int -> unit
             abstract revealPosition: position: IPosition * ?revealVerticalInCenter: bool * ?revealHorizontal: bool -> unit
             abstract revealPositionInCenter: position: IPosition -> unit
             abstract revealPositionInCenterIfOutsideViewport: position: IPosition -> unit
@@ -766,8 +766,8 @@ module monaco =
             abstract setSelection: selection: Selection -> unit
             abstract setSelections: selections: ResizeArray<ISelection> -> unit
             abstract revealLines: startLineNumber: float * endLineNumber: float -> unit
-            abstract revealLinesInCenter: lineNumber: float * endLineNumber: float -> unit
-            abstract revealLinesInCenterIfOutsideViewport: lineNumber: float * endLineNumber: float -> unit
+            abstract revealLinesInCenter: lineNumber: int * endLineNumber: float -> unit
+            abstract revealLinesInCenterIfOutsideViewport: lineNumber: int * endLineNumber: float -> unit
             abstract revealRange: range: IRange -> unit
             abstract revealRangeInCenter: range: IRange -> unit
             abstract revealRangeAtTop: range: IRange -> unit
@@ -816,7 +816,7 @@ module monaco =
             abstract pushUndoStop: unit -> bool
             abstract executeEdits: source: string * edits: ResizeArray<IIdentifiedSingleEditOperation> * ?endCursoState: ResizeArray<Selection> -> bool
             abstract executeCommands: source: string * commands: ResizeArray<ICommand> -> unit
-            abstract getLineDecorations: lineNumber: float -> ResizeArray<IModelDecoration>
+            abstract getLineDecorations: lineNumber: int -> ResizeArray<IModelDecoration>
             abstract deltaDecorations: oldDecorations: ResizeArray<string> * newDecorations: ResizeArray<IModelDeltaDecoration> -> ResizeArray<string>
             abstract getLayoutInfo: unit -> EditorLayoutInfo
 
@@ -829,8 +829,8 @@ module monaco =
             abstract getOriginalEditor: unit -> ICommonCodeEditor
             abstract getModifiedEditor: unit -> ICommonCodeEditor
             abstract getLineChanges: unit -> ResizeArray<ILineChange>
-            abstract getDiffLineInformationForOriginal: lineNumber: float -> IDiffLineInformation
-            abstract getDiffLineInformationForModified: lineNumber: float -> IDiffLineInformation
+            abstract getDiffLineInformationForOriginal: lineNumber: int -> IDiffLineInformation
+            abstract getDiffLineInformationForModified: lineNumber: int -> IDiffLineInformation
             abstract getValue: ?options: obj -> string
 
         type [<AllowNullLiteral>] EditorTypeType =
@@ -1277,10 +1277,10 @@ module monaco =
             abstract removeOverlayWidget: widget: IOverlayWidget -> unit
             abstract changeViewZones: callback: (IViewZoneChangeAccessor -> unit) -> unit
             abstract getCenteredRangeInViewport: unit -> Range
-            abstract getOffsetForColumn: lineNumber: float * column: float -> float
+            abstract getOffsetForColumn: lineNumber: int * column: int -> int
             abstract render: unit -> unit
-            abstract getTopForLineNumber: lineNumber: float -> float
-            abstract getTopForPosition: lineNumber: float * column: float -> float
+            abstract getTopForLineNumber: lineNumber: int -> int
+            abstract getTopForPosition: lineNumber: int * column: int -> int
             abstract getTargetAtClientPoint: clientX: float * clientY: float -> IMouseTarget
             abstract getScrolledVisiblePosition: position: IPosition -> obj
             abstract applyFontInfo: target: HTMLElement -> unit
@@ -1326,7 +1326,7 @@ module monaco =
             static member createWebWorker(opts: IWebWorkerOptions): MonacoWebWorker<'T> = jsNative
             static member colorizeElement(domNode: HTMLElement, options: IColorizerElementOptions): Promise<unit> = jsNative
             static member colorize(text: string, languageId: string, options: IColorizerOptions): Promise<string> = jsNative
-            static member colorizeModelLine(model: IModel, lineNumber: float, ?tabSize: float): string = jsNative
+            static member colorizeModelLine(model: IModel, lineNumber: int, ?tabSize: float): string = jsNative
             static member tokenize(text: string, languageId: string): ResizeArray<ResizeArray<Token>> = jsNative
             static member defineTheme(themeName: string, themeData: IStandaloneThemeData): unit = jsNative
             static member setTheme(themeName: string): unit = jsNative

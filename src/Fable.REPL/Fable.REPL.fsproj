@@ -3,9 +3,10 @@
     <TargetFramework>netstandard1.6</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../FSharp.Compiler.Service_fable/fcs/fcs-fable/fcs-fable.fsproj" />
+    <ProjectReference Include="../../../FSharp.Compiler.Service_fable/fcs/fcs-fable/fcs-fable.fsproj" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="interfaces.fs" />
     <Compile Include="lexer.fs" />
     <Compile Include="fcs.fs" />
   </ItemGroup>
