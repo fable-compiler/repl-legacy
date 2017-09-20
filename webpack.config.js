@@ -1,38 +1,32 @@
-var path = require('path');
+var path = require("path");
+var webpack = require("webpack");
+var fableUtils = require("fable-utils");
 
 function resolve(filePath) {
-  return path.resolve(__dirname, filePath)
+  return path.join(__dirname, filePath)
 }
 
-var babelOptions = {
-  presets: [["es2015", {"modules": false}]]
-};
+var babelOptions = fableUtils.resolveBabelOptions({
+  // presets: [["es2015", { "modules": false }]],
+  // plugins: ["transform-runtime"]
+});
 
-var fableOptions = {
-  // babel: babelOptions,
-  //plugins: [],
-  define: [
-    "COMPILER_PUBLIC_API",
-    "FX_NO_CORHOST_SIGNER",
-    "FX_NO_LINKEDRESOURCES",
-    "FX_NO_PDB_READER",
-    "FX_NO_PDB_WRITER",
-    "FX_NO_WEAKTABLE",
-    "FX_REDUCED_EXCEPTIONS",
-    "NO_COMPILER_BACKEND",
-    "NO_INLINE_IL_PARSER"
-  ]
-};
+var isProduction = process.argv.indexOf("-p") >= 0;
+console.log("Bundling for " + (isProduction ? "production" : "development") + "...");
 
 module.exports = {
-  //devtool: "source-map",
-  entry: resolve('./fable-repl.fsproj'),
+  devtool: "source-map",
+  entry: resolve('./src/App/App.fsproj'),
   output: {
     filename: 'bundle.js',
-    path: resolve('./out'),
+    path: resolve('./public'),
   },
-  externals: {
-    monaco: "monaco"
+  resolve: {
+    modules: [resolve("./node_modules/")]
+  },
+  devServer: {
+    contentBase: resolve('./public'),
+    port: 8080
   },
   module: {
     rules: [
@@ -40,17 +34,32 @@ module.exports = {
         test: /\.fs(x|proj)?$/,
         use: {
           loader: "fable-loader",
-          options: fableOptions
+          options: {
+            babel: babelOptions,
+            define: isProduction ? [] : ["DEBUG"]
+          }
         }
       },
-      // {
-      //   test: /\.js$/,
-      //   exclude: /node_modules\/(?!fable)/,
-      //   use: {
-      //     loader: "babel-loader",
-      //     options: babelOptions
-      //   },
-      // }
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: babelOptions
+        },
+      },
+      {
+        test: /\.json$/,
+        loader: 'json-loader'
+      },
+      {
+        test: /\.sass$/,
+        use: [
+            "style-loader",
+            "css-loader",
+            "sass-loader"
+        ]
+    }      
     ]
-  },
+  }
 };
