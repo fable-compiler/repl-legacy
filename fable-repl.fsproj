@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="src/util.fs" />
     <Compile Include="src/lexer.fs" />
     <Compile Include="src/fcs.fs" />
     <Compile Include="src/monaco.fs" />
