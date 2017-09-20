@@ -6,10 +6,14 @@ open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open FsAutoComplete
 
-type Checker = InteractiveChecker
-type Results = FSharpParseFileResults * FSharpCheckFileResults * FSharpCheckProjectResults
 type Glyph = FSharpGlyph
+type Checker = InteractiveChecker
+type Severity = FSharpErrorSeverity
 
+type ParseResults =
+    { ParseFile: FSharpParseFileResults
+      CheckFile: FSharpCheckFileResults
+      CheckProject: FSharpCheckProjectResults }
 
 let findLongIdentsAndResidue (col, lineStr:string) =
   let lineStr = lineStr.Substring(0, col)
@@ -32,9 +36,9 @@ let createChecker references readAllBytes =
 
 let parseFSharpProject (checker: InteractiveChecker) fileName source =
     let parseResults, typeCheckResults, projectResults = checker.ParseAndCheckScript (fileName, source)
-    for er in projectResults.Errors do
-        printfn "FSHARP: %s" er.Message
-    parseResults, typeCheckResults, projectResults
+    { ParseFile = parseResults
+      CheckFile = typeCheckResults
+      CheckProject = projectResults }
 
 /// Get tool tip at the specified location
 let getToolTipAtLocation (typeCheckResults: FSharpCheckFileResults) line col lineText =
