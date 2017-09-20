@@ -10,12 +10,16 @@
     "prebuild": "webpack -p --entry=./src/babel-standalone.js --output-path=./out --output-filename=babel-standalone.js --output-library=Babel",
     "build": "dotnet ../Fable/build/fable/dotnet-fable.dll npm-rollup --port free --verbose",
     "watch": "dotnet ../Fable/build/fable/dotnet-fable.dll npm-rollup --port free --verbose -- -w",
+    "start-app": "cd src && dotnet fable webpack-dev-server",
     "webpack": "webpack",
     "rollup": "rollup -c",
     "start": "http-server -c-1 ./ -p 8888 -o"
   },
   "dependencies": {
     "monaco-editor": "^0.10.0",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "recharts": "^1.0.0-apha.5",
     "requirejs": "^2.3.5"
   },
   "devDependencies": {
@@ -24,10 +28,15 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-standalone": "^6.26.0",
     "babel-template": "^6.26.0",
+    "css-loader": "^0.28.7",
     "fable-loader": "^1.0.7",
     "http-server": "^0.10.0",
+    "json-loader": "^0.5.7",
     "rollup": "^0.49.2",
     "rollup-plugin-fable": "^1.1.0",
-    "webpack": "^3.5.5"
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.18.2",
+    "webpack": "^3.5.5",
+    "webpack-dev-server": "^2.8.2"
   }
 }
