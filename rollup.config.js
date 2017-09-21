@@ -1,4 +1,9 @@
+import * as path from 'path';
 import fable from 'rollup-plugin-fable';
+
+function resolve(filePath) {
+  return path.join(__dirname, filePath)
+}
 
 // var babelOptions = {
 //   presets: [["es2015", {"modules": false}]]
@@ -6,7 +11,7 @@ import fable from 'rollup-plugin-fable';
 
 var fableOptions = {
   // babel: babelOptions,
-  fableCore: "../Fable/build/fable-core",
+  fableCore: resolve("../Fable/build/fable-core"),
   define: [
     "COMPILER_PUBLIC_API",
     "FX_NO_CORHOST_SIGNER",
@@ -21,13 +26,12 @@ var fableOptions = {
 };
 
 export default {
-  input: './fable-repl.fsproj',
+  input: resolve('./src/Fable.REPL/Fable.REPL.fsproj'),
   output: {
-    file: './out/bundle.js',
+    file: resolve('./public/fable-repl.js'),
     format: 'iife', // 'amd', 'cjs', 'es', 'iife', 'umd'
   },
-  globals: { monaco: "monaco" },
-  name: 'Bundle',
+  name: 'FableREPL',
   plugins: [
     fable(fableOptions),
   ],
