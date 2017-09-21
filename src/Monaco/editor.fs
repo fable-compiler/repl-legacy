@@ -11,7 +11,7 @@ open Fable.REPL.Interfaces
 // Features providers
 //---------------------------------------------------
 
-let FableREPL: IFableREPL = obj() |> unbox //import "Exports" "FableREPL"
+let FableREPL: IFableREPL = import "Exports" "FableREPL"
 
 let mutable fcsChecker: IChecker option = None
 let mutable fcsResults: IParseResults option = None
@@ -77,32 +77,31 @@ let completionProvider = {
             and set v = ()
 }
 
-// let getChecker(f: string[] -> (string->byte[]) -> IChecker): IChecker option =
-//     importMember "./util.js"
+let getChecker(f: string[] -> (string->byte[]) -> IChecker): IChecker option =
+    importMember "./util.js"
 
 let parseEditor (model: monaco.editor.IModel) =
-    ()
-    // match fcsChecker with
-    // | None ->
-    //     fcsChecker <- getChecker (fun x y -> FableREPL.CreateChecker(x, y))
-    // | Some fcsChecker ->
-    //     let content = model.getValue (monaco.editor.EndOfLinePreference.TextDefined, true)
-    //     let res = FableREPL.ParseFSharpProject(fcsChecker, "test.fsx", content)
-    //     fcsResults <- Some res
-    //     let markers = ResizeArray()
-    //     for err in res.Errors do
-    //         let m = createEmpty<monaco.editor.IMarkerData>
-    //         m.startLineNumber <- err.StartLineAlternate
-    //         m.endLineNumber <- err.EndLineAlternate
-    //         m.startColumn <- err.StartColumn
-    //         m.endColumn <- err.EndColumn
-    //         m.message <- err.Message
-    //         m.severity <-
-    //             match err.IsWarning with
-    //             | false -> monaco.Severity.Error 
-    //             | true -> monaco.Severity.Warning
-    //         markers.Add(m)
-    //     monaco.editor.Globals.setModelMarkers(model, "test", markers)
+    match fcsChecker with
+    | None ->
+        fcsChecker <- getChecker (fun x y -> FableREPL.CreateChecker(x, y))
+    | Some fcsChecker ->
+        let content = model.getValue (monaco.editor.EndOfLinePreference.TextDefined, true)
+        let res = FableREPL.ParseFSharpProject(fcsChecker, "test.fsx", content)
+        fcsResults <- Some res
+        let markers = ResizeArray()
+        for err in res.Errors do
+            let m = createEmpty<monaco.editor.IMarkerData>
+            m.startLineNumber <- err.StartLineAlternate
+            m.endLineNumber <- err.EndLineAlternate
+            m.startColumn <- err.StartColumn
+            m.endColumn <- err.EndColumn
+            m.message <- err.Message
+            m.severity <-
+                match err.IsWarning with
+                | false -> monaco.Severity.Error 
+                | true -> monaco.Severity.Warning
+            markers.Add(m)
+        monaco.editor.Globals.setModelMarkers(model, "test", markers)
 
 //---------------------------------------------------
 // Register providers

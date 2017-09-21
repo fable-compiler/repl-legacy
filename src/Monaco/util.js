@@ -38,7 +38,7 @@ function getFileBlob(key, url) {
 };
 
 references.forEach(function(fileName){
-    getFileBlob(fileName, '/repl/metadata/' + fileName);
+    getFileBlob(fileName, 'metadata/' + fileName);
 });
 
 export function getChecker(createChecker) {

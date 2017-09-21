@@ -34,7 +34,8 @@ function getWebpackConfig(entry, filename, library) {
     },
     externals: {
       "monaco": "var monaco",
-      "editor": "var editor"
+      "editor": "var editor",
+      "FableREPL": "var FableREPL",
     },
     module: {
       rules: [

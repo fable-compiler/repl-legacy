@@ -91,7 +91,7 @@ let getCompletionsAtLocation (parseResults: ParseResults) line col lineText = as
         { Name = decl.Name; Glyph = convertGlyph decl.Glyph })
 }
 
-type Exports() =
+type private ExportsImpl() =
     interface IFableREPL with
         member this.CreateChecker(references, readAllBytes) =
             createChecker references readAllBytes |> Checker :> IChecker
@@ -102,6 +102,6 @@ type Exports() =
             let res = parseResults :?> ParseResults
             getCompletionsAtLocation res line col lineText
 
-let Exports = Exports()
+let Exports: IFableREPL = upcast ExportsImpl()
 
 

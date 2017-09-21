@@ -7,12 +7,13 @@
   "license": "MIT",
   "scripts": {
     "preinstall": "dotnet restore",
-    "prebuild": "webpack -p --entry=./src/babel-standalone.js --output-path=./out --output-filename=babel-standalone.js --output-library=Babel",
-    "build": "dotnet ../Fable/build/fable/dotnet-fable.dll npm-rollup --port free --verbose",
-    "watch": "dotnet ../Fable/build/fable/dotnet-fable.dll npm-rollup --port free --verbose -- -w",
+    "prebuild-fcs": "npm run webpack -- -p --entry=./src/js/babel-standalone.js --output-path=./public --output-filename=babel-standalone.js --output-library=Babel",
+    "build-fcs": "cd src && dotnet fable npm-rollup --port free --verbose",
+    "watch-fsc": "cd src && dotnet fable npm-rollup --port free --verbose -- -w",
+    "build-app": "cd src && dotnet fable webpack -- -p",
     "start-app": "cd src && dotnet fable webpack-dev-server",
-    "webpack": "webpack",
-    "rollup": "rollup -c",
+    "webpack": "node node_modules/webpack/bin/webpack.js",
+    "rollup": "node node_modules/rollup/bin/rollup -c",
     "start": "http-server -c-1 ./ -p 8888 -o"
   },
   "dependencies": {
