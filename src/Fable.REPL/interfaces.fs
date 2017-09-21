@@ -38,6 +38,6 @@ type IParseResults =
     abstract Errors: Error[]
 
 type IFableREPL =
-    abstract CreateChecker: references:string[]->readAllBytes:(string->byte[])->IChecker
-    abstract ParseFSharpProject: checker:IChecker->fileName:string->source:string->IParseResults
-    abstract GetCompletionsAtLocation: parseResults:IParseResults->line:int->col:int->lineText:string->Async<Completion[]>
+    abstract CreateChecker: references:string[]*readAllBytes:(string->byte[])->IChecker
+    abstract ParseFSharpProject: checker:IChecker*fileName:string*source:string->IParseResults
+    abstract GetCompletionsAtLocation: parseResults:IParseResults*line:int*col:int*lineText:string->Async<Completion[]>
