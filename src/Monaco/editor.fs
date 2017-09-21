@@ -11,7 +11,7 @@ open Fable.REPL.Interfaces
 // Features providers
 //---------------------------------------------------
 
-let [<Global>] FableREPL: IFableREPL = jsNative
+let FableREPL: IFableREPL = import "Exports" "FableREPL"
 
 let getChecker(f: string[] -> (string->byte[]) -> IChecker): IChecker option =
     importMember "./util.js"
@@ -53,8 +53,8 @@ let completionProvider = {
                 match fcsResults with
                 | Some res ->
                     let! decls =
-                        model.getLineContent(position.lineNumber)
-                        |> FableREPL.GetCompletionsAtLocation res position.lineNumber position.column
+                        let lineText = model.getLineContent(position.lineNumber)
+                        FableREPL.GetCompletionsAtLocation(res, position.lineNumber, position.column, lineText)
                     for d in decls do
                         let ci = createEmpty<monaco.languages.CompletionItem>
                         ci.kind <- convertGlyph d.Glyph
@@ -83,10 +83,10 @@ let completionProvider = {
 let parseEditor (model: monaco.editor.IModel) =
     match fcsChecker with
     | None ->
-        fcsChecker <- getChecker FableREPL.CreateChecker
+        fcsChecker <- getChecker (fun x y -> FableREPL.CreateChecker(x, y))
     | Some fcsChecker ->
         let content = model.getValue (monaco.editor.EndOfLinePreference.TextDefined, true)
-        let res = FableREPL.ParseFSharpProject fcsChecker "test.fsx" content
+        let res = FableREPL.ParseFSharpProject(fcsChecker, "test.fsx", content)
         fcsResults <- Some res
         let markers = ResizeArray()
         for err in res.Errors do

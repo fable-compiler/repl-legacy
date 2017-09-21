@@ -7,11 +7,26 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open FsAutoComplete
 open Interfaces
 
+type Checker(c: InteractiveChecker) =
+    member this.Checker = c
+    interface IChecker
+
 type ParseResults =
     { ParseFile: FSharpParseFileResults
       CheckFile: FSharpCheckFileResults
-      CheckProject: FSharpCheckProjectResults
-      Errors: Error[] }
+      CheckProject: FSharpCheckProjectResults }
+    interface IParseResults with
+        member this.Errors = this.CheckProject.Errors |> Array.map (fun er ->
+            { StartLineAlternate = er.StartLineAlternate
+              StartColumn = er.StartColumn
+              EndLineAlternate = er.EndLineAlternate
+              EndColumn = er.EndColumn
+              Message = er.Message
+              IsWarning =
+                match er.Severity with
+                | FSharpErrorSeverity.Error -> false
+                | FSharpErrorSeverity.Warning -> true
+            })        
 
 let findLongIdentsAndResidue (col, lineStr:string) =
   let lineStr = lineStr.Substring(0, col)
@@ -56,36 +71,37 @@ let convertGlyph glyph =
     | FSharpGlyph.Event ->
         Glyph.Event
 
-let CreateChecker references readAllBytes =
+let createChecker references readAllBytes =
     InteractiveChecker.Create(List.ofArray references, readAllBytes)
 
-let ParseFSharpProject (checker: InteractiveChecker) fileName source =
-    let parseResults, typeCheckResults, projectResults = checker.ParseAndCheckScript (fileName, source)
-    let errors =
-        projectResults.Errors |> Array.map (fun er ->
-            { StartLineAlternate = er.StartLineAlternate
-              StartColumn = er.StartColumn
-              EndLineAlternate = er.EndLineAlternate
-              EndColumn = er.EndColumn
-              Message = er.Message
-              IsWarning =
-                match er.Severity with
-                | FSharpErrorSeverity.Error -> false
-                | FSharpErrorSeverity.Warning -> true
-            })        
+let parseFSharpProject (checker: InteractiveChecker) fileName source =
+    let parseResults, typeCheckResults, projectResults = checker.ParseAndCheckScript (fileName, source)      
     { ParseFile = parseResults
       CheckFile = typeCheckResults
-      CheckProject = projectResults
-      Errors = errors }
+      CheckProject = projectResults }
 
 /// Get tool tip at the specified location
-let GetToolTipAtLocation (typeCheckResults: FSharpCheckFileResults) line col lineText =
+let getToolTipAtLocation (typeCheckResults: FSharpCheckFileResults) line col lineText =
     typeCheckResults.GetToolTipText(line, col, lineText, [], FSharpTokenTag.IDENT)
 
-let GetCompletionsAtLocation (parseResults: ParseResults) line col lineText = async {
+let getCompletionsAtLocation (parseResults: ParseResults) line col lineText = async {
     let longName, residue = findLongIdentsAndResidue(col - 1, lineText)
     let! decls = parseResults.CheckFile.GetDeclarationListInfo(Some parseResults.ParseFile, line, col, lineText, longName, residue, (fun () -> []))
     return decls.Items |> Array.map (fun decl ->
         { Name = decl.Name; Glyph = convertGlyph decl.Glyph })
 }
+
+type Exports() =
+    interface IFableREPL with
+        member this.CreateChecker(references, readAllBytes) =
+            createChecker references readAllBytes |> Checker :> IChecker
+        member this.ParseFSharpProject(checker, fileName, source) =
+            let c = checker :?> Checker
+            parseFSharpProject c.Checker fileName source :> IParseResults
+        member this.GetCompletionsAtLocation(parseResults:IParseResults, line:int, col:int, lineText:string) =
+            let res = parseResults :?> ParseResults
+            getCompletionsAtLocation res line col lineText
+
+let Exports = Exports()
+
 
