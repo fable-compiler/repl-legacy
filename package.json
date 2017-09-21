@@ -16,6 +16,7 @@
     "start": "http-server -c-1 ./ -p 8888 -o"
   },
   "dependencies": {
+    "bulma": "^0.5.3",
     "monaco-editor": "^0.10.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",

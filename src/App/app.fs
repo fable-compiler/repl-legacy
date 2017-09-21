@@ -6,7 +6,11 @@ open Fable.Core.JsInterop
 open Fable.Import
 open Fable.Recharts
 open Fable.Recharts.Props
-module SVG = Fable.Helpers.React.Props
+open Fulma.Layouts
+module R = Fable.Helpers.React
+module RProps = Fable.Helpers.React.Props
+
+let create(elId: string): unit = importMember "editor"
 
 type [<Pojo>] MyData =
     { name: string; uv: float; pv: float; amt: float }
@@ -29,13 +33,30 @@ let barChart(data) =
         yaxis []
         tooltip []
         legend []
-        cartesianGrid [SVG.StrokeDasharray "3 3"]
-        bar [DataKey "uv"; SVG.Fill "#8884d8"]
+        cartesianGrid [RProps.StrokeDasharray "3 3"]
+        bar [DataKey "uv"; RProps.Fill "#8884d8"]
+    ]
+
+let root() =
+    Columns.columns [] [
+        Column.column [] [
+            R.div [RProps.ClassName "editor-frame"] [
+                R.div [
+                    RProps.Id "fable-repl"
+                    RProps.Style [RProps.CSSProp.Height "600px"]
+                ] []
+            ]
+        ]
+        Column.column [] [
+            R.div [RProps.Style [RProps.MarginTop "100px"]] [
+                barChart data
+            ]
+        ]
     ]
 
 let renderApp() =
-    let reactEl = barChart data
     let domEl = Browser.document.getElementById("app-container")
-    ReactDom.render(reactEl, domEl)
+    ReactDom.render(root(), domEl)
+    create "fable-repl"
 
 renderApp()
