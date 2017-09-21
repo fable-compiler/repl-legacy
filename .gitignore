@@ -17,7 +17,6 @@ jspm_packages
 # Binaries
 bin
 obj
-metadata
 
 # Output
 out
