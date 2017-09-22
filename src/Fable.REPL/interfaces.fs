@@ -34,10 +34,15 @@ type Completion =
 type IChecker =
     interface end
 
+type IFableCompiler =
+    interface end
+
 type IParseResults =
     abstract Errors: Error[]
 
 type IFableREPL =
-    abstract CreateChecker: references:string[]*readAllBytes:(string->byte[])->IChecker
-    abstract ParseFSharpProject: checker:IChecker*fileName:string*source:string->IParseResults
-    abstract GetCompletionsAtLocation: parseResults:IParseResults*line:int*col:int*lineText:string->Async<Completion[]>
+    abstract CreateChecker: references:string[] * readAllBytes:(string->byte[])->IChecker
+    abstract CreateCompiler: ?replacements: seq<string * string> -> IFableCompiler 
+    abstract ParseFSharpProject: checker:IChecker * fileName:string * source:string->IParseResults
+    abstract GetCompletionsAtLocation: parseResults:IParseResults * line:int * col:int * lineText:string->Async<Completion[]>
+    abstract CompileToBabelJsonAst: com: IFableCompiler * parseResults:IParseResults * fableCoreDir:string * fileName:string->string

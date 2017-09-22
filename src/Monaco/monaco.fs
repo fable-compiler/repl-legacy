@@ -208,11 +208,11 @@ module monaco =
         | MAX_VALUE = 112
 
     type [<AllowNullLiteral>] [<Import("KeyMod","monaco")>] KeyMod() =
-        static member CtrlCmd with get(): float = jsNative and set(v: float): unit = jsNative
-        static member Shift with get(): float = jsNative and set(v: float): unit = jsNative
-        static member Alt with get(): float = jsNative and set(v: float): unit = jsNative
-        static member WinCtrl with get(): float = jsNative and set(v: float): unit = jsNative
-        static member chord(firstPart: float, secondPart: float): float = jsNative
+        static member CtrlCmd with get(): int = jsNative and set(v: int): unit = jsNative
+        static member Shift with get(): int = jsNative and set(v: int): unit = jsNative
+        static member Alt with get(): int = jsNative and set(v: int): unit = jsNative
+        static member WinCtrl with get(): int = jsNative and set(v: int): unit = jsNative
+        static member chord(firstPart: int, secondPart: int): int = jsNative
 
     type MarkedString =
         U2<string, obj>
@@ -226,7 +226,7 @@ module monaco =
         abstract metaKey: bool with get, set
         abstract keyCode: KeyCode with get, set
         abstract code: string with get, set
-        abstract equals: keybinding: float -> bool
+        abstract equals: keybinding: int -> bool
         abstract preventDefault: unit -> unit
         abstract stopPropagation: unit -> unit
 
@@ -407,13 +407,13 @@ module monaco =
 
         type [<AllowNullLiteral>] IStandaloneCodeEditor =
             inherit ICodeEditor
-            abstract addCommand: keybinding: float * handler: ICommandHandler * context: string -> string
+            abstract addCommand: keybinding: int * handler: (unit->unit) * ?context: string -> string
             abstract createContextKey: key: string * defaultValue: 'T -> IContextKey<'T>
             abstract addAction: descriptor: IActionDescriptor -> IDisposable
 
         type [<AllowNullLiteral>] IStandaloneDiffEditor =
             inherit IDiffEditor
-            abstract addCommand: keybinding: float * handler: ICommandHandler * context: string -> string
+            abstract addCommand: keybinding: int * handler: (unit->unit) * ?context: string -> string
             abstract createContextKey: key: string * defaultValue: 'T -> IContextKey<'T>
             abstract addAction: descriptor: IActionDescriptor -> IDisposable
             abstract getOriginalEditor: unit -> IStandaloneCodeEditor

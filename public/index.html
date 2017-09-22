@@ -12,13 +12,22 @@
 </head>
 <body>
     <div id="app-container" />
-    <!-- <div class="editor-frame">
-        <div id="editor" style="width:800px;height:600px;"></div>
-    </div> -->
+    <!-- Monaco -->
     <script>var require = { paths: { 'vs': '../node_modules/monaco-editor/min/vs' } };</script>
     <script src="../node_modules/monaco-editor/min/vs/loader.js"></script>
     <script src="../node_modules/monaco-editor/min/vs/editor/editor.main.nls.js"></script>
     <script src="../node_modules/monaco-editor/min/vs/editor/editor.main.js"></script>
+
+    <!-- FABLE -->
+    <script src="../node_modules/requirejs/require.js"></script>
+    <script>
+        require.config({
+          paths: {
+            'fable-core': './build/fable-core'
+          }
+        });
+    </script>
+
     <script src="fable-repl.js"></script>
     <script src="editor.js"></script>
     <script src="bundle.js"></script>

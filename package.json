@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "preinstall": "dotnet restore",
-    "prebuild-fcs": "npm run webpack -- -p --entry=./src/js/babel-standalone.js --output-path=./public --output-filename=babel-standalone.js --output-library=Babel",
+    "build-babel": "npm run webpack -- -p --entry=./src/Monaco/babel-standalone.js --output-path=./public --output-filename=babel-standalone.js --output-library=Babel",
     "build-fcs": "cd src && dotnet fable npm-rollup --port free --verbose",
     "watch-fsc": "cd src && dotnet fable npm-rollup --port free --verbose -- -w",
     "build-app": "cd src && dotnet fable webpack -- -p",
