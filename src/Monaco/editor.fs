@@ -11,10 +11,23 @@ open Fable.REPL.Interfaces
 // Features providers
 //---------------------------------------------------
 
+let [<Literal>] FILE_NAME = "test.fsx"
+
 let FableREPL: IFableREPL = import "Exports" "FableREPL"
+
+let getChecker(f: string[] -> (string->byte[]) -> IChecker): IChecker option = importMember "./util.js"
+let runAst(jsonAst: string): unit = importMember "./util.js"
 
 let mutable fcsChecker: IChecker option = None
 let mutable fcsResults: IParseResults option = None
+
+let compileAndRunCurrentResults () =
+    match fcsResults with
+    | Some res ->
+        let com = FableREPL.CreateCompiler()
+        let jsonAst = FableREPL.CompileToBabelJsonAst(com, res, "fable-core", FILE_NAME)
+        runAst jsonAst
+    | None -> ()
 
 let convertGlyph glyph =
     match glyph with
@@ -77,16 +90,13 @@ let completionProvider = {
             and set v = ()
 }
 
-let getChecker(f: string[] -> (string->byte[]) -> IChecker): IChecker option =
-    importMember "./util.js"
-
 let parseEditor (model: monaco.editor.IModel) =
     match fcsChecker with
     | None ->
         fcsChecker <- getChecker (fun x y -> FableREPL.CreateChecker(x, y))
     | Some fcsChecker ->
         let content = model.getValue (monaco.editor.EndOfLinePreference.TextDefined, true)
-        let res = FableREPL.ParseFSharpProject(fcsChecker, "test.fsx", content)
+        let res = FableREPL.ParseFSharpProject(fcsChecker, FILE_NAME, content)
         fcsResults <- Some res
         let markers = ResizeArray()
         for err in res.Errors do
@@ -127,6 +137,11 @@ let create(elId) =
         md.onDidChangeContent(fun _ -> trigger md) |> ignore)
     |> Util.debounce 1000
     |> Observable.add parseEditor
+
+    ed.addCommand(monaco.KeyMod.Alt ||| int monaco.KeyCode.Enter, (fun () ->
+        let content = md.getValue (monaco.editor.EndOfLinePreference.TextDefined, true)
+        compileAndRunCurrentResults()
+    ))
 
 // todo on resize:
 //     ed.layout()
