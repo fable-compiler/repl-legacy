@@ -93,3 +93,16 @@ let renderApp() =
     create "fable-repl"
 
 renderApp()
+
+// open System
+// open Fable.Core
+
+// type [<Pojo>] Data = { name: string; uv: int }
+// let [<Global>] setData (data:Array): unit = jsNative
+
+// let data =
+//     Array.init 10 (fun i ->
+//         { name = "Item" + (string i)
+//           uv = 100 + 10 * i })
+
+// setData data
