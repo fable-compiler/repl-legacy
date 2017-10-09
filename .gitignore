@@ -24,3 +24,4 @@ build
 .fake/
 paket-files/
 packages/
+public/js/

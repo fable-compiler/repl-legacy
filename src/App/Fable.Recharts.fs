@@ -174,31 +174,31 @@ open Props
 open Imports
 
 let inline lineChart (props: ChartProp list) (children: RechartComponent list): React.ReactElement =
-    applySpread createEl (lineChartEl, keyValueList CaseRules.LowerFirst props, children)
+    createElement (lineChartEl, keyValueList CaseRules.LowerFirst props, children)
 
 let inline barChart (props: ChartProp list) (children: RechartComponent list): React.ReactElement =
-    applySpread createEl (barChartEl, keyValueList CaseRules.LowerFirst props, children)
+    createElement (barChartEl, keyValueList CaseRules.LowerFirst props, children)
 
 // TODO: Tooltip props
 let inline tooltip (props: obj list): RechartComponent =
-    applySpread createEl (tooltipEl, keyValueList CaseRules.LowerFirst props, [])
+    createElement (tooltipEl, keyValueList CaseRules.LowerFirst props, [])
 
 // TODO: Legend props
 let inline legend (props: obj list): RechartComponent =
-    applySpread createEl (legendEl, keyValueList CaseRules.LowerFirst props, [])
+    createElement (legendEl, keyValueList CaseRules.LowerFirst props, [])
 
 let inline bar (props: IProp list): RechartComponent =
-    applySpread createEl (barEl, keyValueList CaseRules.LowerFirst props, [])
+    createElement (barEl, keyValueList CaseRules.LowerFirst props, [])
 
 let inline line (props: IProp list): RechartComponent =
-    applySpread createEl (lineEl, keyValueList CaseRules.LowerFirst props, [])
+    createElement (lineEl, keyValueList CaseRules.LowerFirst props, [])
 
 let inline cartesianGrid (props: IProp list): RechartComponent =
-    applySpread createEl (cartesianGridEl, keyValueList CaseRules.LowerFirst props, [])
+    createElement (cartesianGridEl, keyValueList CaseRules.LowerFirst props, [])
 
 let inline xaxis (props: IProp list): RechartComponent =
-    applySpread createEl (xaxisEl, keyValueList CaseRules.LowerFirst props, [])
+    createElement (xaxisEl, keyValueList CaseRules.LowerFirst props, [])
 
 let inline yaxis (props: IProp list): RechartComponent =
-    applySpread createEl (yaxisEl, keyValueList CaseRules.LowerFirst props, [])
+    createElement (yaxisEl, keyValueList CaseRules.LowerFirst props, [])
 

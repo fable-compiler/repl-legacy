@@ -20,11 +20,14 @@ let runDotnet dir =
                                             // Extra timeout allow us to run watch mode
                                             // Otherwise, the process is stopped every 30 minutes by default
 
-let run workingDir fileName args =
+let runScript workingDir (fileName: string) args =
     printfn "CWD: %s" workingDir
     let fileName, args =
-        if EnvironmentHelper.isUnix
-        then fileName, args else "cmd", ("/C " + fileName + " " + args)
+        if EnvironmentHelper.isUnix then 
+            let fileName = fileName.Replace("\\","/")
+            "bash", (fileName + ".sh " + args)
+        else 
+            "cmd", ("/C " + fileName + " " + args)
     let ok =
         execProcess (fun info ->
             info.FileName <- fileName
@@ -62,15 +65,23 @@ let ensureRepoSetup (info : RepoSetupInfo) =
     // Use getBuildParamOrDefault to force Y on CI server
     // See: http://fake.build/apidocs/fake-environmenthelper.html
     // and: https://stackoverflow.com/questions/26267601/can-i-pass-a-parameter-to-a-f-fake-build-script
-
     if not (Directory.Exists(info.FolderPath)) then
         printfn "Can't find %s at: %s" info.FolderName rootDir
-        printfn "Do you want me to setup it for you ? (O/N)"
-        let autoSetup = waitUserResponse ()
-        if autoSetup then
-            Repository.cloneSingleBranch rootDir info.GithubLink info.GithubBranch info.FolderName
+        let setupMode = getBuildParamOrDefault "setup" "ask"
+
+        if setupMode = "ask" then
+            printfn "Do you want me to setup it for you ? (O/N)"
+            let autoSetup = waitUserResponse ()
+            if autoSetup then
+                printfn "Installing %s for you" info.FolderName
+                Repository.clone rootDir info.GithubLink info.FolderName
+                runSimpleGitCommand info.FolderPath ("checkout " + info.GithubBranch) |> ignore
+            else
+                failwithf "You need to setup the %s project at %s yourself so." info.FolderName rootDir
         else
-            failwithf "You need to setup the %s project at %s yourself so." info.FolderName rootDir
+            printfn "You started with auto setup mode. Installing %s for you" info.FolderName            
+            Repository.clone rootDir info.GithubLink info.FolderName
+            runSimpleGitCommand info.FolderPath ("checkout " + info.GithubBranch) |> ignore
     else
         printfn "Directory %s found" info.FolderName
 
@@ -82,12 +93,6 @@ Target "Setup" (fun _ ->
           GithubBranch = "fable" }
 
     ensureRepoSetup
-        { FolderPath = FCSExportFolderPath
-          FolderName = FCSExportFolderName
-          GithubLink = "git@github.com:ncave/FSharp.Compiler.Service.git"
-          GithubBranch = "export" }
-
-    ensureRepoSetup
         { FolderPath = FableFolderPath
           FolderName = FableFolderName
           GithubLink = "git@github.com:fable-compiler/Fable.git"
@@ -95,20 +100,41 @@ Target "Setup" (fun _ ->
 )
 
 Target "Build.FCS_Fable" (fun _ ->
-    run FCSFableFolderPath "fcs\\build" "CodeGen.Fable"
+    runScript FCSFableFolderPath "fcs\\build" "CodeGen.Fable"
 )
 
 Target "Build.FCS_Export" (fun _ ->
-    run FCSExportFolderPath "fcs\\build" "Export.Metadata"
+    ensureRepoSetup
+        { FolderPath = FCSExportFolderPath
+          FolderName = FCSExportFolderName
+          GithubLink = "git@github.com:ncave/FSharp.Compiler.Service.git"
+          GithubBranch = "export" }
+
+    runScript FCSExportFolderPath "fcs\\build" "Export.Metadata"
+)
+
+Target "Generate.Metadata" (fun _ ->
+    let destination = currentDir </> "public" </> "metadata2"
+    CleanDir destination
+    CopyDir destination (FCSExportFolderPath </> "temp" </> "metadata2") (fun _ -> true)
+    !! (destination </> "*.dll")
+    |> Seq.iter(fun filename ->
+        Rename (filename + ".txt") filename
+    ) 
 )
 
 Target "Build.Fable" (fun _ ->
-    run FableFolderPath "build" "FableCoreJS"
+    runScript FableFolderPath "build" "FableCoreJS"
 )
 
-Target "Build.FCS" (fun _ ->
+Target "Build.REPL" (fun _ ->
     runDotnet sourceDir "fable npm-rollup --port free --verbose"
 )
+
+Target "Build.REPL.Quick" (fun _ ->
+    runDotnet sourceDir "fable npm-rollup --port free --verbose"
+)
+
 
 Target "InstallDotNetCore" (fun _ ->
    dotnetExePath <- DotNetCli.InstallDotNetSDK dotnetcliVersion
@@ -123,7 +149,7 @@ Target "Clean" (fun _ ->
 // Dependencies
 
 Target "Restore" (fun _ ->
-    runDotnet rootDir "restore Fable.REPL.sln"
+    runDotnet currentDir "restore Fable.REPL.sln"
 )
 
 Target "YarnInstall" (fun _ ->
@@ -131,6 +157,10 @@ Target "YarnInstall" (fun _ ->
             { p with
                 Command = Install Standard
             })
+)
+
+Target "Watch.App" (fun _ ->
+    runDotnet sourceDir "fable yarn-start-app --port free"
 )
 
 // Client
@@ -147,12 +177,16 @@ Target "All" DoNothing
 // Build order
 "Setup"
     ==> "Build.FCS_Fable"
-    ==> "Build.FCS_Export"
+    ==> "Build.Fable"
     ==> "Clean"
     ==> "InstallDotNetCore"
     ==> "Restore"
     ==> "YarnInstall"
+    ==> "Build.REPL"
     ==> "All"
+
+"Build.FCS_Export"
+    // ==> "Generate.Metadata"
 
 // start build
 RunTargetOrDefault "YarnInstall"

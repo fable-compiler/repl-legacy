@@ -83,7 +83,7 @@ let createChecker references readAllBytes =
     InteractiveChecker.Create(List.ofArray references, readAllBytes)
 
 let createCompiler replacements =
-    Compiler(replacements = replacements)
+    Compiler()
 
 let parseFSharpProject (checker: InteractiveChecker) fileName source =
     let parseResults, typeCheckResults, projectResults = checker.ParseAndCheckScript (fileName, source)      
