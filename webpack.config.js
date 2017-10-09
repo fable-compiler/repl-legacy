@@ -19,7 +19,7 @@ function getWebpackConfig(entry, filename, library) {
     devtool: "source-map",
     entry: resolve(entry),
     output: {
-      filename: filename + '.js',
+      filename: "js/" + filename + '.js',
       path: resolve('./public'),
       publicPath: 'public',
       library: library

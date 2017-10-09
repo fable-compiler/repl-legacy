@@ -28,7 +28,7 @@ var fableOptions = {
 export default {
   input: resolve('./src/Fable.REPL/Fable.REPL.fsproj'),
   output: {
-    file: resolve('./public/fable-repl.js'),
+    file: resolve('./public/js/fable-repl.js'),
     format: 'iife', // 'amd', 'cjs', 'es', 'iife', 'umd'
   },
   name: 'FableREPL',
