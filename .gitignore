@@ -20,3 +20,7 @@ obj
 
 # Output
 build
+
+.fake/
+paket-files/
+packages/

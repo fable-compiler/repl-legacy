@@ -1,4 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
     <DefineConstants>FABLE_COMPILER</DefineConstants>
@@ -18,16 +19,15 @@
     <Compile Include="../../../Fable/src/dotnet/Fable.Core/Import/Fable.Import.JS.fs" />
     <Compile Include="../../../Fable/src/dotnet/Fable.Core/Fable.Core.JsInterop.fs" />
     <Compile Include="../../../Fable/src/dotnet/Fable.Core/Fable.Core.Extensions.fs" />
-
-    <Compile Include="../../../Fable/src/dotnet/Fable.Compiler/Utils.fs"/>
-    <Compile Include="../../../Fable/src/dotnet/Fable.Compiler/Replacements.fs"/>
-    <Compile Include="../../../Fable/src/dotnet/Fable.Compiler/FSharp2Fable.Util.fs"/>
-    <Compile Include="../../../Fable/src/dotnet/Fable.Compiler/FSharp2Fable.fs"/>
-    <Compile Include="../../../Fable/src/dotnet/Fable.Compiler/Fable2Babel.fs"/>
-    <Compile Include="../../../Fable/src/dotnet/Fable.Compiler/State.fs"/>
-  
+    <Compile Include="../../../Fable/src/dotnet/Fable.Compiler/Utils.fs" />
+    <Compile Include="../../../Fable/src/dotnet/Fable.Compiler/Replacements.fs" />
+    <Compile Include="../../../Fable/src/dotnet/Fable.Compiler/FSharp2Fable.Util.fs" />
+    <Compile Include="../../../Fable/src/dotnet/Fable.Compiler/FSharp2Fable.fs" />
+    <Compile Include="../../../Fable/src/dotnet/Fable.Compiler/Fable2Babel.fs" />
+    <Compile Include="../../../Fable/src/dotnet/Fable.Compiler/State.fs" />
     <Compile Include="interfaces.fs" />
     <Compile Include="lexer.fs" />
     <Compile Include="fcs.fs" />
   </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
