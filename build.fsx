@@ -35,6 +35,13 @@ let runScript workingDir (fileName: string) args =
             info.Arguments <- args) TimeSpan.MaxValue
     if not ok then failwith (sprintf "'%s> %s %s' task failed" workingDir fileName args)
 
+let runYarn dir command =
+    Yarn (fun p ->
+            { p with
+                WorkingDirectory = dir
+                Command = Custom command 
+            })
+
 let currentDir = __SOURCE_DIRECTORY__
 let sourceDir = currentDir </> "src"
 let rootDir = currentDir </> ".."
@@ -127,22 +134,16 @@ Target "Build.Fable" (fun _ ->
     runScript FableFolderPath "build" "FableCoreJS"
 )
 
-Target "Build.REPL" (fun _ ->
-    runDotnet sourceDir "fable npm-rollup --port free --verbose"
+Target "Build.FCS" (fun _ ->
+    runYarn sourceDir "build-fcs"
 )
-
-Target "Build.REPL.Quick" (fun _ ->
-    runDotnet sourceDir "fable npm-rollup --port free --verbose"
-)
-
 
 Target "InstallDotNetCore" (fun _ ->
    dotnetExePath <- DotNetCli.InstallDotNetSDK dotnetcliVersion
 )
 
 Target "Clean" (fun _ ->
-    !! "public/metadata2"
-    ++ "public/js"
+    !! "public/js"
   |> CleanDirs
 )
 
@@ -160,16 +161,11 @@ Target "YarnInstall" (fun _ ->
 )
 
 Target "Watch.App" (fun _ ->
-    runDotnet sourceDir "fable yarn-start-app --port free"
+    runYarn sourceDir "start-app"
 )
 
-// Client
-Target "BuildClient" (fun _ ->
-    runDotnet "Client" """fable yarn-build:client --port 3003"""
-)
-
-Target "WatchClient" (fun _ ->
-    runDotnet "Client" """fable yarn-watch:client --port 3003"""
+Target "Build.App" (fun _ ->
+    runYarn sourceDir "build-app"
 )
 
 Target "All" DoNothing
@@ -182,11 +178,15 @@ Target "All" DoNothing
     ==> "InstallDotNetCore"
     ==> "Restore"
     ==> "YarnInstall"
-    ==> "Build.REPL"
+    ==> "Build.FCS"
+    ==> "Build.App"
     ==> "All"
 
+"Watch.App"
+    <== [ "Build.FCS" ]
+
 "Build.FCS_Export"
-    // ==> "Generate.Metadata"
+    ==> "Generate.Metadata"
 
 // start build
-RunTargetOrDefault "YarnInstall"
+RunTargetOrDefault "All"
