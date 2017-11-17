@@ -34,7 +34,7 @@ type ParseResults =
                 match er.Severity with
                 | FSharpErrorSeverity.Error -> false
                 | FSharpErrorSeverity.Warning -> true
-            })        
+            })
 
 let findLongIdentsAndResidue (col, lineStr:string) =
   let lineStr = lineStr.Substring(0, col)
@@ -86,7 +86,7 @@ let createCompiler replacements =
     Compiler()
 
 let parseFSharpProject (checker: InteractiveChecker) fileName source =
-    let parseResults, typeCheckResults, projectResults = checker.ParseAndCheckScript (fileName, source)      
+    let parseResults, typeCheckResults, projectResults = checker.ParseAndCheckScript (fileName, source)
     { ParseFile = parseResults
       CheckFile = typeCheckResults
       CheckProject = projectResults }
@@ -95,12 +95,12 @@ let parseFSharpProject (checker: InteractiveChecker) fileName source =
 let getToolTipAtLocation (typeCheckResults: FSharpCheckFileResults) line col lineText =
     typeCheckResults.GetToolTipText(line, col, lineText, [], FSharpTokenTag.IDENT)
 
-let getCompletionsAtLocation (parseResults: ParseResults) line col lineText = async {
-    let longName, residue = findLongIdentsAndResidue(col - 1, lineText)
-    let! decls = parseResults.CheckFile.GetDeclarationListInfo(Some parseResults.ParseFile, line, col, lineText, longName, residue, (fun () -> []))
-    return decls.Items |> Array.map (fun decl ->
-        { Name = decl.Name; Glyph = convertGlyph decl.Glyph })
-}
+// let getCompletionsAtLocation (parseResults: ParseResults) line col lineText = async {
+//     let longName, residue = findLongIdentsAndResidue(col - 1, lineText)
+//     let! decls = parseResults.CheckFile.GetDeclarationListInfo(Some parseResults.ParseFile, line, lineText, longName, (fun () -> []), residue, None)
+//     return decls.Items |> Array.map (fun decl ->
+//         { Name = decl.Name; Glyph = convertGlyph decl.Glyph })
+// }
 
 let makeProjOptions (com: ICompiler) projFile =
     let projOptions: FSharpProjectOptions =
@@ -124,10 +124,12 @@ let compileAst (com: Compiler) (parseResults: ParseResults) (fableCoreDir: strin
         else NonFilePath fableCoreDir
     // let errors = com.ReadAllLogs() |> Map.tryFind "error"
     // if errors.IsSome then failwith (errors.Value |> String.concat "\n")
+    let implFiles = parseResults.CheckProject.AssemblyContents.ImplementationFiles
+                    |> Seq.map (fun file -> Path.normalizePath file.FileName, file) |> Map
     let projectOptions = makeProjOptions com fileName
-    let project = Project(projectOptions, parseResults.CheckProject, fableCoreDir, isWatchCompile=false)
+    let project = Project(projectOptions, implFiles, parseResults.CheckProject.Errors, fableCoreDir, false)
     let file: Babel.Program =
-        FSharp2Fable.Compiler.transformFile com project project.CheckedProject fileName
+        FSharp2Fable.Compiler.transformFile com project implFiles fileName
         |> Fable2Babel.Compiler.transformFile com project
     let loc = defaultArg file.loc SourceLocation.Empty
     Babel.Program(file.fileName, loc, file.body, file.directives, com.ReadAllLogs())
@@ -143,8 +145,11 @@ type private ExportsImpl() =
             let c = checker :?> CheckerImpl
             parseFSharpProject c.Checker fileName source :> IParseResults
         member this.GetCompletionsAtLocation(parseResults:IParseResults, line:int, col:int, lineText:string) =
-            let res = parseResults :?> ParseResults
-            getCompletionsAtLocation res line col lineText
+            // let res = parseResults :?> ParseResults
+            // getCompletionsAtLocation res line col lineText
+            async {
+                return [||]
+            }
         member this.CompileToBabelJsonAst(com: IFableCompiler, parseResults:IParseResults, fableCoreDir:string, fileName:string) =
             let com = com :?> CompilerImpl
             let res = parseResults :?> ParseResults
@@ -152,5 +157,3 @@ type private ExportsImpl() =
 
 
 let Exports: IFableREPL = upcast ExportsImpl()
-
-
