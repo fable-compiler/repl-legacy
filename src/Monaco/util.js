@@ -9,7 +9,9 @@ var metadata = {}
 
 // Files have .txt extension to allow gzipping in Github Pages
 var references = [
+    "Dotnet.ProjInfo.Matthid.dll",
     "Fable.Core.dll",
+    "Fable.Import.Browser.dll",
     "FSharp.Core.dll",
     "Microsoft.CSharp.dll",
     "Microsoft.VisualBasic.dll",
@@ -222,4 +224,3 @@ export function runAst(jsonAst) {
         console.error(err.message + "\n" + err.stack);
     }
 }
-
