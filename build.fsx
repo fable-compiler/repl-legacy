@@ -10,7 +10,7 @@ open Fake.Git
 open Fake.Testing.Expecto
 open Fake.YarnHelper
 
-let dotnetcliVersion = "2.0.2"
+let dotnetcliVersion = "2.0.3"
 
 let mutable dotnetExePath = "dotnet"
 let runDotnet dir =
