@@ -10,7 +10,7 @@ open Fake.Git
 open Fake.Testing.Expecto
 open Fake.YarnHelper
 
-let dotnetcliVersion = "2.0.0"
+let dotnetcliVersion = "2.0.2"
 
 let mutable dotnetExePath = "dotnet"
 let runDotnet dir =
@@ -23,10 +23,10 @@ let runDotnet dir =
 let runScript workingDir (fileName: string) args =
     printfn "CWD: %s" workingDir
     let fileName, args =
-        if EnvironmentHelper.isUnix then 
+        if EnvironmentHelper.isUnix then
             let fileName = fileName.Replace("\\","/")
             "bash", (fileName + ".sh " + args)
-        else 
+        else
             "cmd", ("/C " + fileName + " " + args)
     let ok =
         execProcess (fun info ->
@@ -39,7 +39,7 @@ let runYarn dir command =
     Yarn (fun p ->
             { p with
                 WorkingDirectory = dir
-                Command = Custom command 
+                Command = Custom command
             })
 
 let currentDir = __SOURCE_DIRECTORY__
@@ -86,7 +86,7 @@ let ensureRepoSetup (info : RepoSetupInfo) =
             else
                 failwithf "You need to setup the %s project at %s yourself so." info.FolderName rootDir
         else
-            printfn "You started with auto setup mode. Installing %s for you" info.FolderName            
+            printfn "You started with auto setup mode. Installing %s for you" info.FolderName
             Repository.clone rootDir info.GithubLink info.FolderName
             runSimpleGitCommand info.FolderPath ("checkout " + info.GithubBranch) |> ignore
     else
@@ -127,7 +127,7 @@ Target "Generate.Metadata" (fun _ ->
     !! (destination </> "*.dll")
     |> Seq.iter(fun filename ->
         Rename (filename + ".txt") filename
-    ) 
+    )
 )
 
 Target "Build.Fable" (fun _ ->
