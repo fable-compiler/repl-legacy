@@ -29,5 +29,5 @@
     <Compile Include="lexer.fs" />
     <Compile Include="fcs.fs" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <!-- <Import Project="..\..\.paket\Paket.Restore.targets" /> -->
 </Project>

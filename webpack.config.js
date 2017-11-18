@@ -62,13 +62,17 @@ function getWebpackConfig(entry, filename, library) {
           loader: 'json-loader'
         },
         {
-          test: /\.sass$/,
+          test: /\.scss$/,
           use: [
-              "style-loader",
-              "css-loader",
-              "sass-loader"
+            "style-loader",
+            "css-loader",
+            "sass-loader"
           ]
-      }      
+        },
+        {
+          test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)(\?.*$|$)/,
+          use: ["file-loader"]
+        }
       ]
     }
   };

@@ -6,6 +6,9 @@ open Fable.Core
 open Fable.Core.JsInterop
 open Fable.Import
 open Fable.REPL.Interfaces
+open System.Collections
+open Fable.Import.Browser
+open Fable.Util
 
 //---------------------------------------------------
 // Features providers
@@ -16,7 +19,7 @@ let [<Literal>] FILE_NAME = "test.fsx"
 let FableREPL: IFableREPL = import "Exports" "FableREPL"
 
 let getChecker(f: string[] -> (string->byte[]) -> IChecker): IChecker option = importMember "./util.js"
-let runAst(jsonAst: string): unit = importMember "./util.js"
+let runAst(jsonAst: string): string = importMember "./util.js"
 
 let mutable fcsChecker: IChecker option = None
 let mutable fcsResults: IParseResults option = None
@@ -27,7 +30,7 @@ let compileAndRunCurrentResults () =
         let com = FableREPL.CreateCompiler()
         let jsonAst = FableREPL.CompileToBabelJsonAst(com, res, "fable-core", FILE_NAME)
         runAst jsonAst
-    | None -> ()
+    | None -> ""
 
 let convertGlyph glyph =
     match glyph with
@@ -108,7 +111,7 @@ let parseEditor (model: monaco.editor.IModel) =
             m.message <- err.Message
             m.severity <-
                 match err.IsWarning with
-                | false -> monaco.Severity.Error 
+                | false -> monaco.Severity.Error
                 | true -> monaco.Severity.Warning
             markers.Add(m)
         monaco.editor.Globals.setModelMarkers(model, "test", markers)
@@ -121,16 +124,22 @@ monaco.languages.Globals.registerCompletionItemProvider("fsharp", completionProv
 //---------------------------------------------------
 // Create editor
 //---------------------------------------------------
-let create(elId) =
-    let domEditor = Browser.document.getElementById(elId)
+let create(domElement) =
 
-    let options = createEmpty<monaco.editor.IEditorConstructionOptions>
-    options.language <- Some "fsharp"
-    options.theme <- Some "vs-dark"
-    options.value <- Some "let t = 1"
+    let options = jsOptions<monaco.editor.IEditorConstructionOptions>(fun o ->
+        let minimapOptions =  jsOptions<monaco.editor.IEditorMinimapOptions>(fun oMinimap ->
+            oMinimap.enabled <- Some false
+        )
+
+        o.language <- Some "fsharp"
+        o.theme <- Some "vs-dark"
+        o.value <- Some "let t = 1"
+        o.minimap <- Some minimapOptions
+    )
+
 
     let services = createEmpty<monaco.editor.IEditorOverrideServices>
-    let ed = monaco.editor.Globals.create(!!domEditor, options, services)
+    let ed = monaco.editor.Globals.create(domElement, options, services)
     let md = ed.getModel()
 
     Util.createObservable(fun trigger ->
@@ -138,10 +147,10 @@ let create(elId) =
     |> Util.debounce 1000
     |> Observable.add parseEditor
 
-    ed.addCommand(monaco.KeyMod.Alt ||| int monaco.KeyCode.Enter, (fun () ->
-        let content = md.getValue (monaco.editor.EndOfLinePreference.TextDefined, true)
-        compileAndRunCurrentResults()
-    ))
+    // Try to delegate this to Elmish app
+    // ed.addCommand(monaco.KeyMod.Alt ||| int monaco.KeyCode.Enter, (fun () ->
+    //     let content = md.getValue (monaco.editor.EndOfLinePreference.TextDefined, true)
+    //     compileAndRunCurrentResults()
+    // )) |> ignore
 
-// todo on resize:
-//     ed.layout()
+    ed

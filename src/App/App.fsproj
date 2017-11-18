@@ -3,8 +3,8 @@
     <TargetFramework>netstandard1.6</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Fable.Recharts.fs" />
-    <Compile Include="app.fs" />
+    <Compile Include="../Monaco/monaco.fs" />
+    <Compile Include="Main.fs" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />  
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

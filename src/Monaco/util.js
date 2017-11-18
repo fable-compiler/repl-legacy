@@ -193,6 +193,35 @@ export function getChecker(createChecker) {
     return checker;
 }
 
+function generateIframeHTML(urlJs) {
+    var baseHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Fable REPL : output</title>
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+        </head>
+        <body>
+            <script src="http://localhost:8080/node_modules/requirejs/require.js"></script>
+            <script>
+                require.config({
+                paths: {
+                    'fable-core': 'http://localhost:8080/public/build/fable-core'
+                }
+                });
+            </script>
+
+            <script src="js_blob_to_replace"></script>
+        </body>
+        </html>
+    `;
+    var replacedHTML = baseHtml.replace("js_blob_to_replace", urlJs);
+
+    var blobHTML = new Blob([replacedHTML], {type: 'text/html'});
+    return URL.createObjectURL(blobHTML);
+}
+
 export function runAst(jsonAst) {
     try {
         var options = {
@@ -218,8 +247,13 @@ export function runAst(jsonAst) {
                 .replace("define", "require")
                 .replace('"use strict";', '"use strict"; try { exports = exports || {}; } catch (err) {}');
 
+        var blobCode = new Blob([code], {type: 'text/javascript'});
+        var urlCode = URL.createObjectURL(blobCode);
+
         // Run
-        new Function(code)();
+        // var iframe = window.frames[0].frameElement;
+        // iframe.contentWindow.myFunc = new Function(code);
+        return generateIframeHTML(urlCode);
     } catch (err) {
         console.error(err.message + "\n" + err.stack);
     }
