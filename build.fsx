@@ -131,7 +131,19 @@ Target "Generate.Metadata" (fun _ ->
 )
 
 Target "Build.Fable" (fun _ ->
+    // Build standard FableCoreJS
+    // This help make sure everything is fine before building the AMD version needed by the repl repo
     runScript FableFolderPath "build" "FableCoreJS"
+
+    let coreJsSrcDir = FableFolderPath </> "src" </> "js" </> "fable-core"
+    let outDir = currentDir </> "public" </> "build" </> "fable-core"
+
+    // Clean older files
+    CleanDir outDir
+
+    // Build AMD version of fable-core
+    let args = sprintf "--project %s -m amd --outDir %s" coreJsSrcDir outDir
+    runYarn FableFolderPath ("tsc " + args)
 )
 
 Target "Build.FCS" (fun _ ->
