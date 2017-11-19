@@ -25,3 +25,4 @@ build
 paket-files/
 packages/
 public/js/
+public/libs/

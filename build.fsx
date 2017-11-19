@@ -154,8 +154,11 @@ Target "InstallDotNetCore" (fun _ ->
    dotnetExePath <- DotNetCli.InstallDotNetSDK dotnetcliVersion
 )
 
+let libsOutput = "public" </> "libs"
+
 Target "Clean" (fun _ ->
     !! "public/js"
+    ++ libsOutput
   |> CleanDirs
 )
 
@@ -170,6 +173,15 @@ Target "YarnInstall" (fun _ ->
             { p with
                 Command = Install Standard
             })
+)
+
+Target "CopyModules" (fun _ ->
+    let requireJsOutput = libsOutput </> "requirejs"
+    let vsOutput = libsOutput </> "vs"
+    CreateDir requireJsOutput
+    CreateDir vsOutput
+    CopyFile requireJsOutput ("node_modules" </> "requirejs" </> "require.js")
+    CopyDir vsOutput ("node_modules" </> "monaco-editor" </> "min" </> "vs") (fun _ -> true)
 )
 
 Target "Watch.App" (fun _ ->
@@ -190,6 +202,7 @@ Target "All" DoNothing
     ==> "InstallDotNetCore"
     ==> "Restore"
     ==> "YarnInstall"
+    ==> "CopyModules"
     ==> "Build.FCS"
     ==> "Build.App"
     ==> "All"
