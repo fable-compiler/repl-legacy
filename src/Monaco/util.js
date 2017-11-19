@@ -203,11 +203,11 @@ function generateIframeHTML(urlJs) {
             <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         </head>
         <body>
-            <script src="http://localhost:8080/node_modules/requirejs/require.js"></script>
+            <script src="http://localhost:8080/libs/requirejs/require.js"></script>
             <script>
                 require.config({
                 paths: {
-                    'fable-core': 'http://localhost:8080/public/build/fable-core'
+                    'fable-core': 'http://localhost:8080/build/fable-core'
                 }
                 });
             </script>
