@@ -21,15 +21,13 @@ function getWebpackConfig(entry, filename, library) {
     output: {
       filename: "js/" + filename + '.js',
       path: resolve('./public'),
-      publicPath: 'public',
       library: library
     },
     resolve: {
       modules: [resolve("./node_modules/")]
     },
     devServer: {
-      // If we use public we won't have access to node_modules
-      contentBase: resolve('.'),
+      contentBase: resolve('public'),
       port: 8080
     },
     externals: {
