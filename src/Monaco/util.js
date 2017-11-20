@@ -193,67 +193,37 @@ export function getChecker(createChecker) {
     return checker;
 }
 
-function generateIframeHTML(urlJs) {
-    var baseHtml = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Fable REPL : output</title>
-            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-            <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-        </head>
-        <body>
-            <script src="http://localhost:8080/libs/requirejs/require.js"></script>
-            <script>
-                require.config({
-                paths: {
-                    'fable-core': 'http://localhost:8080/build/fable-core'
-                }
-                });
-            </script>
+function babelOptions(extraPlugin) {
+    var commonPlugins = [
+        BabelPlugins.getTransformMacroExpressions(BabelTemplate),
+        BabelPlugins.getRemoveUnneededNulls(),
+    ];
 
-            <script src="js_blob_to_replace"></script>
-        </body>
-        </html>
-    `;
-    var replacedHTML = baseHtml.replace("js_blob_to_replace", urlJs);
-
-    var blobHTML = new Blob([replacedHTML], {type: 'text/html'});
-    return URL.createObjectURL(blobHTML);
+    return {
+        plugins:
+            extraPlugin != null
+                ? commonPlugins.concat(extraPlugin)
+                : commonPlugins,
+        filename: 'repl',
+        babelrc: false,
+    };
 }
 
 export function runAst(jsonAst) {
     try {
-        var options = {
-            plugins: [
-                BabelPlugins.getTransformMacroExpressions(BabelTemplate),
-                BabelPlugins.getRemoveUnneededNulls(),
-                // Use AMD modules for evaluation
-                "transform-es2015-modules-amd"
-            ],
-            filename: 'repl',
-            babelrc: false,
-        };
-
-        //   if (!document.getElementById('option-es2015').checked) {
-        //     options.presets = [
-        //       ["es2015", {"modules": false }]
-        //     ];
-        //   }
-
         var ast = JSON.parse(jsonAst);
-        var code =
-            Babel.transformFromAst(ast, null, options).code
-                .replace("define", "require")
-                .replace('"use strict";', '"use strict"; try { exports = exports || {}; } catch (err) {}');
 
-        var blobCode = new Blob([code], {type: 'text/javascript'});
-        var urlCode = URL.createObjectURL(blobCode);
+        var optionsES2015 = babelOptions();
+        var optionsAMD = babelOptions("transform-es2015-modules-amd");
 
-        // Run
-        // var iframe = window.frames[0].frameElement;
-        // iframe.contentWindow.myFunc = new Function(code);
-        return generateIframeHTML(urlCode);
+
+        var codeES2015 = Babel.transformFromAst(ast, null, optionsES2015).code;
+        var codeAMD = Babel.transformFromAst(ast, null, optionsAMD)
+                        .code
+                        .replace("define", "require")
+                        .replace('"use strict";', '"use strict"; try { exports = exports || {}; } catch (err) {}');
+
+        return [codeES2015, codeAMD];
     } catch (err) {
         console.error(err.message + "\n" + err.stack);
     }

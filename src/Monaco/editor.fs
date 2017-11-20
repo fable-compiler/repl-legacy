@@ -19,7 +19,7 @@ let [<Literal>] FILE_NAME = "test.fsx"
 let FableREPL: IFableREPL = import "Exports" "FableREPL"
 
 let getChecker(f: string[] -> (string->byte[]) -> IChecker): IChecker option = importMember "./util.js"
-let runAst(jsonAst: string): string = importMember "./util.js"
+let runAst(jsonAst: string): string * string = importMember "./util.js"
 
 let mutable fcsChecker: IChecker option = None
 let mutable fcsResults: IParseResults option = None
@@ -30,7 +30,7 @@ let compileAndRunCurrentResults () =
         let com = FableREPL.CreateCompiler()
         let jsonAst = FableREPL.CompileToBabelJsonAst(com, res, "fable-core", FILE_NAME)
         runAst jsonAst
-    | None -> ""
+    | None -> "", ""
 
 let convertGlyph glyph =
     match glyph with
@@ -94,6 +94,7 @@ let completionProvider = {
 }
 
 let parseEditor (model: monaco.editor.IModel) =
+    printfn "parseEditor"
     match fcsChecker with
     | None ->
         fcsChecker <- getChecker (fun x y -> FableREPL.CreateChecker(x, y))
@@ -143,7 +144,7 @@ let create(domElement) =
     let md = ed.getModel()
 
     Util.createObservable(fun trigger ->
-        md.onDidChangeContent(fun _ -> trigger md) |> ignore)
+        md.onDidChangeContent(fun _ -> printfn "change"; trigger md) |> ignore)
     |> Util.debounce 1000
     |> Observable.add parseEditor
 

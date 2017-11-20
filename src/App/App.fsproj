@@ -1,9 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../Monaco/monaco.fs" />
+    <Compile Include="Generator.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
