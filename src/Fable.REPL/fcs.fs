@@ -95,12 +95,14 @@ let parseFSharpProject (checker: InteractiveChecker) fileName source =
 let getToolTipAtLocation (typeCheckResults: FSharpCheckFileResults) line col lineText =
     typeCheckResults.GetToolTipText(line, col, lineText, [], FSharpTokenTag.IDENT)
 
-// let getCompletionsAtLocation (parseResults: ParseResults) line col lineText = async {
-//     let longName, residue = findLongIdentsAndResidue(col - 1, lineText)
-//     let! decls = parseResults.CheckFile.GetDeclarationListInfo(Some parseResults.ParseFile, line, lineText, longName, (fun () -> []), residue, None)
-//     return decls.Items |> Array.map (fun decl ->
-//         { Name = decl.Name; Glyph = convertGlyph decl.Glyph })
-// }
+let getCompletionsAtLocation (parseResults: ParseResults) line col lineText = async {
+    let longName, residue = findLongIdentsAndResidue(col - 1, lineText)
+    let partialName = { QualifyingIdents = longName; PartialIdent = residue; EndColumn = (col - 1); LastDotPos = None }
+
+    let! decls = parseResults.CheckFile.GetDeclarationListInfo(Some parseResults.ParseFile, line, lineText, partialName, (fun () -> []), fun _ -> false)
+    return decls.Items |> Array.map (fun decl ->
+        { Name = decl.Name; Glyph = convertGlyph decl.Glyph })
+}
 
 let makeProjOptions (com: ICompiler) projFile =
     let projOptions: FSharpProjectOptions =
@@ -145,11 +147,8 @@ type private ExportsImpl() =
             let c = checker :?> CheckerImpl
             parseFSharpProject c.Checker fileName source :> IParseResults
         member this.GetCompletionsAtLocation(parseResults:IParseResults, line:int, col:int, lineText:string) =
-            // let res = parseResults :?> ParseResults
-            // getCompletionsAtLocation res line col lineText
-            async {
-                return [||]
-            }
+            let res = parseResults :?> ParseResults
+            getCompletionsAtLocation res line col lineText
         member this.CompileToBabelJsonAst(com: IFableCompiler, parseResults:IParseResults, fableCoreDir:string, fileName:string) =
             let com = com :?> CompilerImpl
             let res = parseResults :?> ParseResults
