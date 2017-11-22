@@ -9,6 +9,7 @@ open Fulma.Elements
 open Fulma.Elements.Form
 open Fulma.Extra.FontAwesome
 open Fable.Import.Browser
+open Mouse
 
 importSideEffects "./scss/main.scss"
 
@@ -44,24 +45,43 @@ type ActiveTab =
     | CodeTab
     | LiveTab
 
+type DragTarget =
+    | NoTarget
+    | EditorHandle
+
 type Model =
     { State : State
       Url : string
       ActiveTab : ActiveTab
       CodeES2015: string
-      CodeAMD : string }
+      CodeAMD : string
+      DragTarget : DragTarget
+      EditorSplitRatio : float }
 
 type Msg =
     | StartCompile
     | EndCompile of string * string // codeES2015, codeAMD
     | SetActiveTab of ActiveTab
     | SetUrl of string
+    | EditorDragStarted
+    | EditorDrag of Position
+    | EditorDragEnded
+    | MouseUp of Fable.Import.Browser.MouseEvent
+    | MouseMove of Fable.Import.Browser.MouseEvent
 
 open Elmish
 
 let generateHtmlUrl jsCode =
     let jsUrl = Generator.generateBlobURL jsCode Generator.JavaScript
     Generator.generateHtmlBlobUrl (editorHtml.getValue()) jsUrl
+
+let clamp min max value =
+    if value >= max then
+        max
+    elif value <= min then
+        min
+    else
+        value
 
 let update msg model =
     match msg with
@@ -81,14 +101,51 @@ let update msg model =
     | SetActiveTab newTab ->
         { model with ActiveTab = newTab }, Cmd.none
 
+    | EditorDragStarted ->
+        { model with DragTarget = EditorHandle }, Cmd.none
+
+    | EditorDragEnded ->
+        { model with DragTarget = NoTarget } , Cmd.none
+
+    | MouseUp _ ->
+        let cmd =
+            match model.DragTarget with
+            | NoTarget -> Cmd.none
+            | EditorHandle ->
+                Cmd.ofMsg EditorDragEnded
+
+        model, cmd
+
+    | MouseMove ev ->
+        let cmd =
+            match model.DragTarget with
+            | NoTarget -> Cmd.none
+            | EditorHandle ->
+                Cmd.ofMsg (EditorDrag { X = ev.pageX; Y = ev.pageY} )
+
+        model, cmd
+
+    | EditorDrag position ->
+        { model with EditorSplitRatio =
+                       position
+                       |> (fun p -> p.Y - 54.)
+                       |> (fun h -> h / (window.innerHeight - 54.))
+                       |> clamp 0.2 0.8 }, Cmd.none
+
 let init _ = { State = Compiled
                Url = ""
                ActiveTab = LiveTab
                CodeES2015 = ""
-               CodeAMD = "" }, Cmd.none
+               CodeAMD = ""
+               DragTarget = NoTarget
+               EditorSplitRatio = 0.7 }, Cmd.batch [ Cmd.ups MouseUp
+                                                     Cmd.move MouseMove ]
 
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
+
+let numberToPercent number =
+    string (number * 100.) + "%"
 
 let menubar isCompiling dispatch =
     let iconView =
@@ -113,35 +170,46 @@ let menubar isCompiling dispatch =
               Navbar.item_div [ Navbar.Item.props [ Style [ Color "white" ] ] ]
                 [ str "You can also press Alt+Enter from the editor" ] ] ]
 
-let editorArea dispatch =
+let editorArea isDragging editorSplitRatio dispatch =
     div [ ClassName "editor-container" ]
         [ div [ Key "editor"
                 ClassName "editor-fsharp"
+                Style [ Height (numberToPercent editorSplitRatio) ]
                 OnKeyDown (fun ev ->
                   if ev.altKey && ev.key = "Enter" then
                       dispatch StartCompile
                 )
                 Ref (fun element ->
-                      if not (isNull element) && element.childElementCount = 0. then
-                          editorFsharp <- Editor.create (element :?> Browser.HTMLElement)
+                      if not (isNull element) then
+                        if element.childElementCount = 0. then
+                            editorFsharp <- Editor.create (element :?> Browser.HTMLElement)
+                        else
+                            if isDragging then
+                                editorFsharp.layout()
                   ) ] [ ]
-          div [ ClassName "vertical-resize" ]
+          div [ ClassName "vertical-resize"
+                OnMouseDown (fun _ -> dispatch EditorDragStarted) ]
               [ ]
           div [ ClassName "editor-html"
+                Style [ Height (numberToPercent (1. - editorSplitRatio)) ]
                 Ref (fun element ->
-                        if not (isNull element) && element.childElementCount = 0. then
-                            let options = jsOptions<monaco.editor.IEditorConstructionOptions>(fun o ->
-                                let minimapOptions =  jsOptions<monaco.editor.IEditorMinimapOptions>(fun oMinimap ->
-                                    oMinimap.enabled <- Some false
+                        if not (isNull element) then
+                            if element.childElementCount = 0. then
+                                let options = jsOptions<monaco.editor.IEditorConstructionOptions>(fun o ->
+                                    let minimapOptions =  jsOptions<monaco.editor.IEditorMinimapOptions>(fun oMinimap ->
+                                        oMinimap.enabled <- Some false
+                                    )
+
+                                    o.language <- Some "html"
+                                    o.theme <- Some "vs-dark"
+                                    o.value <- Some outputHtml
+                                    o.minimap <- Some minimapOptions
                                 )
 
-                                o.language <- Some "html"
-                                o.theme <- Some "vs-dark"
-                                o.value <- Some outputHtml
-                                o.minimap <- Some minimapOptions
-                            )
-
-                            editorHtml <- monaco.editor.Globals.create((element :?> Browser.HTMLElement), options)
+                                editorHtml <- monaco.editor.Globals.create((element :?> Browser.HTMLElement), options)
+                            else
+                                if isDragging then
+                                    editorHtml.layout()
                 ) ]
             [ ] ]
 
@@ -212,7 +280,7 @@ let view model dispatch =
     div [ ]
         [ menubar (model.State = Compiling) dispatch
           div [ ClassName "page-content" ]
-            [ editorArea dispatch
+            [ editorArea (model.DragTarget = EditorHandle) model.EditorSplitRatio dispatch
               outputArea model dispatch ] ]
 
 open Elmish.React

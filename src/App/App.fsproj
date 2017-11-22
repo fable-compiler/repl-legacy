@@ -5,6 +5,7 @@
   <ItemGroup>
     <Compile Include="../Monaco/monaco.fs" />
     <Compile Include="Generator.fs" />
+    <Compile Include="Mouse.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

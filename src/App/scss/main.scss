@@ -18,19 +18,19 @@ html {
         background-color: #363636;
 
         .editor-fsharp {
-            height: 70%;
+            // height: 70%;
         }
 
         .editor-html {
-            height: 30%;
+            // height: 30%;
         }
 
         .vertical-resize {
-            height: 6px;
-            margin-top: -3px;
+            height: 8px;
+            margin-top: -4px;
             top: 60%;
             background-color: #363636;
-            // cursor: ns-resize;
+            cursor: ns-resize;
             z-index: 1000;
         }
     }
