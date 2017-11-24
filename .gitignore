@@ -26,3 +26,9 @@ paket-files/
 packages/
 public/js/
 public/libs/
+
+public/*.eot
+public/*.svg
+public/*.woff2
+public/*.ttf
+public/*.woff

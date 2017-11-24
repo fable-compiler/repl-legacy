@@ -129,7 +129,7 @@ let compileAst (com: Compiler) (parseResults: ParseResults) (fableCoreDir: strin
     let implFiles = parseResults.CheckProject.AssemblyContents.ImplementationFiles
                     |> Seq.map (fun file -> Path.normalizePath file.FileName, file) |> Map
     let projectOptions = makeProjOptions com fileName
-    let project = Project(projectOptions, implFiles, parseResults.CheckProject.Errors, fableCoreDir, false)
+    let project = Project(projectOptions, implFiles, parseResults.CheckProject.Errors, Map.empty, fableCoreDir, false)
     let file: Babel.Program =
         FSharp2Fable.Compiler.transformFile com project implFiles fileName
         |> Fable2Babel.Compiler.transformFile com project
