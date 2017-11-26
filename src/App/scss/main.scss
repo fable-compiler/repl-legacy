@@ -12,31 +12,28 @@ html {
     height: calc(100vh - #{$navbar-height});
     width: 100%;
 
+    .horizontal-resize {
+        width: 8px;
+        margin-left: -4px;
+        background-color: #505050;
+        cursor: ew-resize;
+        z-index: 1000;
+    }
+
+    .vertical-resize {
+        height: 8px;
+        margin-top: -4px;
+        background-color: #505050;
+        cursor: ns-resize;
+        z-index: 1000;
+    }
+
     .editor-container {
-        width: 50%;
         height: 100%;
         background-color: #363636;
-
-        .editor-fsharp {
-            // height: 70%;
-        }
-
-        .editor-html {
-            // height: 30%;
-        }
-
-        .vertical-resize {
-            height: 8px;
-            margin-top: -4px;
-            top: 60%;
-            background-color: #363636;
-            cursor: ns-resize;
-            z-index: 1000;
-        }
     }
 
     .output-container {
-        width: 50%;
         height: 100%;
 
         .tabs {

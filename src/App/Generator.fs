@@ -15,6 +15,27 @@ let private requireConfig =
         }
         });
     </script>
+    <script>
+    (function () {
+        var origin = window.location.origin;
+        console.log(origin);
+        document.addEventListener("mousemove", function (ev) {
+            console.log("maxime");
+            window.parent.postMessage({
+                type: "mousemove",
+                x: ev.screenX,
+                y: ev.screenY
+            }, origin);
+        });
+
+        document.addEventListener("mouseup", function (ev) {
+            window.parent.postMessage({
+                type: "mouseup"
+            }, origin);
+        });
+
+    })();
+    </script>
     """.Trim()
 
 let private bundleScriptTag url = sprintf "<script src=\"%s\"></script>\n</body>" url

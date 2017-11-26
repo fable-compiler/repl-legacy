@@ -47,7 +47,8 @@ type ActiveTab =
 
 type DragTarget =
     | NoTarget
-    | EditorHandle
+    | EditorSplitter
+    | PanelSplitter
 
 type Model =
     { State : State
@@ -56,7 +57,8 @@ type Model =
       CodeES2015: string
       CodeAMD : string
       DragTarget : DragTarget
-      EditorSplitRatio : float }
+      EditorSplitRatio : float
+      PanelSplitRatio : float }
 
 type Msg =
     | StartCompile
@@ -66,8 +68,11 @@ type Msg =
     | EditorDragStarted
     | EditorDrag of Position
     | EditorDragEnded
-    | MouseUp of Fable.Import.Browser.MouseEvent
-    | MouseMove of Fable.Import.Browser.MouseEvent
+    | PanelDragStarted
+    | PanelDrag of Position
+    | PanelDragEnded
+    | MouseUp
+    | MouseMove of Mouse.Position
 
 open Elmish
 
@@ -102,26 +107,30 @@ let update msg model =
         { model with ActiveTab = newTab }, Cmd.none
 
     | EditorDragStarted ->
-        { model with DragTarget = EditorHandle }, Cmd.none
+        { model with DragTarget = EditorSplitter }, Cmd.none
 
     | EditorDragEnded ->
         { model with DragTarget = NoTarget } , Cmd.none
 
-    | MouseUp _ ->
+    | MouseUp ->
         let cmd =
             match model.DragTarget with
             | NoTarget -> Cmd.none
-            | EditorHandle ->
+            | EditorSplitter ->
                 Cmd.ofMsg EditorDragEnded
+            | PanelSplitter ->
+                Cmd.ofMsg PanelDragEnded
 
         model, cmd
 
-    | MouseMove ev ->
+    | MouseMove position ->
         let cmd =
             match model.DragTarget with
             | NoTarget -> Cmd.none
-            | EditorHandle ->
-                Cmd.ofMsg (EditorDrag { X = ev.pageX; Y = ev.pageY} )
+            | EditorSplitter ->
+                Cmd.ofMsg (EditorDrag position)
+            | PanelSplitter ->
+                Cmd.ofMsg (PanelDrag position)
 
         model, cmd
 
@@ -132,14 +141,29 @@ let update msg model =
                        |> (fun h -> h / (window.innerHeight - 54.))
                        |> clamp 0.2 0.8 }, Cmd.none
 
+    | PanelDragStarted ->
+        { model with DragTarget = PanelSplitter }, Cmd.none
+
+    | PanelDragEnded ->
+        { model with DragTarget = NoTarget }, Cmd.none
+
+    | PanelDrag position ->
+        { model with PanelSplitRatio =
+                        position
+                        |> (fun p -> p.X)
+                        |> (fun w -> w / window.innerWidth)
+                        |> clamp 0.2 0.8 }, Cmd.none
+
 let init _ = { State = Compiled
                Url = ""
                ActiveTab = LiveTab
                CodeES2015 = ""
                CodeAMD = ""
                DragTarget = NoTarget
-               EditorSplitRatio = 0.7 }, Cmd.batch [ Cmd.ups MouseUp
-                                                     Cmd.move MouseMove ]
+               EditorSplitRatio = 0.7
+               PanelSplitRatio = 0.5 }, Cmd.batch [ Cmd.ups MouseUp
+                                                    Cmd.move MouseMove
+                                                    Cmd.iframeMessage MouseMove MouseUp ]
 
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
@@ -170,11 +194,17 @@ let menubar isCompiling dispatch =
               Navbar.item_div [ Navbar.Item.props [ Style [ Color "white" ] ] ]
                 [ str "You can also press Alt+Enter from the editor" ] ] ]
 
-let editorArea isDragging editorSplitRatio dispatch =
-    div [ ClassName "editor-container" ]
+let editorArea model dispatch =
+    let isDragging =
+        match model.DragTarget with
+        | EditorSplitter
+        | PanelSplitter -> true
+        | NoTarget -> false
+    div [ ClassName "editor-container"
+          Style [ Width (numberToPercent model.PanelSplitRatio) ] ]
         [ div [ Key "editor"
                 ClassName "editor-fsharp"
-                Style [ Height (numberToPercent editorSplitRatio) ]
+                Style [ Height (numberToPercent model.EditorSplitRatio) ]
                 OnKeyDown (fun ev ->
                   if ev.altKey && ev.key = "Enter" then
                       dispatch StartCompile
@@ -191,7 +221,7 @@ let editorArea isDragging editorSplitRatio dispatch =
                 OnMouseDown (fun _ -> dispatch EditorDragStarted) ]
               [ ]
           div [ ClassName "editor-html"
-                Style [ Height (numberToPercent (1. - editorSplitRatio)) ]
+                Style [ Height (numberToPercent (1. - model.EditorSplitRatio)) ]
                 Ref (fun element ->
                         if not (isNull element) then
                             if element.childElementCount = 0. then
@@ -273,24 +303,25 @@ let outputArea model dispatch =
               viewIframe (model.ActiveTab = LiveTab) model.Url
               viewCodeEditor (model.ActiveTab = CodeTab) model.CodeES2015 ]
 
-    div [ ClassName "output-container" ]
+    div [ ClassName "output-container"
+          Style [ Width (numberToPercent (1. - model.PanelSplitRatio)) ] ]
         content
 
 let view model dispatch =
     div [ ]
         [ menubar (model.State = Compiling) dispatch
           div [ ClassName "page-content" ]
-            [ editorArea (model.DragTarget = EditorHandle) model.EditorSplitRatio dispatch
+            [ editorArea model dispatch
+              div [ ClassName "horizontal-resize"
+                    OnClick (fun _ -> dispatch PanelDragStarted) ]
+                [ ]
               outputArea model dispatch ] ]
 
 open Elmish.React
-open Elmish.Debug
-open Elmish.HMR
 
 Program.mkProgram init update view
 #if DEBUG
-|> Program.withHMR
-|> Program.withDebugger
+// |> Program.withConsoleTrace
 #endif
 |> Program.withReact "app-container"
 |> Program.run
