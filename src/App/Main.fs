@@ -40,6 +40,7 @@ let outputHtml =
 type State =
     | Compiling
     | Compiled
+    | NoState
 
 type ActiveTab =
     | CodeTab
@@ -154,7 +155,7 @@ let update msg model =
                         |> (fun w -> w / window.innerWidth)
                         |> clamp 0.2 0.8 }, Cmd.none
 
-let init _ = { State = Compiled
+let init _ = { State = NoState
                Url = ""
                ActiveTab = LiveTab
                CodeES2015 = ""
@@ -200,6 +201,7 @@ let editorArea model dispatch =
         | EditorSplitter
         | PanelSplitter -> true
         | NoTarget -> false
+
     div [ ClassName "editor-container"
           Style [ Width (numberToPercent model.PanelSplitRatio) ] ]
         [ div [ Key "editor"
@@ -302,18 +304,26 @@ let outputArea model dispatch =
             [ outputTabs model.ActiveTab dispatch
               viewIframe (model.ActiveTab = LiveTab) model.Url
               viewCodeEditor (model.ActiveTab = CodeTab) model.CodeES2015 ]
+        | NoState ->
+            [ str "No apps compiled yet" ]
 
     div [ ClassName "output-container"
           Style [ Width (numberToPercent (1. - model.PanelSplitRatio)) ] ]
         content
 
 let view model dispatch =
-    div [ ]
+    let isDragging =
+        match model.DragTarget with
+        | EditorSplitter
+        | PanelSplitter -> true
+        | NoTarget -> false
+
+    div [ classList [ "is-unselectable", isDragging ] ]
         [ menubar (model.State = Compiling) dispatch
           div [ ClassName "page-content" ]
             [ editorArea model dispatch
               div [ ClassName "horizontal-resize"
-                    OnClick (fun _ -> dispatch PanelDragStarted) ]
+                    OnMouseDown (fun _ -> dispatch PanelDragStarted) ]
                 [ ]
               outputArea model dispatch ] ]
 

@@ -64,7 +64,8 @@ function getWebpackConfig(entry, filename, library) {
           use: [
             "style-loader",
             "css-loader",
-            "sass-loader"
+            "sass-loader",
+            "postcss-loader"
           ]
         },
         {
