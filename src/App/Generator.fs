@@ -20,7 +20,6 @@ let private requireConfig =
         var origin = window.location.origin;
         console.log(origin);
         document.addEventListener("mousemove", function (ev) {
-            console.log("maxime");
             window.parent.postMessage({
                 type: "mousemove",
                 x: ev.screenX,
