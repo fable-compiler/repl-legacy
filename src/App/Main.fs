@@ -51,6 +51,11 @@ type DragTarget =
     | EditorSplitter
     | PanelSplitter
 
+type EditorCollapse =
+    | BothExtended
+    | HtmlOnly
+    | FSharpOnly
+
 type Model =
     { State : State
       Url : string
@@ -59,7 +64,8 @@ type Model =
       CodeAMD : string
       DragTarget : DragTarget
       EditorSplitRatio : float
-      PanelSplitRatio : float }
+      PanelSplitRatio : float
+      EditorCollapse : EditorCollapse }
 
 type Msg =
     | StartCompile
@@ -74,8 +80,12 @@ type Msg =
     | PanelDragEnded
     | MouseUp
     | MouseMove of Mouse.Position
+    | ToggleFsharpCollapse
+    | ToggleHtmlCollapse
+    | FailEditorsLayout of exn
 
 open Elmish
+open Fable.Import.JS
 
 let generateHtmlUrl jsCode =
     let jsUrl = Generator.generateBlobURL jsCode Generator.JavaScript
@@ -88,6 +98,12 @@ let clamp min max value =
         min
     else
         value
+
+let updateLayouts _ =
+    window.setTimeout((fun _ ->
+        editorFsharp.layout()
+        editorHtml.layout()), 100) |> ignore
+
 
 let update msg model =
     match msg with
@@ -140,7 +156,7 @@ let update msg model =
                        position
                        |> (fun p -> p.Y - 54.)
                        |> (fun h -> h / (window.innerHeight - 54.))
-                       |> clamp 0.2 0.8 }, Cmd.none
+                       |> clamp 0.3 0.7 }, Cmd.none
 
     | PanelDragStarted ->
         { model with DragTarget = PanelSplitter }, Cmd.none
@@ -155,16 +171,39 @@ let update msg model =
                         |> (fun w -> w / window.innerWidth)
                         |> clamp 0.2 0.8 }, Cmd.none
 
+    | ToggleFsharpCollapse ->
+        let newState =
+            match model.EditorCollapse with
+            | BothExtended -> HtmlOnly
+            | FSharpOnly -> HtmlOnly
+            | HtmlOnly -> BothExtended
+
+        { model with EditorCollapse = newState }, Cmd.attemptFunc updateLayouts () FailEditorsLayout
+
+    | ToggleHtmlCollapse ->
+        let newState =
+            match model.EditorCollapse with
+            | BothExtended -> FSharpOnly
+            | FSharpOnly -> BothExtended
+            | HtmlOnly -> FSharpOnly
+
+        { model with EditorCollapse = newState }, Cmd.attemptFunc updateLayouts () FailEditorsLayout
+
+    | FailEditorsLayout error ->
+        console.log error.Message
+        model, Cmd.none
+
 let init _ = { State = NoState
                Url = ""
                ActiveTab = LiveTab
                CodeES2015 = ""
                CodeAMD = ""
                DragTarget = NoTarget
-               EditorSplitRatio = 0.7
-               PanelSplitRatio = 0.5 }, Cmd.batch [ Cmd.ups MouseUp
-                                                    Cmd.move MouseMove
-                                                    Cmd.iframeMessage MouseMove MouseUp ]
+               EditorSplitRatio = 0.6
+               PanelSplitRatio = 0.5
+               EditorCollapse = BothExtended }, Cmd.batch [ Cmd.ups MouseUp
+                                                            Cmd.move MouseMove
+                                                            Cmd.iframeMessage MouseMove MouseUp ]
 
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
@@ -202,51 +241,88 @@ let editorArea model dispatch =
         | PanelSplitter -> true
         | NoTarget -> false
 
+    let fsharpAngle, htmlAngle =
+        match model.EditorCollapse with
+        | BothExtended -> Fa.I.Compress, Fa.I.Compress
+        | FSharpOnly -> Fa.I.Compress, Fa.I.Expand
+        | HtmlOnly -> Fa.I.Expand, Fa.I.Compress
+
+    let fsharpDisplay, htmlDisplay =
+        match model.EditorCollapse with
+        | BothExtended -> "block", "block"
+        | FSharpOnly -> "block", "none"
+        | HtmlOnly -> "none", "block"
+
+    let fsharpHeight, htmlHeight =
+        match model.EditorCollapse with
+        | BothExtended ->
+            numberToPercent model.EditorSplitRatio, numberToPercent (1. - model.EditorSplitRatio)
+        | FSharpOnly ->
+            "calc(100% - 54px)", "44px"
+        | HtmlOnly ->
+            "44px", "calc(100% - 49px)"
+
     div [ ClassName "editor-container"
           Style [ Width (numberToPercent model.PanelSplitRatio) ] ]
-        [ div [ Key "editor"
-                ClassName "editor-fsharp"
-                Style [ Height (numberToPercent model.EditorSplitRatio) ]
-                OnKeyDown (fun ev ->
-                  if ev.altKey && ev.key = "Enter" then
-                      dispatch StartCompile
-                )
-                Ref (fun element ->
-                      if not (isNull element) then
-                        if element.childElementCount = 0. then
-                            editorFsharp <- Editor.create (element :?> Browser.HTMLElement)
-                        else
-                            if isDragging then
-                                editorFsharp.layout()
-                  ) ] [ ]
+        [ Card.card [ Card.props [ Style [ Height fsharpHeight ] ] ]
+            [ Card.header [ Card.Header.props [ OnClick (fun _ -> dispatch ToggleFsharpCollapse )] ]
+                [ Card.Header.title [ ]
+                    [ str "F#" ]
+                  Card.Header.icon [ ]
+                    [ Icon.faIcon [ ]
+                        [ Fa.icon fsharpAngle
+                          Fa.faLg ] ] ]
+              Card.content [ Card.props [ Style [ Display fsharpDisplay ] ] ]
+                [ div [ Key "editor"
+                        ClassName "editor-fsharp"
+                        OnKeyDown (fun ev ->
+                          if ev.altKey && ev.key = "Enter" then
+                              dispatch StartCompile
+                        )
+                        Ref (fun element ->
+                              if not (isNull element) then
+                                if element.childElementCount = 0. then
+                                    editorFsharp <- Editor.create (element :?> Browser.HTMLElement)
+                                else
+                                    if isDragging then
+                                        editorFsharp.layout()
+                          ) ] [ ] ] ]
           div [ ClassName "vertical-resize"
                 OnMouseDown (fun _ -> dispatch EditorDragStarted) ]
               [ ]
-          div [ ClassName "editor-html"
-                Style [ Height (numberToPercent (1. - model.EditorSplitRatio)) ]
-                Ref (fun element ->
-                        if not (isNull element) then
-                            if element.childElementCount = 0. then
-                                let options = jsOptions<monaco.editor.IEditorConstructionOptions>(fun o ->
-                                    let minimapOptions =  jsOptions<monaco.editor.IEditorMinimapOptions>(fun oMinimap ->
-                                        oMinimap.enabled <- Some false
-                                    )
+          Card.card [ Card.props [ Style [ Height htmlHeight ] ] ]
+            [ Card.header [ Card.Header.props [ OnClick (fun _ -> dispatch ToggleHtmlCollapse )] ]
+                [ Card.Header.title [ ]
+                    [ str "Html" ]
+                  Card.Header.icon [ ]
+                    [ Icon.faIcon [ ]
+                        [ Fa.icon htmlAngle
+                          Fa.faLg ] ] ]
+              Card.content [ Card.props [ Style [ Display htmlDisplay ] ] ]
+                [ div [ ClassName "editor-html"
+                        Ref (fun element ->
+                                if not (isNull element) then
+                                    if element.childElementCount = 0. then
+                                        let options = jsOptions<monaco.editor.IEditorConstructionOptions>(fun o ->
+                                            let minimapOptions =  jsOptions<monaco.editor.IEditorMinimapOptions>(fun oMinimap ->
+                                                oMinimap.enabled <- Some false
+                                            )
 
-                                    o.language <- Some "html"
-                                    o.theme <- Some "vs-dark"
-                                    o.value <- Some outputHtml
-                                    o.minimap <- Some minimapOptions
-                                )
+                                            o.language <- Some "html"
+                                            o.theme <- Some "vs-dark"
+                                            o.value <- Some outputHtml
+                                            o.minimap <- Some minimapOptions
+                                        )
 
-                                editorHtml <- monaco.editor.Globals.create((element :?> Browser.HTMLElement), options)
-                            else
-                                if isDragging then
-                                    editorHtml.layout()
-                ) ]
-            [ ] ]
+                                        editorHtml <- monaco.editor.Globals.create((element :?> Browser.HTMLElement), options)
+                                    else
+                                        if isDragging then
+                                            editorHtml.layout()
+                        ) ] [ ] ] ] ]
 
 let outputTabs (activeTab : ActiveTab) dispatch =
-    Tabs.tabs [ Tabs.isCentered ]
+    Tabs.tabs [ Tabs.isCentered
+                Tabs.isMedium ]
         [ Tabs.tab [ if (activeTab = LiveTab) then
                         yield Tabs.Tab.isActive
                      yield Tabs.Tab.props [
