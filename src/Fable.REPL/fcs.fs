@@ -80,7 +80,7 @@ let convertGlyph glyph =
         Glyph.Event
 
 let createChecker references readAllBytes =
-    InteractiveChecker.Create(List.ofArray references, readAllBytes)
+    InteractiveChecker.Create(references, readAllBytes)
 
 let createCompiler replacements =
     Compiler()
