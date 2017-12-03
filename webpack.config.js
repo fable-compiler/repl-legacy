@@ -22,7 +22,6 @@ function getWebpackConfig(entry, filename, library) {
       filename: "js/" + filename + '.js',
       path: resolve('./public'),
       library: library,
-      libraryTarget: "amd"
     },
     resolve: {
       modules: [resolve("./node_modules/")]
@@ -32,9 +31,9 @@ function getWebpackConfig(entry, filename, library) {
       port: 8080
     },
     externals: {
-      "monaco": { root: "monaco" },
-      "editor": "editor",
-      "fable-repl": "fable-repl",
+      "monaco": "var monaco",
+      "editor": "var editor",
+      "fable-repl": "var Fable",
     },
     module: {
       rules: [

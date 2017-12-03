@@ -11,6 +11,10 @@
 </head>
 <body>
     <div id="app-container" />
+
+    <!-- Load Fable before loader and require so it's assigned to global variable -->
+    <script src="js/repl/bundle.js"></script>
+
     <!-- Monaco -->
     <script>var require = { paths: { 'vs': 'libs/vs' } };</script>
     <script src="libs/vs/loader.js"></script>
@@ -22,7 +26,6 @@
     <script>
         require.config({
           paths: {
-            'fable-repl': './js/repl/bundle',
             'fable-core': './js/repl/fable-core'
           }
         });

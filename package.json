@@ -9,6 +9,7 @@
     "build-fcs": "cd src && dotnet fable npm-rollup --port free --verbose",
     "watch-fsc": "cd src && dotnet fable npm-rollup --port free --verbose -- -w",
     "build-app": "cd src && dotnet fable webpack",
+    "watch-app": "cd src && dotnet fable webpack -- -w",
     "start-app": "cd src && dotnet fable webpack-dev-server --define DEBUG",
     "webpack": "node node_modules/webpack/bin/webpack.js",
     "rollup": "node node_modules/rollup/bin/rollup -c",
