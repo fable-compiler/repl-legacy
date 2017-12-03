@@ -4,11 +4,16 @@ import * as Babel from "babel-standalone";
 import BabelTemplate from "babel-template";
 import * as BabelPlugins from "../../../Fable/src/js/fable-utils/babel-plugins";
 
+var use_net_45 = true;
+var metadataPath = use_net_45 ? "metadata/" : "metadata2/";
 var checker = null;
 var metadata = {}
 
 // Files have .txt extension to allow gzipping in Github Pages
-var references = [
+var references =
+    use_net_45
+    ? ["Fable.Core.dll","Fable.Import.Browser.dll","FSharp.Core.dll","mscorlib.dll","System.dll","System.Core.dll","System.Data.dll","System.IO.dll","System.Xml.dll","System.Numerics.dll"]
+    : [
     "Dotnet.ProjInfo.Matthid.dll",
     "Fable.Core.dll",
     "Fable.Import.Browser.dll",
@@ -178,7 +183,7 @@ function getFileBlob(key, url) {
 };
 
 references.forEach(function (fileName) {
-    getFileBlob(fileName, 'metadata2/' + fileName);
+    getFileBlob(fileName, metadataPath + fileName);
 });
 
 export function getChecker(createChecker) {

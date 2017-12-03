@@ -9,6 +9,7 @@ open Fake.ReleaseNotesHelper
 open Fake.Git
 open Fake.Testing.Expecto
 open Fake.YarnHelper
+open System.Net
 
 let dotnetcliVersion = "2.0.3"
 
@@ -42,6 +43,14 @@ let runYarn dir command =
                 Command = Custom command
             })
 
+let downloadArtifact path (url: string) =
+    let tempFile = Path.ChangeExtension(Path.GetTempFileName(), ".zip")
+    use client = new WebClient()
+    client.DownloadFile(Uri url, tempFile)
+    CleanDir path
+    Unzip path tempFile
+    File.Delete tempFile
+
 let currentDir = __SOURCE_DIRECTORY__
 let sourceDir = currentDir </> "src"
 let rootDir = currentDir </> ".."
@@ -52,6 +61,7 @@ let FableFolderName = "Fable"
 let FCSFableFolderPath = rootDir </> FCSFableFolderName
 let FCSExportFolderPath = rootDir </> FCSExportFolderName
 let FableFolderPath = rootDir </> FableFolderName
+let AppveyorReplArtifactURL = "https://ci.appveyor.com/api/projects/fable-compiler/Fable/artifacts/src/dotnet/Fable.JS/demo/repl/bundle.zip"
 
 let rec waitUserResponse _ =
     let userInput = Console.ReadLine()
@@ -192,6 +202,11 @@ Target "Build.App" (fun _ ->
     runYarn sourceDir "build-app"
 )
 
+Target "DownloadReplArtifact" (fun _ ->
+    let targetDir = currentDir </> "public/js/repl"
+    downloadArtifact targetDir AppveyorReplArtifactURL
+)
+
 Target "All" DoNothing
 
 // Build order
@@ -202,7 +217,7 @@ Target "All" DoNothing
     ==> "InstallDotNetCore"
     ==> "Restore"
     ==> "YarnInstall"
-    ==> "CopyModules"
+    // ==> "CopyModules"
     ==> "Build.FCS"
     ==> "Build.App"
     ==> "All"

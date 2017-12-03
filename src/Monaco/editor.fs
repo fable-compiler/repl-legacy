@@ -5,18 +5,15 @@ module Fable.Editor
 open Fable.Core
 open Fable.Core.JsInterop
 open Fable.Import
-open Fable.REPL.Interfaces
-open System.Collections
-open Fable.Import.Browser
-open Fable.Util
+open Fable.JS.Interfaces
 
 //---------------------------------------------------
 // Features providers
 //---------------------------------------------------
 
-let [<Literal>] FILE_NAME = "test.fsx"
+let [<Literal>] FILE_NAME = "test.fs"
 
-let FableREPL: IFableREPL = import "Exports" "FableREPL"
+let FableREPL: IFableManager = importDefault "fable-repl"
 
 let getChecker(f: string[] -> (string->byte[]) -> IChecker): IChecker option = importMember "./util.js"
 let runAst(jsonAst: string): string * string = importMember "./util.js"
@@ -27,8 +24,8 @@ let mutable fcsResults: IParseResults option = None
 let compileAndRunCurrentResults () =
     match fcsResults with
     | Some res ->
-        let com = FableREPL.CreateCompiler()
-        let jsonAst = FableREPL.CompileToBabelJsonAst(com, res, "fable-core", FILE_NAME)
+        let com = FableREPL.CreateCompiler("fable-core")
+        let jsonAst = FableREPL.CompileToBabelJsonAst(com, res, FILE_NAME)
         runAst jsonAst
     | None -> "", ""
 
@@ -94,7 +91,7 @@ let completionProvider = {
 }
 
 let parseEditor (model: monaco.editor.IModel) =
-    printfn "parseEditor"
+    // printfn "parseEditor"
     match fcsChecker with
     | None ->
         fcsChecker <- getChecker (fun x y -> FableREPL.CreateChecker(x, y))
@@ -134,7 +131,7 @@ let create(domElement) =
 
         o.language <- Some "fsharp"
         o.theme <- Some "vs-dark"
-        o.value <- Some "let t = 1"
+        o.value <- Some "module Program\n\nprintfn \"Hello World!\""
         o.minimap <- Some minimapOptions
     )
 
@@ -144,7 +141,7 @@ let create(domElement) =
     let md = ed.getModel()
 
     Util.createObservable(fun trigger ->
-        md.onDidChangeContent(fun _ -> printfn "change"; trigger md) |> ignore)
+        md.onDidChangeContent(fun _ -> trigger md) |> ignore)
     |> Util.debounce 1000
     |> Observable.add parseEditor
 

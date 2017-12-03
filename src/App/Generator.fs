@@ -7,11 +7,11 @@ open Fable.Import.Browser
 let private requireConfig =
     """
 <body>
-    <script src="http://localhost:8080/libs/requirejs/require.js"></script>
+    <script src="/libs/requirejs/require.js"></script>
     <script>
         require.config({
         paths: {
-            'fable-core': 'http://localhost:8080/build/fable-core'
+            'fable-core': '/js/repl/fable-core'
         }
         });
     </script>
