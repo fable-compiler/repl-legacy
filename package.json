@@ -13,7 +13,7 @@
     "start-app": "cd src && dotnet fable webpack-dev-server --define DEBUG",
     "webpack": "node node_modules/webpack/bin/webpack.js",
     "rollup": "node node_modules/rollup/bin/rollup -c",
-    "start": "http-server -c-1 ./public -p 8888 -o"
+    "start": "http-server -c-1 ./public -p 8080 -o"
   },
   "dependencies": {
     "bulma": "^0.6.1",

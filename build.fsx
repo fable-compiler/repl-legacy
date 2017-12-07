@@ -61,7 +61,7 @@ let FableFolderName = "Fable"
 let FCSFableFolderPath = rootDir </> FCSFableFolderName
 let FCSExportFolderPath = rootDir </> FCSExportFolderName
 let FableFolderPath = rootDir </> FableFolderName
-let AppveyorReplArtifactURL = "https://ci.appveyor.com/api/projects/fable-compiler/Fable/artifacts/src/dotnet/Fable.JS/demo/repl/bundle.zip?branch=do-not-optimize-assignments"
+let AppveyorReplArtifactURL = "https://ci.appveyor.com/api/projects/fable-compiler/Fable/artifacts/src/dotnet/Fable.JS/demo/repl/bundle.zip"
 
 let rec waitUserResponse _ =
     let userInput = Console.ReadLine()
@@ -210,15 +210,16 @@ Target "DownloadReplArtifact" (fun _ ->
 Target "All" DoNothing
 
 // Build order
-"Setup"
-    ==> "Build.FCS_Fable"
-    ==> "Build.Fable"
-    ==> "Clean"
+// "Setup"
+//     ==> "Build.FCS_Fable"
+//     ==> "Build.Fable"
+"Clean"
     ==> "InstallDotNetCore"
     ==> "Restore"
     ==> "YarnInstall"
     ==> "CopyModules"
-    ==> "Build.FCS"
+    // ==> "Build.FCS"
+    ==> "DownloadReplArtifact"
     ==> "Build.App"
     ==> "All"
 
