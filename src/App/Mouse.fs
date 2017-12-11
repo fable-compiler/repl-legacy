@@ -3,6 +3,7 @@ module Mouse
 open Fable.Import.Browser
 open Fable.Core.JsInterop
 open System
+open Thot.Json
 
 type Position =
     { X : float
@@ -38,16 +39,34 @@ module Cmd =
         let handler dispatch =
 
             window.addEventListener_message(Func<_,_>(fun ev ->
-                let typ = ev.data?("type") |> unbox<string>
-                match typ with
-                | "mousemove" ->
-                    { X = unbox ev.data?x
-                      Y = unbox ev.data?y }
-                    |> moveCtor
-                    |> dispatch
-                | "mouseup" ->
-                    dispatch upCtor
-                | _ -> ()
+                let iframeMessageDecoder =
+                    Decode.field "type" Decode.string
+                    |> Decode.andThen
+                        (function
+                        | "mousemove" ->
+                            Decode.decode
+                                (fun x y ->
+                                    { X = x
+                                      Y = y })
+                                |> Decode.required "x" Decode.float
+                                |> Decode.required "y" Decode.float
+                                |> Decode.map moveCtor
+
+                        | "mouseup" ->
+                            Decode.succeed upCtor
+                        | unkown ->
+                            // Discard the message we don't know how to handle it
+                            sprintf "Invalid message `%s` from iframe" unkown
+                            |> Decode.fail
+                        )
+
+                iframeMessageDecoder ev.data
+                |> function
+                    | Ok msg ->
+                        dispatch msg
+                    | Error error ->
+                        console.warn error
+
                 null
             ))
 

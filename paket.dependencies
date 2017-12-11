@@ -8,6 +8,7 @@ nuget Fable.React
 nuget Fulma prerelease
 nuget Fable.Elmish
 nuget Fable.Elmish.React
+nuget Thot.Json
 
 github fable-compiler/Fable src/dotnet/Fable.JS/Interfaces.fs
 
