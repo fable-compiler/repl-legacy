@@ -178,7 +178,7 @@ function getFileBlob(key, url) {
 };
 
 references.forEach(function (fileName) {
-    getFileBlob(fileName, 'metadata2/' + fileName);
+    getFileBlob(fileName, "metadata2/" + fileName);
 });
 
 export function getChecker(createChecker) {

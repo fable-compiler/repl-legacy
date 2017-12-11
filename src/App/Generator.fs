@@ -11,7 +11,7 @@ let private requireConfig =
     <script>
         require.config({
         paths: {
-            'fable-core': 'http://localhost:8080/build/fable-core'
+            'fable-core': 'http://localhost:8080/js/repl/fable-core'
         }
         });
     </script>

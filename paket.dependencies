@@ -9,6 +9,8 @@ nuget Fulma prerelease
 nuget Fable.Elmish
 nuget Fable.Elmish.React
 
+github fable-compiler/Fable src/dotnet/Fable.JS/Interfaces.fs
+
 group Build
 framework: net46
 

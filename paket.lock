@@ -734,7 +734,9 @@ NUGET
       System.Text.Encoding (>= 4.3) - restriction: && (< monotouch) (< net46) (>= netstandard1.3) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)
       System.Threading (>= 4.3) - restriction: && (< monotouch) (< net46) (>= netstandard1.3) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)
       System.Xml.ReaderWriter (>= 4.3) - restriction: && (< monotouch) (< net46) (>= netstandard1.3) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)
-
+GITHUB
+  remote: fable-compiler/Fable
+    src/dotnet/Fable.JS/Interfaces.fs (c6cf3be6e38608e103e59d292fbc5b5a33bc084b)
 GROUP Build
 RESTRICTION: == net46
 NUGET
