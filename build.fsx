@@ -5,9 +5,7 @@
 open System
 open System.IO
 open Fake
-open Fake.ReleaseNotesHelper
 open Fake.Git
-open Fake.Testing.Expecto
 open Fake.YarnHelper
 open System.Net
 
@@ -54,11 +52,9 @@ let downloadArtifact path (url: string) =
 let currentDir = __SOURCE_DIRECTORY__
 let sourceDir = currentDir </> "src"
 let rootDir = currentDir </> ".."
-let FCSFableFolderName = "FSharp.Compiler.Service_fable"
 let FCSExportFolderName = "FSharp.Compiler.Service_export"
 let FableFolderName = "Fable"
 
-let FCSFableFolderPath = rootDir </> FCSFableFolderName
 let FCSExportFolderPath = rootDir </> FCSExportFolderName
 let FableFolderPath = rootDir </> FableFolderName
 let AppveyorReplArtifactURL = "https://ci.appveyor.com/api/projects/fable-compiler/Fable/artifacts/src/dotnet/Fable.JS/demo/repl/bundle.zip"
@@ -101,10 +97,6 @@ let ensureRepoSetup (info : RepoSetupInfo) =
             runSimpleGitCommand info.FolderPath ("checkout " + info.GithubBranch) |> ignore
     else
         printfn "Directory %s found" info.FolderName
-
-Target "Build.FCS_Fable" (fun _ ->
-    runScript FCSFableFolderPath "fcs\\build" "CodeGen.Fable"
-)
 
 Target "Build.FCS_Export" (fun _ ->
     ensureRepoSetup
