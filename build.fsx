@@ -102,20 +102,6 @@ let ensureRepoSetup (info : RepoSetupInfo) =
     else
         printfn "Directory %s found" info.FolderName
 
-Target "Setup" (fun _ ->
-    ensureRepoSetup
-        { FolderPath = FCSFableFolderPath
-          FolderName = FCSFableFolderName
-          GithubLink = "git@github.com:ncave/FSharp.Compiler.Service.git"
-          GithubBranch = "fable" }
-
-    ensureRepoSetup
-        { FolderPath = FableFolderPath
-          FolderName = FableFolderName
-          GithubLink = "git@github.com:fable-compiler/Fable.git"
-          GithubBranch = "master" }
-)
-
 Target "Build.FCS_Fable" (fun _ ->
     runScript FCSFableFolderPath "fcs\\build" "CodeGen.Fable"
 )
@@ -210,21 +196,14 @@ Target "DownloadReplArtifact" (fun _ ->
 Target "All" DoNothing
 
 // Build order
-// "Setup"
-//     ==> "Build.FCS_Fable"
-//     ==> "Build.Fable"
 "Clean"
     ==> "InstallDotNetCore"
     ==> "Restore"
     ==> "YarnInstall"
     ==> "CopyModules"
-    // ==> "Build.FCS"
     ==> "DownloadReplArtifact"
     ==> "Build.App"
     ==> "All"
-
-"Watch.App"
-    <== [ "Build.FCS" ]
 
 "Build.FCS_Export"
     ==> "Generate.Metadata"
