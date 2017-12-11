@@ -83,6 +83,7 @@ type Msg =
     | ToggleFsharpCollapse
     | ToggleHtmlCollapse
     | FailEditorsLayout of exn
+    | WindowResize
 
 open Elmish
 open Fable.Import.JS
@@ -188,6 +189,9 @@ let update msg model =
             | HtmlOnly -> FSharpOnly
 
         { model with EditorCollapse = newState }, Cmd.attemptFunc updateLayouts () FailEditorsLayout
+
+    | WindowResize ->
+        model, Cmd.attemptFunc updateLayouts () FailEditorsLayout
 
     | FailEditorsLayout error ->
         console.log error.Message
@@ -404,6 +408,20 @@ let view model dispatch =
               outputArea model dispatch ] ]
 
 open Elmish.React
+
+let resizeSubscription _ =
+    let sub dispatch =
+        let mutable lastTick = DateTime.Now
+
+        window.addEventListener_resize(Func<_,_>(fun _ ->
+            let now = DateTime.Now
+            if lastTick - now > TimeSpan.FromSeconds 1.5 then
+                dispatch WindowResize
+                lastTick <- now
+            null
+        ))
+
+    Cmd.ofSub sub
 
 Program.mkProgram init update view
 #if DEBUG
