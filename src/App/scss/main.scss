@@ -8,79 +8,101 @@ html {
 }
 
 .page-content {
-    display: flex;
     height: calc(100vh - #{$navbar-height});
-    width: 100%;
+    widows: 100%;
+    display: flex;
 
-    .horizontal-resize {
-        width: 6px;
-        margin-left: -3px;
-        background-color: #505050;
-        cursor: ew-resize;
-        z-index: 1000;
+    .sidebar {
+        display: block;
+        flex: none;
+        width: 250px;
+        background-color: $grey-dark;
+
+        .card-header {
+            cursor: pointer;
+        }
     }
 
-    .vertical-resize {
-        height: 8px;
-        margin-top: -4px;
-        background-color: #505050;
-        cursor: ns-resize;
-        z-index: 1000;
-    }
+    .main-content {
+        display: block;
+        flex-basis: 0;
+        flex-grow: 1;
+        flex-shrink: 1;
 
-    .editor-container {
-        height: 100%;
-        background-color: #363636;
+        .horizontal-resize {
+            width: 6px;
+            margin-left: -3px;
+            background-color: #505050;
+            cursor: ew-resize;
+            z-index: 1000;
+        }
 
-        .card {
-            background-color: #1e1e1e;
+        .vertical-resize {
+            height: 8px;
+            margin-top: -4px;
+            background-color: #505050;
+            cursor: ns-resize;
+            z-index: 1000;
+        }
 
-            .card-header {
-                background-color: white;
-                cursor: pointer;
+        .editor-container {
+            height: 100%;
+            background-color: #363636;
 
-                .icon {
-                    color: $dark;
+            .card {
+                background-color: #1e1e1e;
 
-                    &:hover {
-                        color: grey;
+                .card-header {
+                    background-color: white;
+                    cursor: pointer;
+
+                    .icon {
+                        color: $dark;
+
+                        &:hover {
+                            color: grey;
+                        }
                     }
                 }
-            }
 
-            .card-content {
-                padding: 0;
-                height: calc(100% - 3em); // Compensate the line-height: 1.5; of the header
+                .card-content {
+                    padding: 0;
+                    height: calc(100% - 3em); // Compensate the line-height: 1.5; of the header
 
-                .editor-fsharp,
-                .editor-html {
-                    height: 100%;
+                    .editor-fsharp,
+                    .editor-html {
+                        height: 100%;
+                    }
+
                 }
+            }
 
+        }
+
+        .collapse-control {
+            position: absolute;
+            z-index: 1000;
+        }
+
+        .output-container {
+            height: 100%;
+
+            .tabs {
+                margin-bottom: 0;
+            }
+
+            .editor-output {
+                height: 100%;
+            }
+
+            iframe {
+                width: 100%;
+                height: 100%;
             }
         }
-
     }
+}
 
-    .collapse-control {
-        position: absolute;
-        z-index: 1000;
-    }
-
-    .output-container {
-        height: 100%;
-
-        .tabs {
-            margin-bottom: 0;
-        }
-
-        .editor-output {
-            height: 100%;
-        }
-
-        iframe {
-            width: 100%;
-            height: 100%;
-        }
-    }
+.sidebar {
+    width: 250px;
 }

@@ -1,7 +1,6 @@
 module Mouse
 
 open Fable.Import.Browser
-open Fable.Core.JsInterop
 open System
 open Thot.Json
 

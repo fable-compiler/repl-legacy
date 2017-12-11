@@ -65,7 +65,8 @@ type Model =
       DragTarget : DragTarget
       EditorSplitRatio : float
       PanelSplitRatio : float
-      EditorCollapse : EditorCollapse }
+      EditorCollapse : EditorCollapse
+      Sidebar : Sidebar.Model }
 
 type Msg =
     | StartCompile
@@ -84,6 +85,7 @@ type Msg =
     | ToggleHtmlCollapse
     | FailEditorsLayout of exn
     | WindowResize
+    | SidebarMsg of Sidebar.Msg
 
 open Elmish
 open Fable.Import.JS
@@ -168,8 +170,8 @@ let update msg model =
     | PanelDrag position ->
         { model with PanelSplitRatio =
                         position
-                        |> (fun p -> p.X)
-                        |> (fun w -> w / window.innerWidth)
+                        |> (fun p -> p.X - 250.)
+                        |> (fun w -> w / (window.innerWidth - 250.))
                         |> clamp 0.2 0.8 }, Cmd.none
 
     | ToggleFsharpCollapse ->
@@ -197,6 +199,10 @@ let update msg model =
         console.log error.Message
         model, Cmd.none
 
+    | SidebarMsg msg ->
+        let (subModel, cmd, externalMsg) = Sidebar.update msg model.Sidebar
+        { model with Sidebar = subModel }, Cmd.map SidebarMsg cmd
+
 let init _ = { State = NoState
                Url = ""
                ActiveTab = LiveTab
@@ -205,12 +211,14 @@ let init _ = { State = NoState
                DragTarget = NoTarget
                EditorSplitRatio = 0.6
                PanelSplitRatio = 0.5
-               EditorCollapse = BothExtended }, Cmd.batch [ Cmd.ups MouseUp
-                                                            Cmd.move MouseMove
-                                                            Cmd.iframeMessage MouseMove MouseUp ]
+               EditorCollapse = BothExtended
+               Sidebar = Sidebar.init () }, Cmd.batch [ Cmd.ups MouseUp
+                                                        Cmd.move MouseMove
+                                                        Cmd.iframeMessage MouseMove MouseUp ]
 
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
+open Fulma.Layouts
 
 let numberToPercent number =
     string (number * 100.) + "%"
@@ -401,11 +409,14 @@ let view model dispatch =
     div [ classList [ "is-unselectable", isDragging ] ]
         [ menubar (model.State = Compiling) dispatch
           div [ ClassName "page-content" ]
-            [ editorArea model dispatch
-              div [ ClassName "horizontal-resize"
-                    OnMouseDown (fun _ -> dispatch PanelDragStarted) ]
-                [ ]
-              outputArea model dispatch ] ]
+            [ Sidebar.view model.Sidebar (SidebarMsg >> dispatch)
+              div [ ClassName "main-content" ]
+                [ div [ ClassName "page-content" ]
+                    [ editorArea model dispatch
+                      div [ ClassName "horizontal-resize"
+                            OnMouseDown (fun _ -> dispatch PanelDragStarted) ]
+                        [ ]
+                      outputArea model dispatch ] ] ] ]
 
 open Elmish.React
 
