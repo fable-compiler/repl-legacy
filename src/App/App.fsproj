@@ -6,6 +6,7 @@
     <Compile Include="../Monaco/monaco.fs" />
     <Compile Include="Generator.fs" />
     <Compile Include="Mouse.fs" />
+    <Compile Include="Samples.fs" />
     <Compile Include="Sidebar.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>

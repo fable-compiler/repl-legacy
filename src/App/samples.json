@@ -1,0 +1,38 @@
+[
+    {
+        "type": "category",
+        "children": [
+            {
+                "label": "General",
+                "children": [
+                    {
+                        "type": "simple",
+                        "label": "Dashboard"
+                    },
+                    {
+                        "type": "simple",
+                        "label": "Dashboard"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "type": "category",
+        "children": [
+            {
+                "label": "General",
+                "children": [
+                    {
+                        "type": "simple",
+                        "label": "Dashboard"
+                    },
+                    {
+                        "type": "simple",
+                        "label": "Dashboard"
+                    }
+                ]
+            }
+        ]
+    }
+]

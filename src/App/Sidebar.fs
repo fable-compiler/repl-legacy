@@ -30,7 +30,6 @@ open Fulma.Elements
 open Fulma.Extra.FontAwesome
 open Fulma.Components
 
-
 let view model dispatch =
     div [ ClassName "sidebar" ]
         [ Card.card [ ]
@@ -42,5 +41,9 @@ let view model dispatch =
                         [ Fa.icon Fa.I.AngleUp
                           Fa.faLg ] ] ]
               Card.content [ ]
-                [ ] ]
+                [ Samples.view ()
+
+
+
+                ] ]
         ]

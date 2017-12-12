@@ -17,6 +17,7 @@ module Editor =
     let create(element: Browser.HTMLElement): monaco.editor.IStandaloneCodeEditor = importMember "editor"
 
     let compileAndRunCurrentResults (_:unit) : string * string = importMember "editor"
+
 // We store a reference to the editor so we can access it
 // Later we will probably wrap it inside a Cmd implementation
 // For now, it's good enough for some proto
@@ -270,9 +271,9 @@ let editorArea model dispatch =
         | BothExtended ->
             numberToPercent model.EditorSplitRatio, numberToPercent (1. - model.EditorSplitRatio)
         | FSharpOnly ->
-            "calc(100% - 54px)", "44px"
+            "calc(100% - 48px)", "38px"
         | HtmlOnly ->
-            "44px", "calc(100% - 49px)"
+            "38px", "calc(100% - 44px)"
 
     div [ ClassName "editor-container"
           Style [ Width (numberToPercent model.PanelSplitRatio) ] ]
@@ -433,26 +434,3 @@ Program.mkProgram init update view
 |> Program.withSubscription resizeSubscription
 |> Program.withReact "app-container"
 |> Program.run
-
-
-// open Fable.Core
-// open Fable.Core.JsInterop
-// open Fable.Import.Browser
-
-// let canvas = document.querySelector(".view") :?> HTMLCanvasElement
-
-// let ctx = canvas.getContext_2d()
-// // The (!^) operator checks and casts a value to an Erased Union type
-// // See http://fable.io/docs/interacting.html#Erase-attribute
-// ctx.fillStyle <- !^"rgb(200,0,0)"
-// ctx.fillRect (10., 10., 55., 50.)
-// ctx.fillStyle <- !^"rgba(0, 0, 200, 0.5)"
-// ctx.fillRect (30., 30., 55., 50.)
-
-// <html>
-//     <head>
-//     </head>
-//     <body>
-//         <canvas class="view" width="800" height="600"></canvas>
-//     </body>
-// </html>
