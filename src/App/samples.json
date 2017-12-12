@@ -1,17 +1,23 @@
 [
     {
         "type": "category",
+        "label": "Learn Fable",
         "children": [
             {
-                "label": "General",
+                "type": "menu-item",
+                "label": "Basic canvas",
+                "fsharpCode": "",
+                "htmlCode": "default"
+            },
+            {
+                "type": "sub-category",
+                "label": "Interop",
                 "children": [
                     {
-                        "type": "simple",
-                        "label": "Dashboard"
-                    },
-                    {
-                        "type": "simple",
-                        "label": "Dashboard"
+                        "type": "menu-item",
+                        "label": "Pojo",
+                        "fsharpCode": "",
+                        "htmlCode": "default"
                     }
                 ]
             }
@@ -19,19 +25,37 @@
     },
     {
         "type": "category",
+        "label": "Samples",
         "children": [
             {
-                "label": "General",
+                "type": "sub-category",
+                "label": "Fun and Games",
                 "children": [
                     {
-                        "type": "simple",
-                        "label": "Dashboard"
+                        "type": "menu-item",
+                        "label": "Super Fable Mario",
+                        "fsharpCode": "",
+                        "htmlCode": "default"
                     },
                     {
-                        "type": "simple",
-                        "label": "Dashboard"
+                        "type": "menu-item",
+                        "label": "Ozmo Game",
+                        "fsharpCode": "",
+                        "htmlCode": "default"
                     }
                 ]
+            }
+        ]
+    },
+    {
+        "type": "category",
+        "label": "Visualizations",
+        "children": [
+            {
+                "type": "menu-item",
+                "label": "Mandelbrot",
+                "fsharpCode": "",
+                "htmlCode": "default"
             }
         ]
     }

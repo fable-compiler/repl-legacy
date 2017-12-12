@@ -130,6 +130,7 @@ let create(domElement) =
         )
 
         o.language <- Some "fsharp"
+        o.fontSize <- Some 14.
         o.theme <- Some "vs-dark"
         o.value <- Some "module Program\n\nprintfn \"Hello World!\""
         o.minimap <- Some minimapOptions

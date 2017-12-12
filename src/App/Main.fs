@@ -322,6 +322,7 @@ let editorArea model dispatch =
                                             )
 
                                             o.language <- Some "html"
+                                            o.fontSize <- Some 14.
                                             o.theme <- Some "vs-dark"
                                             o.value <- Some outputHtml
                                             o.minimap <- Some minimapOptions
@@ -371,6 +372,7 @@ let viewCodeEditor isShown code =
                                 )
 
                                 o.language <- Some "javascript"
+                                o.fontSize <- Some 14.
                                 o.theme <- Some "vs-dark"
                                 o.minimap <- Some minimapOptions
                             )

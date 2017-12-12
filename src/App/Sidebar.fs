@@ -3,18 +3,21 @@ module Sidebar
 open Elmish
 
 type Model =
-    { IsExpanded : bool }
+    { IsExpanded : bool
+      Samples : Samples.Model }
 
 type Msg =
     | Expand
     | Collapse
+    | SamplesMsg of Samples.Msg
 
 type ExternalMsg =
     | LoadSample of string
     | NoOp
 
 let init _ =
-    { IsExpanded = true }
+    { IsExpanded = true
+      Samples = Samples.init () }
 
 let update msg model =
     match msg with
@@ -23,6 +26,11 @@ let update msg model =
 
     | Collapse ->
         { model with IsExpanded = false }, Cmd.none,NoOp
+
+    | SamplesMsg msg ->
+        let (samplesModel, samplesCmd) = Samples.update msg model.Samples
+
+        { model with Samples = samplesModel }, Cmd.map SamplesMsg samplesCmd, NoOp
 
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
@@ -41,9 +49,6 @@ let view model dispatch =
                         [ Fa.icon Fa.I.AngleUp
                           Fa.faLg ] ] ]
               Card.content [ ]
-                [ Samples.view ()
-
-
-
+                [ Samples.view model.Samples (SamplesMsg >> dispatch)
                 ] ]
         ]
