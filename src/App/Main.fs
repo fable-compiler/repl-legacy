@@ -422,22 +422,15 @@ open Elmish.React
 
 let resizeSubscription _ =
     let sub dispatch =
-        let mutable lastTick = DateTime.Now
-
         window.addEventListener_resize(Func<_,_>(fun _ ->
-            let now = DateTime.Now
-            if lastTick - now > TimeSpan.FromSeconds 1.5 then
-                dispatch WindowResize
-                lastTick <- now
+            dispatch WindowResize
             null
         ))
 
     Cmd.ofSub sub
 
 Program.mkProgram init update view
-#if DEBUG
-// |> Program.withConsoleTrace
-#endif
+|> Program.withSubscription resizeSubscription
 |> Program.withReact "app-container"
 |> Program.run
 
