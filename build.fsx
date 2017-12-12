@@ -57,7 +57,7 @@ let FableFolderName = "Fable"
 
 let FCSExportFolderPath = rootDir </> FCSExportFolderName
 let FableFolderPath = rootDir </> FableFolderName
-let AppveyorReplArtifactURL = "https://ci.appveyor.com/api/projects/fable-compiler/Fable/artifacts/src/dotnet/Fable.JS/demo/repl/bundle.zip"
+let AppveyorReplArtifactURL = "https://ci.appveyor.com/api/projects/fable-compiler/Fable/artifacts/src/dotnet/Fable.JS/demo/repl/bundle.zip?branch=master"
 
 let rec waitUserResponse _ =
     let userInput = Console.ReadLine()
