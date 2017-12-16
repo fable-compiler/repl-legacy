@@ -20,6 +20,10 @@ module Editor =
 
     let compileAndRunCurrentResults (_:unit) : string * string = importMember "editor"
 
+// let editor : Fable.Editor.Interfaces.IExports = importDefault "editor"
+
+// console.log editor
+
 // We store a reference to the editor so we can access it
 // Later we will probably wrap it inside a Cmd implementation
 // For now, it's good enough for some proto

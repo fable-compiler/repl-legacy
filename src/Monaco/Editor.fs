@@ -153,3 +153,12 @@ let create(domElement) =
     // )) |> ignore
 
     ed
+
+// [<ExportDefault>]
+// let exports =
+//     { new Editor.Interfaces.IExports with
+//         member __.CreateFSharpEditor domElement = create domElement
+
+//         member __.ParseEditor editor = parseEditor editor
+
+//         member __.CompileAndRunCurrentResults () = compileAndRunCurrentResults  () }
