@@ -13,16 +13,16 @@ open Mouse
 
 importSideEffects "./scss/main.scss"
 
-module Editor =
-    let create(_: Browser.HTMLElement): monaco.editor.IStandaloneCodeEditor = importMember "editor"
+// module Editor =
+//     let create(_: Browser.HTMLElement): monaco.editor.IStandaloneCodeEditor = importMember "editor"
 
-    let parseEditor (_: monaco.editor.IModel) = importMember "editor"
+//     let parseEditor (_: monaco.editor.IModel) = importMember "editor"
 
-    let compileAndRunCurrentResults (_:unit) : string * string = importMember "editor"
+//     let compileAndRunCurrentResults (_:unit) : string * string = importMember "editor"
 
-// let editor : Fable.Editor.Interfaces.IExports = importDefault "editor"
+let editor : Fable.Editor.Interfaces.IExports = importDefault "editor"
 
-// console.log editor
+console.log editor
 
 // We store a reference to the editor so we can access it
 // Later we will probably wrap it inside a Cmd implementation
@@ -107,7 +107,7 @@ let updateLayouts _ =
 let update msg model =
     match msg with
     | StartCompile ->
-        { model with State = Compiling }, Cmd.performFunc Editor.compileAndRunCurrentResults () EndCompile
+        { model with State = Compiling }, Cmd.performFunc editor.CompileAndRunCurrentResults () EndCompile
 
     | EndCompile (codeES2015, codeAMD) ->
         { model with State = Compiled
@@ -201,7 +201,7 @@ let update msg model =
         | Sidebar.LoadSample (fsharpCode, htmlCode) ->
             editorFsharp.setValue fsharpCode
             // Force the FCS to parse the new F# code
-            Editor.parseEditor (editorFsharp.getModel())
+            editor.ParseEditor (editorFsharp.getModel())
             editorHtml.setValue htmlCode
 
         { model with Sidebar = subModel }, Cmd.map SidebarMsg cmd
@@ -297,7 +297,7 @@ let editorArea model dispatch =
                         Ref (fun element ->
                               if not (isNull element) then
                                 if element.childElementCount = 0. then
-                                    editorFsharp <- Editor.create (element :?> Browser.HTMLElement)
+                                    editorFsharp <- editor.CreateFSharpEditor (element :?> Browser.HTMLElement)
                                 else
                                     if isDragging then
                                         editorFsharp.layout()
