@@ -7,6 +7,7 @@ open Fable.Helpers.React.Props
 open Fulma.Common
 open Fulma.Extra.FontAwesome
 open Fable.Core.JsInterop
+open Fable.PowerPack
 
   /////////////////////
  // Sample def DSL  //
@@ -14,12 +15,16 @@ open Fable.Core.JsInterop
 
 let sampleJson : obj = importAll "./samples.json"
 
+type HtmlCodeInfo =
+    | Default
+    | Url of string
+
 let decodeHtmlCode =
     Decode.string
     |> Decode.andThen (fun code ->
         match code with
-        | "default" -> Decode.succeed "bla bla default html"
-        | custom -> Decode.succeed custom
+        | "default" -> Decode.succeed Default
+        | custom -> Decode.succeed (Url custom)
     )
 
 type CategoryInfo =
@@ -34,7 +39,7 @@ and SubCategory =
 and MenuItemInfo =
     { Label : string
       FSharpCode : string
-      HtmlCode : string }
+      HtmlCode : HtmlCodeInfo }
 
 and MenuType =
     | Category of CategoryInfo
@@ -105,6 +110,13 @@ type Model =
 
 type Msg =
     | ToggleMenuState of int list
+    | FetchSample of string * HtmlCodeInfo
+    | FetchCodeSuccess of string * string
+    | FetchCodeError of exn
+
+type ExternalMsg =
+    | NoOp
+    | LoadSample of FSharpCode : string * HtmlCode : string
 
 let init _ =
     match Decode.decodeValue decodeSampleJson sampleJson with
@@ -133,19 +145,43 @@ let rec updateSubCategoryState (path : int list) (menus : MenuType list) =
             menu
     )
 
+let getCodeFromUrl (fsharpUrl, htmlInfo) =
+    promise {
+        let url = "" + fsharpUrl
+        let! fsharpRes = Fetch.fetch url []
+        let! fsharpCode = fsharpRes.text()
+
+        match htmlInfo with
+        | Default ->
+            return fsharpCode, Generator.defaultHtmlCode
+        | Url url ->
+            let! htmlRes = Fetch.fetch ("" + url) []
+            let! htmlCode = htmlRes.text()
+            return fsharpCode, htmlCode
+    }
+
 let update msg model =
     match msg with
     | ToggleMenuState path ->
         let newMenuInfos = updateSubCategoryState path model.MenuInfos
-        { model with MenuInfos = newMenuInfos }, Cmd.none
+        { model with MenuInfos = newMenuInfos }, Cmd.none, NoOp
+    | FetchSample (fsharpUrl, htmlInfo) ->
+        model, Cmd.ofPromise getCodeFromUrl (fsharpUrl, htmlInfo) FetchCodeSuccess FetchCodeError, NoOp
+
+    | FetchCodeSuccess (fsharpCode, htmlCode) ->
+        model, Cmd.none, LoadSample (fsharpCode, htmlCode)
+
+    | FetchCodeError error ->
+        Fable.Import.Browser.console.error error
+        model, Cmd.none, NoOp
 
 let inline genKey key = Props [ Key key ]
 
-let private menuItem txt currentPath dispatch =
+let private menuItem info dispatch =
     li [ ]
-       [ a [ ]
+       [ a [ OnClick (fun _ -> FetchSample (info.FSharpCode, info.HtmlCode) |> dispatch ) ]
            [ span [ ]
-                [ str txt ] ] ]
+                [ str info.Label ] ] ]
 
 let private subMenu label currentPath isActive children dispatch =
     let children =
@@ -191,7 +227,7 @@ let rec private render (path : int list) index (sample : MenuType) dispatch =
             dispatch
 
     | MenuItem info ->
-        menuItem info.Label currentPath dispatch
+        menuItem info dispatch
 
 let view model dispatch =
     Menu.menu [ ]

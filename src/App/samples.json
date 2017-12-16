@@ -6,8 +6,8 @@
             {
                 "type": "menu-item",
                 "label": "Basic canvas",
-                "fsharpCode": "",
-                "htmlCode": "default"
+                "fsharpCode": "samples/basic-canvas/basic_canvas.fs",
+                "htmlCode": "samples/basic-canvas/basic_canvas.html"
             },
             {
                 "type": "sub-category",
@@ -16,8 +16,14 @@
                     {
                         "type": "menu-item",
                         "label": "Pojo",
-                        "fsharpCode": "",
+                        "fsharpCode": "samples/pojo.fs",
                         "htmlCode": "default"
+                    },
+                    {
+                        "type": "menu-item",
+                        "label": "Mini JQuery bindings",
+                        "fsharpCode": "samples/jquery/jquery.fs",
+                        "htmlCode": "samples/jquery/jquery.html"
                     }
                 ]
             }
@@ -34,14 +40,14 @@
                     {
                         "type": "menu-item",
                         "label": "Super Fable Mario",
-                        "fsharpCode": "",
-                        "htmlCode": "default"
+                        "fsharpCode": "samples/mario/mario.fs",
+                        "htmlCode": "samples/mario/mario.html"
                     },
                     {
                         "type": "menu-item",
                         "label": "Ozmo Game",
-                        "fsharpCode": "",
-                        "htmlCode": "default"
+                        "fsharpCode": "samples/ozmo/ozmo.fs",
+                        "htmlCode": "samples/ozmo/ozmo.html"
                     }
                 ]
             }
@@ -54,8 +60,8 @@
             {
                 "type": "menu-item",
                 "label": "Mandelbrot",
-                "fsharpCode": "",
-                "htmlCode": "default"
+                "fsharpCode": "samples/mandelbrot/mandelbrot.fs",
+                "htmlCode": "samples/mandelbrot/mandelbrot.html"
             }
         ]
     }

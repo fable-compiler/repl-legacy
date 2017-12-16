@@ -12,7 +12,7 @@ type Msg =
     | SamplesMsg of Samples.Msg
 
 type ExternalMsg =
-    | LoadSample of string
+    | LoadSample of string * string
     | NoOp
 
 let init _ =
@@ -28,9 +28,14 @@ let update msg model =
         { model with IsExpanded = false }, Cmd.none,NoOp
 
     | SamplesMsg msg ->
-        let (samplesModel, samplesCmd) = Samples.update msg model.Samples
+        let (samplesModel, samplesCmd, externalMsg) = Samples.update msg model.Samples
 
-        { model with Samples = samplesModel }, Cmd.map SamplesMsg samplesCmd, NoOp
+        let extraMsg =
+            match externalMsg with
+            | Samples.NoOp -> NoOp
+            | Samples.LoadSample (fsharpCode, htmlCode) -> LoadSample (fsharpCode, htmlCode)
+
+        { model with Samples = samplesModel }, Cmd.map SamplesMsg samplesCmd, extraMsg
 
 open Fable.Helpers.React
 open Fable.Helpers.React.Props

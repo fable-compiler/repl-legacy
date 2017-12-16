@@ -14,7 +14,9 @@ open Mouse
 importSideEffects "./scss/main.scss"
 
 module Editor =
-    let create(element: Browser.HTMLElement): monaco.editor.IStandaloneCodeEditor = importMember "editor"
+    let create(_: Browser.HTMLElement): monaco.editor.IStandaloneCodeEditor = importMember "editor"
+
+    let parseEditor (_: monaco.editor.IModel) = importMember "editor"
 
     let compileAndRunCurrentResults (_:unit) : string * string = importMember "editor"
 
@@ -26,17 +28,6 @@ let mutable editorFsharp = Unchecked.defaultof<monaco.editor.IStandaloneCodeEdit
 let mutable editorHtml = Unchecked.defaultof<monaco.editor.IStandaloneCodeEditor>
 
 let mutable editorCode = Unchecked.defaultof<monaco.editor.IStandaloneCodeEditor>
-
-let outputHtml =
-    """
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    </head>
-    <body>
-    </body>
-</html>
-    """.Trim()
 
 type State =
     | Compiling
@@ -115,8 +106,6 @@ let update msg model =
         { model with State = Compiling }, Cmd.performFunc Editor.compileAndRunCurrentResults () EndCompile
 
     | EndCompile (codeES2015, codeAMD) ->
-        console.log("code")
-        console.log codeES2015
         { model with State = Compiled
                      CodeES2015 = codeES2015
                      CodeAMD = codeAMD }, Cmd.batch [ Cmd.performFunc generateHtmlUrl codeAMD SetUrl ]
@@ -202,6 +191,15 @@ let update msg model =
 
     | SidebarMsg msg ->
         let (subModel, cmd, externalMsg) = Sidebar.update msg model.Sidebar
+
+        match externalMsg with
+        | Sidebar.NoOp -> ()
+        | Sidebar.LoadSample (fsharpCode, htmlCode) ->
+            editorFsharp.setValue fsharpCode
+            // Force the FCS to parse the new F# code
+            Editor.parseEditor (editorFsharp.getModel())
+            editorHtml.setValue htmlCode
+
         { model with Sidebar = subModel }, Cmd.map SidebarMsg cmd
 
 let init _ = { State = NoState
@@ -324,7 +322,7 @@ let editorArea model dispatch =
                                             o.language <- Some "html"
                                             o.fontSize <- Some 14.
                                             o.theme <- Some "vs-dark"
-                                            o.value <- Some outputHtml
+                                            o.value <- Some Generator.defaultHtmlCode
                                             o.minimap <- Some minimapOptions
                                         )
 

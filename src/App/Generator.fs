@@ -4,6 +4,18 @@ module Generator
 open Fable.Core.JsInterop
 open Fable.Import.Browser
 
+let defaultHtmlCode =
+    """
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    </head>
+    <body>
+    </body>
+</html>
+    """.Trim()
+
+#if DEBUG
 let private requireConfig =
     """
 <body>
@@ -18,7 +30,6 @@ let private requireConfig =
     <script>
     (function () {
         var origin = window.location.origin;
-        console.log(origin);
         document.addEventListener("mousemove", function (ev) {
             window.parent.postMessage({
                 type: "mousemove",
@@ -36,6 +47,39 @@ let private requireConfig =
     })();
     </script>
     """.Trim()
+#else
+let private requireConfig =
+    """
+<body>
+    <script src="http://fable.io/fable-repl/libs/requirejs/require.js"></script>
+    <script>
+        require.config({
+        paths: {
+            'fable-core': 'http://fable.io/fable-repl/js/repl/fable-core'
+        }
+        });
+    </script>
+    <script>
+    (function () {
+        var origin = window.location.origin;
+        document.addEventListener("mousemove", function (ev) {
+            window.parent.postMessage({
+                type: "mousemove",
+                x: ev.screenX,
+                y: ev.screenY
+            }, origin);
+        });
+
+        document.addEventListener("mouseup", function (ev) {
+            window.parent.postMessage({
+                type: "mouseup"
+            }, origin);
+        });
+
+    })();
+    </script>
+    """.Trim()
+#endif
 
 let private bundleScriptTag url = sprintf "<script src=\"%s\"></script>\n</body>" url
 
