@@ -3,13 +3,14 @@
     <TargetFramework>netstandard1.6</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="../Monaco/Monaco.fs" />
-    <Compile Include="../Monaco/Interface.fs" />
     <Compile Include="Generator.fs" />
     <Compile Include="Mouse.fs" />
     <Compile Include="Samples.fs" />
     <Compile Include="Sidebar.fs" />
     <Compile Include="Main.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Monaco\Monaco.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

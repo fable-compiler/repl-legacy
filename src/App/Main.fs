@@ -13,16 +13,7 @@ open Mouse
 
 importSideEffects "./scss/main.scss"
 
-module Editor =
-    let create(_: Browser.HTMLElement): monaco.editor.IStandaloneCodeEditor = importMember "editor"
-
-    let parseEditor (_: monaco.editor.IModel) = importMember "editor"
-
-    let compileAndRunCurrentResults (_:unit) : string * string = importMember "editor"
-
-// let editor : Fable.Editor.Interfaces.IExports = importDefault "editor"
-
-// console.log editor
+let editor = Fable.Editor.Main.fableEditor
 
 // We store a reference to the editor so we can access it
 // Later we will probably wrap it inside a Cmd implementation
@@ -84,7 +75,6 @@ type Msg =
     | SidebarMsg of Sidebar.Msg
 
 open Elmish
-open Fable.Import.JS
 
 let generateHtmlUrl jsCode =
     let jsUrl = Generator.generateBlobURL jsCode Generator.JavaScript
@@ -107,7 +97,7 @@ let updateLayouts _ =
 let update msg model =
     match msg with
     | StartCompile ->
-        { model with State = Compiling }, Cmd.performFunc Editor.compileAndRunCurrentResults () EndCompile
+        { model with State = Compiling }, Cmd.performFunc editor.CompileAndRunCurrentResults () EndCompile
 
     | EndCompile (codeES2015, codeAMD) ->
         { model with State = Compiled
@@ -201,7 +191,7 @@ let update msg model =
         | Sidebar.LoadSample (fsharpCode, htmlCode) ->
             editorFsharp.setValue fsharpCode
             // Force the FCS to parse the new F# code
-            Editor.parseEditor (editorFsharp.getModel())
+            editor.ParseEditor (editorFsharp.getModel())
             editorHtml.setValue htmlCode
 
         { model with Sidebar = subModel }, Cmd.map SidebarMsg cmd
@@ -221,12 +211,11 @@ let init _ = { State = NoState
 
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
-open Fulma.Layouts
 
-let numberToPercent number =
+let private numberToPercent number =
     string (number * 100.) + "%"
 
-let menubar isCompiling dispatch =
+let private menubar isCompiling dispatch =
     let iconView =
         if isCompiling then
             Icon.faIcon [ Icon.isSmall ]
@@ -249,7 +238,7 @@ let menubar isCompiling dispatch =
               Navbar.item_div [ Navbar.Item.props [ Style [ Color "white" ] ] ]
                 [ str "You can also press Alt+Enter from the editor" ] ] ]
 
-let editorArea model dispatch =
+let private editorArea model dispatch =
     let isDragging =
         match model.DragTarget with
         | EditorSplitter
@@ -273,13 +262,13 @@ let editorArea model dispatch =
         | BothExtended ->
             numberToPercent model.EditorSplitRatio, numberToPercent (1. - model.EditorSplitRatio)
         | FSharpOnly ->
-            "calc(100% - 48px)", "38px"
+            "calc(100% - 42px)", "38px" // 46px = 42px + 4px (card-header height + vertical-resize height)
         | HtmlOnly ->
-            "38px", "calc(100% - 44px)"
+            "38px", "calc(100% - 42px)"
 
     div [ ClassName "editor-container"
           Style [ Width (numberToPercent model.PanelSplitRatio) ] ]
-        [ Card.card [ Card.props [ Style [ Height fsharpHeight ] ] ]
+        [ Card.card [ Card.props [ Style [ Height ("calc("+ fsharpHeight + " - 4px)") ] ] ] // We remove 4px to compensate the vertical-resize height
             [ Card.header [ Card.Header.props [ OnClick (fun _ -> dispatch ToggleFsharpCollapse )] ]
                 [ Card.Header.title [ ]
                     [ str "F#" ]
@@ -297,7 +286,7 @@ let editorArea model dispatch =
                         Ref (fun element ->
                               if not (isNull element) then
                                 if element.childElementCount = 0. then
-                                    editorFsharp <- Editor.create (element :?> Browser.HTMLElement)
+                                    editorFsharp <- editor.CreateFSharpEditor (element :?> Browser.HTMLElement)
                                 else
                                     if isDragging then
                                         editorFsharp.layout()
@@ -336,7 +325,7 @@ let editorArea model dispatch =
                                             editorHtml.layout()
                         ) ] [ ] ] ] ]
 
-let outputTabs (activeTab : ActiveTab) dispatch =
+let private outputTabs (activeTab : ActiveTab) dispatch =
     Tabs.tabs [ Tabs.isCentered
                 Tabs.isMedium ]
         [ Tabs.tab [ if (activeTab = LiveTab) then
@@ -352,18 +341,18 @@ let outputTabs (activeTab : ActiveTab) dispatch =
                      ] ]
             [ a [ ] [ str "Code" ] ] ]
 
-let toggleDisplay cond =
+let private toggleDisplay cond =
     if cond then
         ""
     else
         "is-hidden"
 
-let viewIframe isShown url =
+let private viewIframe isShown url =
     iframe [ Src url
              ClassName (toggleDisplay isShown) ]
         [ ]
 
-let viewCodeEditor isShown code =
+let private viewCodeEditor isShown code =
     div [ ClassName ("editor-output " + toggleDisplay isShown)
           Ref (fun element ->
                     if not (isNull element) then
@@ -388,7 +377,7 @@ let viewCodeEditor isShown code =
             ) ]
         [ ]
 
-let outputArea model dispatch =
+let private outputArea model dispatch =
     let content =
         match model.State with
         | Compiling ->
@@ -398,13 +387,17 @@ let outputArea model dispatch =
               viewIframe (model.ActiveTab = LiveTab) model.Url
               viewCodeEditor (model.ActiveTab = CodeTab) model.CodeES2015 ]
         | NoState ->
-            [ str "No apps compiled yet" ]
+            [ br [ ]
+              div [ ClassName "has-text-centered"
+                    Style [ Width "100%" ] ]
+                [ Heading.h4 [ Heading.isSubtitle ]
+                    [ str "You need to compile an application first" ] ] ]
 
     div [ ClassName "output-container"
           Style [ Width (numberToPercent (1. - model.PanelSplitRatio)) ] ]
         content
 
-let view model dispatch =
+let private view model dispatch =
     let isDragging =
         match model.DragTarget with
         | EditorSplitter
@@ -425,7 +418,7 @@ let view model dispatch =
 
 open Elmish.React
 
-let resizeSubscription _ =
+let private resizeSubscription _ =
     let sub dispatch =
         window.addEventListener_resize(Func<_,_>(fun _ ->
             dispatch WindowResize
@@ -436,5 +429,6 @@ let resizeSubscription _ =
 
 Program.mkProgram init update view
 |> Program.withSubscription resizeSubscription
+// |> Program.withSubscription (Notifications.subscription NotificationsMsg)
 |> Program.withReact "app-container"
 |> Program.run

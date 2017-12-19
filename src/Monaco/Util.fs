@@ -1,4 +1,4 @@
-module Fable.Util
+module Fable.Editor.Util
 
 open System
 open System.Collections.Generic

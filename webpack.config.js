@@ -78,6 +78,5 @@ function getWebpackConfig(entry, filename, library) {
 }
 
 module.exports = [
-  getWebpackConfig('./src/Monaco/Monaco.fsproj', 'editor', 'editor'),
   getWebpackConfig('./src/App/App.fsproj', 'app'),
 ]

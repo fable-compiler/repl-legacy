@@ -1,6 +1,6 @@
 // source: https://github.com/ionide/ionide-web/blob/master/src/editor.fsx
 
-module Fable.Editor
+module Fable.Editor.Main
 
 open Fable.Core
 open Fable.Core.JsInterop
@@ -91,7 +91,6 @@ let completionProvider = {
 }
 
 let parseEditor (model: monaco.editor.IModel) =
-    // printfn "parseEditor"
     match fcsChecker with
     | None ->
         fcsChecker <- getChecker (fun x y -> FableREPL.CreateChecker(x, y))
@@ -132,7 +131,6 @@ let create(domElement) =
         o.language <- Some "fsharp"
         o.fontSize <- Some 14.
         o.theme <- Some "vs-dark"
-        o.value <- Some "module Program\n\nprintfn \"Hello World!\""
         o.minimap <- Some minimapOptions
     )
 
@@ -155,10 +153,11 @@ let create(domElement) =
     ed
 
 // [<ExportDefault>]
-// let exports =
-//     { new Editor.Interfaces.IExports with
-//         member __.CreateFSharpEditor domElement = create domElement
+let fableEditor =
+    { new Interfaces.IExports with
 
-//         member __.ParseEditor editor = parseEditor editor
+        member __.CreateFSharpEditor domElement = create domElement
 
-//         member __.CompileAndRunCurrentResults () = compileAndRunCurrentResults  () }
+        member __.ParseEditor editor = parseEditor editor
+
+        member __.CompileAndRunCurrentResults () = compileAndRunCurrentResults  () }

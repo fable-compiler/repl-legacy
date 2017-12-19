@@ -5,8 +5,6 @@ open Fable.Import.Browser
 let init() =
     let canvas = document.querySelector(".view") :?> HTMLCanvasElement
 
-    canvas.width <- 1000.
-    canvas.height <- 800.
     let ctx = canvas.getContext_2d()
     // The (!^) operator checks and casts a value to an Erased Union type
     // See http://fable.io/docs/interacting.html#Erase-attribute
