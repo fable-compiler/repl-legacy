@@ -118,26 +118,6 @@ Target "Generate.Metadata" (fun _ ->
     )
 )
 
-Target "Build.Fable" (fun _ ->
-    // Build standard FableCoreJS
-    // This help make sure everything is fine before building the AMD version needed by the repl repo
-    runScript FableFolderPath "build" "FableCoreJS"
-
-    let coreJsSrcDir = FableFolderPath </> "src" </> "js" </> "fable-core"
-    let outDir = currentDir </> "public" </> "build" </> "fable-core"
-
-    // Clean older files
-    CleanDir outDir
-
-    // Build AMD version of fable-core
-    let args = sprintf "--project %s -m amd --outDir %s" coreJsSrcDir outDir
-    runYarn FableFolderPath ("tsc " + args)
-)
-
-Target "Build.FCS" (fun _ ->
-    runYarn sourceDir "build-fcs"
-)
-
 Target "InstallDotNetCore" (fun _ ->
    dotnetExePath <- DotNetCli.InstallDotNetSDK dotnetcliVersion
 )
@@ -180,6 +160,10 @@ Target "Build.App" (fun _ ->
     runYarn sourceDir "build-app"
 )
 
+Target "Publish.GHPages" (fun _->
+    runYarn currentDir "gh-pages -d public"
+)
+
 Target "DownloadReplArtifact" (fun _ ->
     let targetDir = currentDir </> "public/js/repl"
     downloadArtifact targetDir AppveyorReplArtifactURL
@@ -199,6 +183,9 @@ Target "All" DoNothing
 
 "Build.FCS_Export"
     ==> "Generate.Metadata"
+
+"Publish.GHPages"
+    <== [ "Build.App" ]
 
 // start build
 RunTargetOrDefault "All"
