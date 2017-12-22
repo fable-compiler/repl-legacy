@@ -1,10 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Fable.Recharts.fs" />
-    <Compile Include="app.fs" />
+    <Compile Include="Generator.fs" />
+    <Compile Include="Mouse.fs" />
+    <Compile Include="Samples.fs" />
+    <Compile Include="Sidebar.fs" />
+    <Compile Include="Main.fs" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />  
+  <ItemGroup>
+    <ProjectReference Include="..\Monaco\Monaco.fsproj" />
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

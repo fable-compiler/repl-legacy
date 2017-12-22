@@ -21,21 +21,19 @@ function getWebpackConfig(entry, filename, library) {
     output: {
       filename: "js/" + filename + '.js',
       path: resolve('./public'),
-      publicPath: 'public',
-      library: library
+      library: library,
     },
     resolve: {
       modules: [resolve("./node_modules/")]
     },
     devServer: {
-      // If we use public we won't have access to node_modules
-      contentBase: resolve('.'),
+      contentBase: resolve('public'),
       port: 8080
     },
     externals: {
       "monaco": "var monaco",
       "editor": "var editor",
-      "FableREPL": "var FableREPL",
+      "fable-repl": "var Fable",
     },
     module: {
       rules: [
@@ -62,19 +60,23 @@ function getWebpackConfig(entry, filename, library) {
           loader: 'json-loader'
         },
         {
-          test: /\.sass$/,
+          test: /\.scss$/,
           use: [
-              "style-loader",
-              "css-loader",
-              "sass-loader"
+            "style-loader",
+            "css-loader",
+            "sass-loader",
+            "postcss-loader"
           ]
-      }      
+        },
+        {
+          test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)(\?.*$|$)/,
+          use: ["file-loader"]
+        }
       ]
     }
   };
 }
 
 module.exports = [
-  getWebpackConfig('./src/App/App.fsproj', 'bundle'),
-  getWebpackConfig('./src/Monaco/Monaco.fsproj', 'editor', 'editor')
+  getWebpackConfig('./src/App/App.fsproj', 'app'),
 ]

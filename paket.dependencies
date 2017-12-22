@@ -4,8 +4,14 @@ storage:none
 clitool dotnet-fable prerelease
 nuget Fable.Core prerelease
 nuget Fable.Import.Browser
-nuget Fable.React
+nuget Fable.React 2.0.0-beta-001
 nuget Fulma prerelease
+nuget Fable.Elmish
+nuget Fable.Elmish.React 1.0.1-beta-1
+nuget Thot.Json
+nuget Fable.PowerPack
+
+github fable-compiler/Fable src/dotnet/Fable.JS/Interfaces.fs
 
 group Build
 framework: net46

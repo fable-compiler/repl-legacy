@@ -1,22 +1,22 @@
 // source: https://github.com/ionide/ionide-web/blob/master/src/editor.fsx
 
-module Fable.Editor
+module Fable.Editor.Main
 
 open Fable.Core
 open Fable.Core.JsInterop
 open Fable.Import
-open Fable.REPL.Interfaces
+open Fable.JS.Interfaces
 
 //---------------------------------------------------
 // Features providers
 //---------------------------------------------------
 
-let [<Literal>] FILE_NAME = "test.fsx"
+let [<Literal>] FILE_NAME = "test.fs"
 
-let FableREPL: IFableREPL = import "Exports" "FableREPL"
+let FableREPL: IFableManager = importDefault "fable-repl"
 
 let getChecker(f: string[] -> (string->byte[]) -> IChecker): IChecker option = importMember "./util.js"
-let runAst(jsonAst: string): unit = importMember "./util.js"
+let runAst(jsonAst: string): string * string = importMember "./util.js"
 
 let mutable fcsChecker: IChecker option = None
 let mutable fcsResults: IParseResults option = None
@@ -24,10 +24,10 @@ let mutable fcsResults: IParseResults option = None
 let compileAndRunCurrentResults () =
     match fcsResults with
     | Some res ->
-        let com = FableREPL.CreateCompiler()
-        let jsonAst = FableREPL.CompileToBabelJsonAst(com, res, "fable-core", FILE_NAME)
+        let com = FableREPL.CreateCompiler("fable-core")
+        let jsonAst = FableREPL.CompileToBabelJsonAst(com, res, FILE_NAME)
         runAst jsonAst
-    | None -> ()
+    | None -> "", ""
 
 let convertGlyph glyph =
     match glyph with
@@ -108,7 +108,7 @@ let parseEditor (model: monaco.editor.IModel) =
             m.message <- err.Message
             m.severity <-
                 match err.IsWarning with
-                | false -> monaco.Severity.Error 
+                | false -> monaco.Severity.Error
                 | true -> monaco.Severity.Warning
             markers.Add(m)
         monaco.editor.Globals.setModelMarkers(model, "test", markers)
@@ -121,16 +121,22 @@ monaco.languages.Globals.registerCompletionItemProvider("fsharp", completionProv
 //---------------------------------------------------
 // Create editor
 //---------------------------------------------------
-let create(elId) =
-    let domEditor = Browser.document.getElementById(elId)
+let create(domElement) =
 
-    let options = createEmpty<monaco.editor.IEditorConstructionOptions>
-    options.language <- Some "fsharp"
-    options.theme <- Some "vs-dark"
-    options.value <- Some "let t = 1"
+    let options = jsOptions<monaco.editor.IEditorConstructionOptions>(fun o ->
+        let minimapOptions =  jsOptions<monaco.editor.IEditorMinimapOptions>(fun oMinimap ->
+            oMinimap.enabled <- Some false
+        )
+
+        o.language <- Some "fsharp"
+        o.fontSize <- Some 14.
+        o.theme <- Some "vs-dark"
+        o.minimap <- Some minimapOptions
+    )
+
 
     let services = createEmpty<monaco.editor.IEditorOverrideServices>
-    let ed = monaco.editor.Globals.create(!!domEditor, options, services)
+    let ed = monaco.editor.Globals.create(domElement, options, services)
     let md = ed.getModel()
 
     Util.createObservable(fun trigger ->
@@ -138,10 +144,20 @@ let create(elId) =
     |> Util.debounce 1000
     |> Observable.add parseEditor
 
-    ed.addCommand(monaco.KeyMod.Alt ||| int monaco.KeyCode.Enter, (fun () ->
-        let content = md.getValue (monaco.editor.EndOfLinePreference.TextDefined, true)
-        compileAndRunCurrentResults()
-    ))
+    // Try to delegate this to Elmish app
+    // ed.addCommand(monaco.KeyMod.Alt ||| int monaco.KeyCode.Enter, (fun () ->
+    //     let content = md.getValue (monaco.editor.EndOfLinePreference.TextDefined, true)
+    //     compileAndRunCurrentResults()
+    // )) |> ignore
 
-// todo on resize:
-//     ed.layout()
+    ed
+
+// [<ExportDefault>]
+let fableEditor =
+    { new Interfaces.IExports with
+
+        member __.CreateFSharpEditor domElement = create domElement
+
+        member __.ParseEditor editor = parseEditor editor
+
+        member __.CompileAndRunCurrentResults () = compileAndRunCurrentResults  () }
