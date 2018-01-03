@@ -20,14 +20,7 @@ let runAst(jsonAst: string): string * string = importMember "./util.js"
 
 let mutable fcsChecker: IChecker option = None
 let mutable fcsResults: IParseResults option = None
-
-let compileAndRunCurrentResults () =
-    match fcsResults with
-    | Some res ->
-        let com = FableREPL.CreateCompiler("fable-core")
-        let jsonAst = FableREPL.CompileToBabelJsonAst(com, res, FILE_NAME)
-        runAst jsonAst
-    | None -> "", ""
+let observable = Util.GenericObservable<string*string>()
 
 let convertGlyph glyph =
     match glyph with
@@ -97,6 +90,12 @@ let parseEditor (model: monaco.editor.IModel) =
     | Some fcsChecker ->
         let content = model.getValue (monaco.editor.EndOfLinePreference.TextDefined, true)
         let res = FableREPL.ParseFSharpProject(fcsChecker, FILE_NAME, content)
+
+        // Trigger JS compilation
+        let com = FableREPL.CreateCompiler("fable-core")
+        let jsonAst = FableREPL.CompileToBabelJsonAst(com, res, FILE_NAME)
+        observable.Trigger(runAst jsonAst)
+
         fcsResults <- Some res
         let markers = ResizeArray()
         for err in res.Errors do
@@ -155,9 +154,6 @@ let create(domElement) =
 // [<ExportDefault>]
 let fableEditor =
     { new Interfaces.IExports with
-
         member __.CreateFSharpEditor domElement = create domElement
-
         member __.ParseEditor editor = parseEditor editor
-
-        member __.CompileAndRunCurrentResults () = compileAndRunCurrentResults  () }
+        member __.OnCompiled = upcast observable }
