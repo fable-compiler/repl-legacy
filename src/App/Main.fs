@@ -96,7 +96,7 @@ let updateLayouts _ =
 let update msg model =
     match msg with
     | StartCompile ->
-        { model with State = Compiling }, Cmd.performFunc editor.CompileAndRunCurrentResults () EndCompile
+        { model with State = Compiling }, Cmd.performFunc editor.CompileAndRunCurrentResults editorFsharp EndCompile
 
     | EndCompile (codeES2015, codeAMD) ->
         { model with State = Compiled
@@ -291,8 +291,7 @@ let private editorArea model dispatch =
                         ClassName "editor-fsharp"
                         OnKeyDown (fun ev ->
                           if ev.altKey && ev.key = "Enter" then
-                              dispatch StartCompile
-                        )
+                              dispatch StartCompile)
                         Ref (fun element ->
                               if not (isNull element) then
                                 if element.childElementCount = 0. then
@@ -314,6 +313,9 @@ let private editorArea model dispatch =
                           Fa.faLg ] ] ]
               Card.content [ Card.props [ Style [ Display htmlDisplay ] ] ]
                 [ div [ ClassName "editor-html"
+                        OnKeyDown (fun ev ->
+                          if ev.altKey && ev.key = "Enter" then
+                              dispatch StartCompile)
                         Ref (fun element ->
                                 if not (isNull element) then
                                     if element.childElementCount = 0. then
