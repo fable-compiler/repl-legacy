@@ -7,8 +7,6 @@ type Model =
       Samples : Samples.Model }
 
 type Msg =
-    | Expand
-    | Collapse
     | SamplesMsg of Samples.Msg
 
 type ExternalMsg =
@@ -16,17 +14,11 @@ type ExternalMsg =
     | NoOp
 
 let init _ =
-    { IsExpanded = true
+    { IsExpanded = false
       Samples = Samples.init () }
 
 let update msg model =
     match msg with
-    | Expand ->
-        { model with IsExpanded = true }, Cmd.none, NoOp
-
-    | Collapse ->
-        { model with IsExpanded = false }, Cmd.none,NoOp
-
     | SamplesMsg msg ->
         let (samplesModel, samplesCmd, externalMsg) = Samples.update msg model.Samples
 
@@ -39,21 +31,15 @@ let update msg model =
 
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
-open Fulma.Elements
-open Fulma.Extra.FontAwesome
 open Fulma.Components
 
-let view model dispatch =
-    div [ ClassName "sidebar" ]
-        [ Card.card [ ]
-            [ Card.header [ ]
-                [ Card.Header.title [ ]
-                    [ str "Samples" ]
-                  Card.Header.icon [ ]
-                    [ Icon.faIcon [ ]
-                        [ Fa.icon Fa.I.AngleUp
-                          Fa.faLg ] ] ]
-              Card.content [ ]
-                [ Samples.view model.Samples (SamplesMsg >> dispatch)
-                ] ]
-        ]
+let view (model: Model) dispatch =
+    if model.IsExpanded then
+        div [ ClassName "sidebar" ]
+            [ Card.card [ ]
+                [ Card.content [ ]
+                    [ Samples.view model.Samples (SamplesMsg >> dispatch)
+                    ] ]
+            ]
+    else
+        div [] []

@@ -21,13 +21,15 @@ let runAst(jsonAst: string): string * string = importMember "./util.js"
 let mutable fcsChecker: IChecker option = None
 let mutable fcsResults: IParseResults option = None
 
-let compileAndRunCurrentResults () =
-    match fcsResults with
-    | Some res ->
+let compileAndRunCurrentResults (ed: monaco.editor.IStandaloneCodeEditor) =
+    match fcsChecker with
+    | None -> "", ""
+    | Some fcsChecker ->
+        let content = ed.getModel().getValue(monaco.editor.EndOfLinePreference.TextDefined, true)
+        let res = FableREPL.ParseFSharpProject(fcsChecker, FILE_NAME, content)
         let com = FableREPL.CreateCompiler("fable-core")
         let jsonAst = FableREPL.CompileToBabelJsonAst(com, res, FILE_NAME)
         runAst jsonAst
-    | None -> "", ""
 
 let convertGlyph glyph =
     match glyph with
@@ -160,4 +162,4 @@ let fableEditor =
 
         member __.ParseEditor editor = parseEditor editor
 
-        member __.CompileAndRunCurrentResults () = compileAndRunCurrentResults  () }
+        member __.CompileAndRunCurrentResults ed = compileAndRunCurrentResults ed }
