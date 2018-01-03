@@ -70,3 +70,8 @@ module Cmd =
             ))
 
         [ handler ]
+
+    let compile (obs: IObservable<string*string>) messageCtor =
+        let handler dispatch =
+            obs |> Observable.add (messageCtor >> dispatch)
+        [ handler ]

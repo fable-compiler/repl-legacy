@@ -56,7 +56,7 @@ type Model =
       Sidebar : Sidebar.Model }
 
 type Msg =
-    | StartCompile
+    // | StartCompile
     | EndCompile of string * string // codeES2015, codeAMD
     | SetActiveTab of ActiveTab
     | SetUrl of string
@@ -96,8 +96,8 @@ let updateLayouts _ =
 
 let update msg model =
     match msg with
-    | StartCompile ->
-        { model with State = Compiling }, Cmd.performFunc editor.CompileAndRunCurrentResults () EndCompile
+    // | StartCompile ->
+    //     { model with State = Compiling }, Cmd.performFunc editor.CompileAndRunCurrentResults editorFsharp EndCompile
 
     | EndCompile (codeES2015, codeAMD) ->
         { model with State = Compiled
@@ -207,7 +207,8 @@ let init _ = { State = NoState
                EditorCollapse = BothExtended
                Sidebar = Sidebar.init () }, Cmd.batch [ Cmd.ups MouseUp
                                                         Cmd.move MouseMove
-                                                        Cmd.iframeMessage MouseMove MouseUp ]
+                                                        Cmd.iframeMessage MouseMove MouseUp
+                                                        Cmd.compile editor.OnCompiled EndCompile ]
 
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
@@ -229,14 +230,15 @@ let private menubar isCompiling dispatch =
         [ Navbar.brand_div [ ]
             [ Navbar.item_div [ ]
                 [ img [ Src "img/fable_ionide.png" ] ] ]
-          Navbar.menu [ ]
-            [ Navbar.item_div [ ]
-                [ Button.button_btn [ Button.onClick (fun _ -> dispatch StartCompile) ]
-                    [ iconView
-                      span [ ]
-                        [ str "Compile" ] ] ]
-              Navbar.item_div [ Navbar.Item.props [ Style [ Color "white" ] ] ]
-                [ str "You can also press Alt+Enter from the editor" ] ] ]
+        //   Navbar.menu [ ]
+        //     [ Navbar.item_div [ ]
+        //         [ Button.button_btn [ Button.onClick (fun _ -> dispatch StartCompile) ]
+        //             [ iconView
+        //               span [ ]
+        //                 [ str "Compile" ] ] ]
+        //       Navbar.item_div [ Navbar.Item.props [ Style [ Color "white" ] ] ]
+        //         [ str "You can also press Alt+Enter from the editor" ] ]
+        ]
 
 let private editorArea model dispatch =
     let isDragging =
@@ -279,10 +281,9 @@ let private editorArea model dispatch =
               Card.content [ Card.props [ Style [ Display fsharpDisplay ] ] ]
                 [ div [ Key "editor"
                         ClassName "editor-fsharp"
-                        OnKeyDown (fun ev ->
-                          if ev.altKey && ev.key = "Enter" then
-                              dispatch StartCompile
-                        )
+                        // OnKeyDown (fun ev ->
+                        //   if ev.altKey && ev.key = "Enter" then
+                        //       dispatch StartCompile)
                         Ref (fun element ->
                               if not (isNull element) then
                                 if element.childElementCount = 0. then
