@@ -1,12 +1,10 @@
 module Main
 
 open System
-open Fable.Core
 open Fable.Core.JsInterop
 open Fable.Import
 open Fulma.Components
 open Fulma.Elements
-open Fulma.Elements.Form
 open Fulma.Extra.FontAwesome
 open Fable.Import.Browser
 open Mouse
@@ -70,6 +68,7 @@ type Msg =
     | MouseMove of Mouse.Position
     | ToggleFsharpCollapse
     | ToggleHtmlCollapse
+    | ToggleSamples
     | FailEditorsLayout of exn
     | WindowResize
     | SidebarMsg of Sidebar.Msg
@@ -176,6 +175,10 @@ let update msg model =
 
         { model with EditorCollapse = newState }, Cmd.attemptFunc updateLayouts () FailEditorsLayout
 
+    | ToggleSamples ->
+        let sideBar = { model.Sidebar with IsExpanded = not model.Sidebar.IsExpanded }
+        { model with Sidebar = sideBar }, Cmd.attemptFunc updateLayouts () FailEditorsLayout
+
     | WindowResize ->
         model, Cmd.attemptFunc updateLayouts () FailEditorsLayout
 
@@ -215,24 +218,31 @@ open Fable.Helpers.React.Props
 let private numberToPercent number =
     string (number * 100.) + "%"
 
-let private menubar isCompiling dispatch =
-    let iconView =
-        if isCompiling then
+let private menubar (model: Model) dispatch =
+    let samplesIcon =
+        if model.Sidebar.IsExpanded
+        then Icon.faIcon [] [Fa.icon Fa.I.AngleUp; Fa.faLg]
+        else Icon.faIcon [] [Fa.icon Fa.I.AngleDown; Fa.faLg]
+    let compileIcon =
+        if model.State = Compiling then
             Icon.faIcon [ Icon.isSmall ]
                 [ Fa.icon Fa.I.Spinner
                   Fa.spin ]
         else
             Icon.faIcon [ Icon.isSmall ]
                 [ Fa.icon Fa.I.Play ]
-
     nav [ ClassName "navbar is-fixed-top is-dark" ]
         [ Navbar.brand_div [ ]
             [ Navbar.item_div [ ]
                 [ img [ Src "img/fable_ionide.png" ] ] ]
           Navbar.menu [ ]
             [ Navbar.item_div [ ]
+                [ Button.button_btn
+                    [ Button.onClick (fun _ -> dispatch ToggleSamples) ]
+                    [ span [] [str "Samples"]; samplesIcon ] ]
+              Navbar.item_div [ ]
                 [ Button.button_btn [ Button.onClick (fun _ -> dispatch StartCompile) ]
-                    [ iconView
+                    [ compileIcon
                       span [ ]
                         [ str "Compile" ] ] ]
               Navbar.item_div [ Navbar.Item.props [ Style [ Color "white" ] ] ]
@@ -397,15 +407,14 @@ let private outputArea model dispatch =
           Style [ Width (numberToPercent (1. - model.PanelSplitRatio)) ] ]
         content
 
-let private view model dispatch =
+let private view (model: Model) dispatch =
     let isDragging =
         match model.DragTarget with
         | EditorSplitter
         | PanelSplitter -> true
         | NoTarget -> false
-
     div [ classList [ "is-unselectable", isDragging ] ]
-        [ menubar (model.State = Compiling) dispatch
+        [ menubar model dispatch
           div [ ClassName "page-content" ]
             [ Sidebar.view model.Sidebar (SidebarMsg >> dispatch)
               div [ ClassName "main-content" ]
