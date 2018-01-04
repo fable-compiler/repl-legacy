@@ -92,6 +92,31 @@ let completionProvider = {
             and set v = ()
 }
 
+let createTooltipProvider() =
+    let createHover (doc: monaco.editor.IReadOnlyModel) (pos: monaco.Position) (lines: string[]) =
+        let w = doc.getWordAtPosition !!pos
+        let r: monaco.IRange = jsOptions(fun r ->
+            r.startColumn <- w.startColumn
+            r.endColumn <- w.endColumn
+            r.startLineNumber <- float pos.lineNumber
+            r.endLineNumber <- float pos.lineNumber
+        )
+        jsOptions<monaco.languages.Hover>(fun h ->
+            h.contents <- ResizeArray (!!lines: monaco.MarkedString[])
+            h.range <- r
+        )
+    { new monaco.languages.HoverProvider with
+        member __.provideHover(doc, pos, _ ) =
+            async {
+                match fcsResults with
+                | Some res ->
+                    let lineText = doc.getLineContent(pos.lineNumber)
+                    let! lines = FableREPL.GetToolTipText(res, pos.lineNumber, pos.column, lineText)
+                    return createHover doc pos lines
+                | None -> return createHover doc pos [||]
+            } |> Async.StartAsPromise |> unbox
+    }
+
 let parseEditor (model: monaco.editor.IModel) =
     match fcsChecker with
     | None ->
@@ -119,6 +144,7 @@ let parseEditor (model: monaco.editor.IModel) =
 // Register providers
 //---------------------------------------------------
 monaco.languages.Globals.registerCompletionItemProvider("fsharp", completionProvider) |> ignore
+monaco.languages.Globals.registerHoverProvider("fsharp", createTooltipProvider()) |> ignore
 
 //---------------------------------------------------
 // Create editor
@@ -129,13 +155,11 @@ let create(domElement) =
         let minimapOptions =  jsOptions<monaco.editor.IEditorMinimapOptions>(fun oMinimap ->
             oMinimap.enabled <- Some false
         )
-
         o.language <- Some "fsharp"
         o.fontSize <- Some 14.
         o.theme <- Some "vs-dark"
         o.minimap <- Some minimapOptions
     )
-
 
     let services = createEmpty<monaco.editor.IEditorOverrideServices>
     let ed = monaco.editor.Globals.create(domElement, options, services)
