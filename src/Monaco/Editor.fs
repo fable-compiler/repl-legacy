@@ -93,28 +93,26 @@ let completionProvider = {
 }
 
 let createTooltipProvider() =
-    let createHover (doc: monaco.editor.IReadOnlyModel) (pos: monaco.Position) (lines: string[]) =
-        let w = doc.getWordAtPosition !!pos
-        let r: monaco.IRange = jsOptions(fun r ->
-            r.startColumn <- w.startColumn
-            r.endColumn <- w.endColumn
-            r.startLineNumber <- float pos.lineNumber
-            r.endLineNumber <- float pos.lineNumber
-        )
-        jsOptions<monaco.languages.Hover>(fun h ->
-            h.contents <- ResizeArray (!!lines: monaco.MarkedString[])
-            h.range <- r
-        )
     { new monaco.languages.HoverProvider with
         member __.provideHover(doc, pos, _ ) =
             async {
-                match fcsResults with
-                | Some res ->
+                let w = doc.getWordAtPosition !!pos |> Option.ofObj
+                match w, fcsResults with
+                | Some w, Some res ->
                     let lineText = doc.getLineContent(pos.lineNumber)
                     let! lines = FableREPL.GetToolTipText(res, pos.lineNumber, pos.column, lineText)
-                    return createHover doc pos lines
-                | None -> return createHover doc pos [||]
-            } |> Async.StartAsPromise |> unbox
+                    let r: monaco.IRange = jsOptions(fun r ->
+                        r.startColumn <- w.startColumn
+                        r.endColumn <- w.endColumn
+                        r.startLineNumber <- float pos.lineNumber
+                        r.endLineNumber <- float pos.lineNumber
+                    )
+                    return jsOptions<monaco.languages.Hover>(fun h ->
+                        h.contents <- ResizeArray (!!lines: monaco.MarkedString[])
+                        h.range <- r
+                    )
+                | _ -> return createEmpty<monaco.languages.Hover>
+            } |> Async.StartAsPromise |> U2.Case2
     }
 
 let parseEditor (model: monaco.editor.IModel) =

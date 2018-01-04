@@ -151,10 +151,11 @@ let update msg model =
         { model with DragTarget = NoTarget }, Cmd.none
 
     | PanelDrag position ->
+        let offset = if model.Sidebar.IsExpanded then 250. else 0.
         { model with PanelSplitRatio =
                         position
-                        |> (fun p -> p.X - 250.)
-                        |> (fun w -> w / (window.innerWidth - 250.))
+                        |> (fun p -> p.X - offset)
+                        |> (fun w -> w / (window.innerWidth - offset))
                         |> clamp 0.2 0.8 }, Cmd.none
 
     | ToggleFsharpCollapse ->

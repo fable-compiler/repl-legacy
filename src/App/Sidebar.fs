@@ -34,12 +34,12 @@ open Fable.Helpers.React.Props
 open Fulma.Components
 
 let view (model: Model) dispatch =
-    if model.IsExpanded then
-        div [ ClassName "sidebar" ]
-            [ Card.card [ ]
-                [ Card.content [ ]
-                    [ Samples.view model.Samples (SamplesMsg >> dispatch)
-                    ] ]
-            ]
-    else
-        div [] []
+    let el =
+        if model.IsExpanded then
+            div [ ClassName "sidebar" ]
+                [ Card.card [ ]
+                    [ Card.content [ ]
+                        [ Samples.view model.Samples (SamplesMsg >> dispatch) ] ] ]
+            |> Some
+        else None
+    ofOption el

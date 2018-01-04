@@ -10,11 +10,6 @@ open Fable.Import.JS
 open Fable.Import.Browser
 
 module monaco =
-    type Thenable<'T> = Promise<'T>
-    // type [<AllowNullLiteral>] Thenable<'T> =
-    //     abstract ``then``: ?onfulfilled: ('T -> U2<'TResult, Thenable<'TResult>>) * ?onrejected: (obj -> U2<'TResult, Thenable<'TResult>>) -> Thenable<'TResult>
-    //     abstract ``then``: ?onfulfilled: ('T -> U2<'TResult, Thenable<'TResult>>) * ?onrejected: (obj -> unit) -> Thenable<'TResult>
-
     type [<AllowNullLiteral>] IDisposable =
         abstract dispose: unit -> unit
 
@@ -33,39 +28,10 @@ module monaco =
         | Error = 3
 
     type [<AllowNullLiteral>] TValueCallback<'T> =
-        [<Emit("$0($1...)")>] abstract Invoke: value: U2<'T, Thenable<'T>> -> unit
+        [<Emit("$0($1...)")>] abstract Invoke: value: U2<'T, Promise<'T>> -> unit
 
     type [<AllowNullLiteral>] ProgressCallback =
         [<Emit("$0($1...)")>] abstract Invoke: progress: obj -> obj
-
-    type [<AllowNullLiteral>] [<Import("Promise","monaco")>] Promise<'V>(init: (TValueCallback<'V> -> (obj -> unit) -> ProgressCallback -> unit), ?oncancel: obj) =
-        member __.``then``(?success: ('V -> Promise<'U>), ?error: (obj -> Promise<'U>), ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: ('V -> Promise<'U>), ?error: (obj -> U2<Promise<'U>, 'U>), ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: ('V -> Promise<'U>), ?error: (obj -> 'U), ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: ('V -> Promise<'U>), ?error: (obj -> unit), ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: ('V -> U2<Promise<'U>, 'U>), ?error: (obj -> Promise<'U>), ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: ('V -> U2<Promise<'U>, 'U>), ?error: (obj -> U2<Promise<'U>, 'U>), ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: ('V -> U2<Promise<'U>, 'U>), ?error: (obj -> 'U), ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: ('V -> U2<Promise<'U>, 'U>), ?error: (obj -> unit), ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: ('V -> 'U), ?error: (obj -> Promise<'U>), ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: ('V -> 'U), ?error: (obj -> U2<Promise<'U>, 'U>), ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: ('V -> 'U), ?error: (obj -> 'U), ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``then``(?success: ('V -> 'U), ?error: (obj -> unit), ?progress: ProgressCallback): Promise<'U> = jsNative
-        member __.``done``(?success: ('V -> unit), ?error: (obj -> obj), ?progress: ProgressCallback): unit = jsNative
-        member __.cancel(): unit = jsNative
-        static member ``as``(value: obj): Promise<obj> = jsNative
-        // static member ``as``(value: Promise<'ValueType>): Promise<'ValueType> = jsNative
-        static member ``as``(value: Thenable<'ValueType>): Thenable<'ValueType> = jsNative
-        static member ``as``(value: 'ValueType): Promise<'ValueType> = jsNative
-        static member is(value: obj): obj = jsNative
-        static member timeout(delay: float): Promise<unit> = jsNative
-        // static member join(promises: ResizeArray<Promise<'ValueType>>): Promise<ResizeArray<'ValueType>> = jsNative
-        static member join(promises: ResizeArray<Thenable<'ValueType>>): Thenable<ResizeArray<'ValueType>> = jsNative
-        static member join(promises: obj): Promise<obj> = jsNative
-        static member any(promises: ResizeArray<Promise<'ValueType>>): Promise<obj> = jsNative
-        static member wrap(value: Thenable<'ValueType>): Promise<'ValueType> = jsNative
-        static member wrap(value: 'ValueType): Promise<'ValueType> = jsNative
-        static member wrapError(error: Error): Promise<'ValueType> = jsNative
 
     type [<AllowNullLiteral>] [<Import("CancellationTokenSource","monaco")>] CancellationTokenSource() =
         member __.token with get(): CancellationToken = jsNative and set(v: CancellationToken): unit = jsNative
@@ -1350,7 +1316,7 @@ module monaco =
             abstract markers: ResizeArray<editor.IMarkerData> with get, set
 
         type [<AllowNullLiteral>] CodeActionProvider =
-            abstract provideCodeActions: model: editor.IReadOnlyModel * range: Range * context: CodeActionContext * token: CancellationToken -> U2<ResizeArray<Command>, Thenable<ResizeArray<Command>>>
+            abstract provideCodeActions: model: editor.IReadOnlyModel * range: Range * context: CodeActionContext * token: CancellationToken -> U2<ResizeArray<Command>, Promise<ResizeArray<Command>>>
 
         type CompletionItemKind =
             | Text = 0
@@ -1393,8 +1359,8 @@ module monaco =
 
         type [<AllowNullLiteral>] CompletionItemProvider =
             abstract triggerCharacters: ResizeArray<string> option with get, set
-            abstract provideCompletionItems: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U4<ResizeArray<CompletionItem>, JS.Promise<ResizeArray<CompletionItem>>, CompletionList, Thenable<CompletionList>>
-            abstract resolveCompletionItem: item: CompletionItem * token: CancellationToken -> U2<CompletionItem, Thenable<CompletionItem>>
+            abstract provideCompletionItems: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U4<ResizeArray<CompletionItem>, JS.Promise<ResizeArray<CompletionItem>>, CompletionList, Promise<CompletionList>>
+            abstract resolveCompletionItem: item: CompletionItem * token: CancellationToken -> U2<CompletionItem, Promise<CompletionItem>>
 
         type [<AllowNullLiteral>] CommentRule =
             abstract lineComment: string option with get, set
@@ -1460,7 +1426,7 @@ module monaco =
             abstract range: IRange with get, set
 
         type [<AllowNullLiteral>] HoverProvider =
-            abstract provideHover: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Hover, Thenable<Hover>>
+            abstract provideHover: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Hover, Promise<Hover>>
 
         type [<AllowNullLiteral>] ParameterInformation =
             abstract label: string with get, set
@@ -1478,7 +1444,7 @@ module monaco =
 
         type [<AllowNullLiteral>] SignatureHelpProvider =
             abstract signatureHelpTriggerCharacters: ResizeArray<string> with get, set
-            abstract provideSignatureHelp: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<SignatureHelp, Thenable<SignatureHelp>>
+            abstract provideSignatureHelp: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<SignatureHelp, Promise<SignatureHelp>>
 
         type DocumentHighlightKind =
             | Text = 0
@@ -1490,13 +1456,13 @@ module monaco =
             abstract kind: DocumentHighlightKind with get, set
 
         type [<AllowNullLiteral>] DocumentHighlightProvider =
-            abstract provideDocumentHighlights: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<ResizeArray<DocumentHighlight>, Thenable<ResizeArray<DocumentHighlight>>>
+            abstract provideDocumentHighlights: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<ResizeArray<DocumentHighlight>, Promise<ResizeArray<DocumentHighlight>>>
 
         type [<AllowNullLiteral>] ReferenceContext =
             abstract includeDeclaration: bool with get, set
 
         type [<AllowNullLiteral>] ReferenceProvider =
-            abstract provideReferences: model: editor.IReadOnlyModel * position: Position * context: ReferenceContext * token: CancellationToken -> U2<ResizeArray<Location>, Thenable<ResizeArray<Location>>>
+            abstract provideReferences: model: editor.IReadOnlyModel * position: Position * context: ReferenceContext * token: CancellationToken -> U2<ResizeArray<Location>, Promise<ResizeArray<Location>>>
 
         type [<AllowNullLiteral>] Location =
             abstract uri: Uri with get, set
@@ -1506,13 +1472,13 @@ module monaco =
             U2<Location, ResizeArray<Location>>
 
         type [<AllowNullLiteral>] DefinitionProvider =
-            abstract provideDefinition: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Definition, Thenable<Definition>>
+            abstract provideDefinition: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Definition, Promise<Definition>>
 
         type [<AllowNullLiteral>] ImplementationProvider =
-            abstract provideImplementation: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Definition, Thenable<Definition>>
+            abstract provideImplementation: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Definition, Promise<Definition>>
 
         type [<AllowNullLiteral>] TypeDefinitionProvider =
-            abstract provideTypeDefinition: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Definition, Thenable<Definition>>
+            abstract provideTypeDefinition: model: editor.IReadOnlyModel * position: Position * token: CancellationToken -> U2<Definition, Promise<Definition>>
 
         type SymbolKind =
             | File = 0
@@ -1549,7 +1515,7 @@ module monaco =
             abstract location: Location with get, set
 
         type [<AllowNullLiteral>] DocumentSymbolProvider =
-            abstract provideDocumentSymbols: model: editor.IReadOnlyModel * token: CancellationToken -> U2<ResizeArray<SymbolInformation>, Thenable<ResizeArray<SymbolInformation>>>
+            abstract provideDocumentSymbols: model: editor.IReadOnlyModel * token: CancellationToken -> U2<ResizeArray<SymbolInformation>, Promise<ResizeArray<SymbolInformation>>>
 
         type [<AllowNullLiteral>] TextEdit =
             abstract range: IRange with get, set
@@ -1561,22 +1527,22 @@ module monaco =
             abstract insertSpaces: bool with get, set
 
         type [<AllowNullLiteral>] DocumentFormattingEditProvider =
-            abstract provideDocumentFormattingEdits: model: editor.IReadOnlyModel * options: FormattingOptions * token: CancellationToken -> U2<ResizeArray<TextEdit>, Thenable<ResizeArray<TextEdit>>>
+            abstract provideDocumentFormattingEdits: model: editor.IReadOnlyModel * options: FormattingOptions * token: CancellationToken -> U2<ResizeArray<TextEdit>, Promise<ResizeArray<TextEdit>>>
 
         type [<AllowNullLiteral>] DocumentRangeFormattingEditProvider =
-            abstract provideDocumentRangeFormattingEdits: model: editor.IReadOnlyModel * range: Range * options: FormattingOptions * token: CancellationToken -> U2<ResizeArray<TextEdit>, Thenable<ResizeArray<TextEdit>>>
+            abstract provideDocumentRangeFormattingEdits: model: editor.IReadOnlyModel * range: Range * options: FormattingOptions * token: CancellationToken -> U2<ResizeArray<TextEdit>, Promise<ResizeArray<TextEdit>>>
 
         type [<AllowNullLiteral>] OnTypeFormattingEditProvider =
             abstract autoFormatTriggerCharacters: ResizeArray<string> with get, set
-            abstract provideOnTypeFormattingEdits: model: editor.IReadOnlyModel * position: Position * ch: string * options: FormattingOptions * token: CancellationToken -> U2<ResizeArray<TextEdit>, Thenable<ResizeArray<TextEdit>>>
+            abstract provideOnTypeFormattingEdits: model: editor.IReadOnlyModel * position: Position * ch: string * options: FormattingOptions * token: CancellationToken -> U2<ResizeArray<TextEdit>, Promise<ResizeArray<TextEdit>>>
 
         type [<AllowNullLiteral>] ILink =
             abstract range: IRange with get, set
             abstract url: string with get, set
 
         type [<AllowNullLiteral>] LinkProvider =
-            abstract resolveLink: (ILink -> CancellationToken -> U2<ILink, Thenable<ILink>>) option with get, set
-            abstract provideLinks: model: editor.IReadOnlyModel * token: CancellationToken -> U2<ResizeArray<ILink>, Thenable<ResizeArray<ILink>>>
+            abstract resolveLink: (ILink -> CancellationToken -> U2<ILink, Promise<ILink>>) option with get, set
+            abstract provideLinks: model: editor.IReadOnlyModel * token: CancellationToken -> U2<ResizeArray<ILink>, Promise<ResizeArray<ILink>>>
 
         type [<AllowNullLiteral>] IResourceEdit =
             abstract resource: Uri with get, set
@@ -1588,7 +1554,7 @@ module monaco =
             abstract rejectReason: string option with get, set
 
         type [<AllowNullLiteral>] RenameProvider =
-            abstract provideRenameEdits: model: editor.IReadOnlyModel * position: Position * newName: string * token: CancellationToken -> U2<WorkspaceEdit, Thenable<WorkspaceEdit>>
+            abstract provideRenameEdits: model: editor.IReadOnlyModel * position: Position * newName: string * token: CancellationToken -> U2<WorkspaceEdit, Promise<WorkspaceEdit>>
 
         type [<AllowNullLiteral>] Command =
             abstract id: string with get, set
@@ -1603,8 +1569,8 @@ module monaco =
 
         type [<AllowNullLiteral>] CodeLensProvider =
             abstract onDidChange: IEvent<obj> option with get, set
-            abstract provideCodeLenses: model: editor.IReadOnlyModel * token: CancellationToken -> U2<ResizeArray<ICodeLensSymbol>, Thenable<ResizeArray<ICodeLensSymbol>>>
-            abstract resolveCodeLens: model: editor.IReadOnlyModel * codeLens: ICodeLensSymbol * token: CancellationToken -> U2<ICodeLensSymbol, Thenable<ICodeLensSymbol>>
+            abstract provideCodeLenses: model: editor.IReadOnlyModel * token: CancellationToken -> U2<ResizeArray<ICodeLensSymbol>, Promise<ResizeArray<ICodeLensSymbol>>>
+            abstract resolveCodeLens: model: editor.IReadOnlyModel * codeLens: ICodeLensSymbol * token: CancellationToken -> U2<ICodeLensSymbol, Promise<ICodeLensSymbol>>
 
         type [<AllowNullLiteral>] ILanguageExtensionPoint =
             abstract id: string with get, set
@@ -1860,5 +1826,3 @@ module monaco =
 
         type [<AllowNullLiteral>] IWorkerContext =
             abstract getMirrorModels: unit -> ResizeArray<IMirrorModel>
-
-
