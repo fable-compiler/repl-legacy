@@ -37,12 +37,13 @@ module Cmd =
     let iframeMessage moveCtor upCtor =
         let handler dispatch =
 
-            window.addEventListener_message(Func<_,_>(fun ev ->
+            window.addEventListener_message(fun ev ->
                 let iframeMessageDecoder =
                     Decode.field "type" Decode.string
+                    |> Decode.option
                     |> Decode.andThen
                         (function
-                        | "mousemove" ->
+                        | Some "mousemove" ->
                             Decode.decode
                                 (fun x y ->
                                     { X = x
@@ -50,23 +51,19 @@ module Cmd =
                                 |> Decode.required "x" Decode.float
                                 |> Decode.required "y" Decode.float
                                 |> Decode.map moveCtor
-
-                        | "mouseup" ->
+                        | Some "mouseup" ->
                             Decode.succeed upCtor
-                        | unkown ->
-                            // Discard the message we don't know how to handle it
-                            sprintf "Invalid message `%s` from iframe" unkown
-                            |> Decode.fail
-                        )
+                        | _ ->
+                            // Discard messages we don't know how to handle it
+                            Decode.fail "Invalid message from iframe"
+                    )
 
                 iframeMessageDecoder ev.data
                 |> function
-                    | Ok msg ->
-                        dispatch msg
-                    | Error error ->
-                        console.warn error
+                    | Ok msg -> dispatch msg
+                    | Error _error -> () // console.warn error
 
                 null
-            ))
+            )
 
         [ handler ]
