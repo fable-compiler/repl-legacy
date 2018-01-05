@@ -5,6 +5,7 @@ module Fable.Editor.Main
 open Fable.Core
 open Fable.Core.JsInterop
 open Fable.Import
+open Fable.PowerPack
 open Fable.JS.Interfaces
 
 //---------------------------------------------------
@@ -15,7 +16,7 @@ let [<Literal>] FILE_NAME = "test.fs"
 
 let FableREPL: IFableManager = importDefault "fable-repl"
 
-let getChecker(f: string[] -> (string->byte[]) -> IChecker): IChecker option = importMember "./util.js"
+let getChecker(f: string[] -> (string->byte[]) -> IChecker): JS.Promise<IChecker> = importMember "./util.js"
 let runAst(jsonAst: string): string * string = importMember "./util.js"
 
 let mutable fcsChecker: IChecker option = None
@@ -116,12 +117,16 @@ let createTooltipProvider() =
     }
 
 let parseEditor (model: monaco.editor.IModel) =
-    match fcsChecker with
-    | None ->
-        fcsChecker <- getChecker (fun x y -> FableREPL.CreateChecker(x, y))
-    | Some fcsChecker ->
+    let checker =
+        match fcsChecker with
+        | None ->
+            getChecker (fun x y -> FableREPL.CreateChecker(x, y))
+            |> Promise.map (fun c -> fcsChecker <- Some c; c)
+        | Some checker ->
+            Promise.lift checker
+    checker |> Promise.iter (fun checker ->
         let content = model.getValue (monaco.editor.EndOfLinePreference.TextDefined, true)
-        let res = FableREPL.ParseFSharpProject(fcsChecker, FILE_NAME, content)
+        let res = FableREPL.ParseFSharpProject(checker, FILE_NAME, content)
         fcsResults <- Some res
         let markers = ResizeArray()
         for err in res.Errors do
@@ -137,6 +142,7 @@ let parseEditor (model: monaco.editor.IModel) =
                 | true -> monaco.Severity.Warning
             markers.Add(m)
         monaco.editor.Globals.setModelMarkers(model, "test", markers)
+    )
 
 //---------------------------------------------------
 // Register providers

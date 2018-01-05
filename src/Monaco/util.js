@@ -61,16 +61,31 @@ references.forEach(function (fileName) {
     getFileBlob(fileName, "metadata/" + fileName);
 });
 
+function until(predicate, interval = 100) {
+    return new Promise((resolve, reject) => {
+        function check() {
+            if (predicate()) {
+                resolve();
+            } else {
+                setTimeout(check, interval)
+            }
+        }
+        check();
+    });
+}
+
 export function getChecker(createChecker) {
     if (checker === null) {
-        if (Object.getOwnPropertyNames(metadata).length < references.length) {
-            return null;
-        }
-        var readAllBytes = function (fileName) { return metadata[fileName]; }
-        var references2 = references.filter(x => !isSigdata(x)).map(x => x.replace(".dll", ""));
-        checker = createChecker(references2, readAllBytes)
+        return until(() => Object.getOwnPropertyNames(metadata).length >= references.length)
+            .then(() => {
+                var readAllBytes = function (fileName) { return metadata[fileName]; }
+                var references2 = references.filter(x => !isSigdata(x)).map(x => x.replace(".dll", ""));
+                checker = createChecker(references2, readAllBytes);
+                return checker;
+            });
+    } else {
+        return Promise.resolve(checker);
     }
-    return checker;
 }
 
 function babelOptions(extraPlugin) {

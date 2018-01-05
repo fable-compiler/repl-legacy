@@ -11,6 +11,9 @@ open Mouse
 
 importSideEffects "./scss/main.scss"
 
+let loadState(): string * string = importMember "./util.js"
+let saveState(code: string, html: string): unit = importMember "./util.js"
+
 let editor = Fable.Editor.Main.fableEditor
 
 // We store a reference to the editor so we can access it
@@ -76,8 +79,11 @@ type Msg =
 open Elmish
 
 let generateHtmlUrl jsCode =
+    let fsCode = editorFsharp.getValue()
+    let htmlCode = editorHtml.getValue()
+    saveState(fsCode, htmlCode)
     let jsUrl = Generator.generateBlobURL jsCode Generator.JavaScript
-    Generator.generateHtmlBlobUrl (editorHtml.getValue()) jsUrl
+    Generator.generateHtmlBlobUrl htmlCode jsUrl
 
 let clamp min max value =
     if value >= max then
@@ -297,6 +303,9 @@ let private editorArea model dispatch =
                               if not (isNull element) then
                                 if element.childElementCount = 0. then
                                     editorFsharp <- editor.CreateFSharpEditor (element :?> Browser.HTMLElement)
+                                    let code, _ = loadState()
+                                    editorFsharp.setValue(code)
+                                    editor.ParseEditor (editorFsharp.getModel())
                                 else
                                     if isDragging then
                                         editorFsharp.layout()
@@ -333,6 +342,8 @@ let private editorArea model dispatch =
                                         )
 
                                         editorHtml <- monaco.editor.Globals.create((element :?> Browser.HTMLElement), options)
+                                        let _, html = loadState()
+                                        editorHtml.setValue(html)
                                     else
                                         if isDragging then
                                             editorHtml.layout()
