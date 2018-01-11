@@ -98,7 +98,7 @@ open Canvas
 open Physics
 open Fable.Import.Browser
 
-let origin = window.location.origin
+let origin = window.location.origin + "/repl/"
 
 let render (w,h) (mario: MarioModel) =
     (0., 0., w, h) |> filled (rgb 174 238 238)
