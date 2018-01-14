@@ -5,7 +5,8 @@
   <ItemGroup>
     <Compile Include="Generator.fs" />
     <Compile Include="Mouse.fs" />
-    <Compile Include="Samples.fs" />
+    <Compile Include="Widgets/Samples.fs" />
+    <Compile Include="Widgets/About.fs" />
     <Compile Include="Sidebar.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
