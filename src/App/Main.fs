@@ -71,7 +71,7 @@ type Msg =
     | MouseMove of Mouse.Position
     | ToggleFsharpCollapse
     | ToggleHtmlCollapse
-    | ToggleSamples
+    | ToggleSidebar
     | FailEditorsLayout of exn
     | WindowResize
     | SidebarMsg of Sidebar.Msg
@@ -97,7 +97,6 @@ let updateLayouts _ =
     window.setTimeout((fun _ ->
         editorFsharp.layout()
         editorHtml.layout()), 100) |> ignore
-
 
 let update msg model =
     match msg with
@@ -182,7 +181,7 @@ let update msg model =
 
         { model with EditorCollapse = newState }, Cmd.attemptFunc updateLayouts () FailEditorsLayout
 
-    | ToggleSamples ->
+    | ToggleSidebar ->
         let sideBar = { model.Sidebar with IsExpanded = not model.Sidebar.IsExpanded }
         { model with Sidebar = sideBar }, Cmd.attemptFunc updateLayouts () FailEditorsLayout
 
@@ -226,10 +225,6 @@ let private numberToPercent number =
     string (number * 100.) + "%"
 
 let private menubar (model: Model) dispatch =
-    let samplesIcon =
-        if model.Sidebar.IsExpanded
-        then Icon.faIcon [] [Fa.icon Fa.I.AngleUp; Fa.faLg]
-        else Icon.faIcon [] [Fa.icon Fa.I.AngleDown; Fa.faLg]
     let compileIcon =
         if model.State = Compiling then
             Icon.faIcon [ Icon.isSmall ]
@@ -240,14 +235,16 @@ let private menubar (model: Model) dispatch =
                 [ Fa.icon Fa.I.Play ]
     nav [ ClassName "navbar is-fixed-top is-dark" ]
         [ Navbar.brand_div [ ]
-            [ Navbar.item_div [ ]
+            [ div [ ClassName "navbar-burger"
+                    Style [ Display "block" ]
+                    OnClick (fun _ -> dispatch ToggleSidebar) ] // Force the burger to be always visible
+                [ span [ ] [ ]
+                  span [ ] [ ]
+                  span [ ] [ ] ]
+              Navbar.item_div [ ]
                 [ img [ Src "img/fable_ionide.png" ] ] ]
           Navbar.menu [ ]
             [ Navbar.item_div [ ]
-                [ Button.button_btn
-                    [ Button.onClick (fun _ -> dispatch ToggleSamples) ]
-                    [ span [] [str "Samples"]; samplesIcon ] ]
-              Navbar.item_div [ ]
                 [ Button.button_btn [ Button.onClick (fun _ -> dispatch StartCompile) ]
                     [ compileIcon
                       span [ ]

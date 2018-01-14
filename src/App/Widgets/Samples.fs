@@ -1,4 +1,4 @@
-module Samples
+module Widgets.Samples
 
 open Thot.Json
 open Fulma.Components
