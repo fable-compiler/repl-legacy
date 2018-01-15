@@ -1,13 +1,17 @@
 // include Fake libs
 #r "./packages/build/FAKE/tools/FakeLib.dll"
 #r "System.IO.Compression.FileSystem"
+#load "paket-files/build/fsharp/FAKE/modules/Octokit/Octokit.fsx"
+#load "paket-files/build/fable-compiler/fake-helpers/Fable.FakeHelpers.fs"
 
 open System
 open System.IO
+open System.Net
+open System.Text.RegularExpressions
 open Fake
 open Fake.Git
 open Fake.YarnHelper
-open System.Net
+open Fable.FakeHelpers
 
 let dotnetcliVersion = "2.0.3"
 
@@ -169,6 +173,17 @@ Target "DownloadReplArtifact" (fun _ ->
     downloadArtifact targetDir AppveyorReplArtifactURL
 )
 
+Target "UpdateVersion" (fun _ ->
+    let reg = Regex(@"\bVERSION\s*=\s*""(.*?)""")
+    let release =
+        FableFolderPath </> "src/dotnet/Fable.Compiler/RELEASE_NOTES.md"
+        |> ReleaseNotesHelper.LoadReleaseNotes
+    let mainFile = sourceDir </> "App/Widgets/About.fs"
+    (reg, mainFile) ||> replaceLines (fun line m ->
+        let replacement = sprintf "VERSION = \"%s\"" release.NugetVersion
+        reg.Replace(line, replacement) |> Some)
+)
+
 Target "All" DoNothing
 
 // Build order
@@ -178,6 +193,7 @@ Target "All" DoNothing
     ==> "YarnInstall"
     ==> "CopyModules"
     ==> "DownloadReplArtifact"
+    ==> "UpdateVersion"
     ==> "Build.App"
     ==> "All"
 

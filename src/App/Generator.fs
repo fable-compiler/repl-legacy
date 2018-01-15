@@ -51,11 +51,11 @@ let private requireConfig =
 let private requireConfig =
     """
 <body>
-    <script src="http://fable.io/fable-repl/libs/requirejs/require.js"></script>
+    <script src="http://fable.io/repl/libs/requirejs/require.js"></script>
     <script>
         require.config({
         paths: {
-            'fable-core': 'http://fable.io/fable-repl/js/repl/fable-core'
+            'fable-core': 'http://fable.io/repl/js/repl/fable-core'
         }
         });
     </script>
