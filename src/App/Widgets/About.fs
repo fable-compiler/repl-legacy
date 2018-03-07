@@ -4,7 +4,7 @@ open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open Fulma.Elements
 
-let [<Literal>] VERSION = "1.3.7"
+let [<Literal>] VERSION = "1.3.10"
 
 let view =
     Content.content [ ]

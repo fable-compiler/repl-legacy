@@ -66,7 +66,7 @@ let AppveyorReplArtifactURL = "https://ci.appveyor.com/api/projects/fable-compil
 let rec waitUserResponse _ =
     let userInput = Console.ReadLine()
     match userInput.ToUpper() with
-    | "O" -> true
+    | "Y" -> true
     | "N" -> false
     | _ ->
         printfn "Invalid response"
@@ -87,7 +87,7 @@ let ensureRepoSetup (info : RepoSetupInfo) =
         let setupMode = getBuildParamOrDefault "setup" "ask"
 
         if setupMode = "ask" then
-            printfn "Do you want me to setup it for you ? (O/N)"
+            printfn "Do you want me to setup it for you ? (Y/N)"
             let autoSetup = waitUserResponse ()
             if autoSetup then
                 printfn "Installing %s for you" info.FolderName
@@ -174,6 +174,12 @@ Target "DownloadReplArtifact" (fun _ ->
 )
 
 Target "UpdateVersion" (fun _ ->
+    ensureRepoSetup
+        { FolderPath = FableFolderPath
+          FolderName = FableFolderName
+          GithubLink = "git@github.com:fable-compiler/Fable.git"
+          GithubBranch = "master" }
+
     let reg = Regex(@"\bVERSION\s*=\s*""(.*?)""")
     let release =
         FableFolderPath </> "src/dotnet/Fable.Compiler/RELEASE_NOTES.md"
