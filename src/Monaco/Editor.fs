@@ -133,8 +133,8 @@ let parseEditor (model: monaco.editor.IModel) =
             let m = createEmpty<monaco.editor.IMarkerData>
             m.startLineNumber <- err.StartLineAlternate
             m.endLineNumber <- err.EndLineAlternate
-            m.startColumn <- err.StartColumn
-            m.endColumn <- err.EndColumn
+            m.startColumn <- err.StartColumn + 1
+            m.endColumn <- err.EndColumn + 1
             m.message <- err.Message
             m.severity <-
                 match err.IsWarning with
