@@ -28,8 +28,8 @@
                     {
                         "type": "menu-item",
                         "label": "Commented Interop examples",
-                        "fsharpCode": "samples/interop-examples/interop-examples.fs",
-                        "htmlCode": "samples/interop-examples/interop-examples.html"
+                        "fsharpCode": "samples/interop-samples/interop-samples.fs",
+                        "htmlCode": "samples/interop-samples/interop-samples.html"
                     }
 
                 ]
