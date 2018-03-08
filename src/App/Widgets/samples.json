@@ -24,7 +24,14 @@
                         "label": "Mini JQuery bindings",
                         "fsharpCode": "samples/jquery/jquery.fs",
                         "htmlCode": "samples/jquery/jquery.html"
+                    },
+                    {
+                        "type": "menu-item",
+                        "label": "Commented Interop examples",
+                        "fsharpCode": "samples/interop-examples/interop-examples.fs",
+                        "htmlCode": "samples/interop-examples/interop-examples.html"
                     }
+
                 ]
             }
         ]
