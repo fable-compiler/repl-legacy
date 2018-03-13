@@ -13,7 +13,7 @@ open Fake.Git
 open Fake.YarnHelper
 open Fable.FakeHelpers
 
-let dotnetcliVersion = "2.0.3"
+let dotnetcliVersion = "2.1.4"
 
 let mutable dotnetExePath = "dotnet"
 let runDotnet dir =
