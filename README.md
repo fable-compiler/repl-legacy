@@ -1,18 +1,18 @@
 # Fable.FCS component
 
-Example of how to use Fable.FCS component on your web
+Example of how to use the `Fable.FCS` component on your web
 
 ## How to add a sample ?
 
-*This is the documenation of how to add a sample to the REPL, please note it's still in early stage and may change in the furture*
+*This is the documenation of how to add a sample to the REPL, please note it's still in early stage and may change in the future*
 
-To add a sample, you need to update the `src/samples.json` file. This file is used to generate the sample menu in the browser.
+To add a sample, you need to update the `src/samples.json` file. This file is used to generate the samples menu in the browser.
 
-You can add 3 types or entry:
+You can add 3 types or entries:
 
-- Category: this add a title entry to the menu
-- SubCategory: this add an entry under a category, and make it collapsable
-- MenuItem: this is a classic item when clicked, this will load the sample into the REPL
+- Category: adds a title entry to the menu
+- SubCategory: adds an entry under a category, and make it collapsible
+- MenuItem: adds a classic item which when clicked will load the sample into the REPL
 
 **Category**
 
@@ -25,7 +25,7 @@ You can add 3 types or entry:
 }
 ```
 
-- label: Will be display as the title of the category
+- label: Will be displayed as the title of the category
 - children: A list of `SubCategory` or `MenuItem`
 
 **SubCategory**
@@ -38,7 +38,7 @@ You can add 3 types or entry:
 }
 ```
 
-- label: Will be display as the title of the SubCategory
+- label: Will be displayed as the title of the SubCategory
 - children: A list of `MenuItem`
 
 **SubCategory**
@@ -68,4 +68,4 @@ You can add 3 types or entry:
 
     - Otherwise, you need to set the relative url of the html code to load
 
-All the url for `fsharpCode`, `htmlCode` are relative to the `public` folder.
+All the urls for `fsharpCode`, `htmlCode` are relative to the `public` folder.
