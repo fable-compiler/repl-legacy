@@ -1,3 +1,16 @@
+// A regression for the REPL has been reported after 1.3.7
+// See https://github.com/fable-compiler/Fable/issues/1351
+// I tried to use 1.3.7 but tooltips failed cause Fable.JS.Interfaces was not in sync anymore
+let AppveyorReplArtifactURLParams = "?branch=master"
+let AppveyorReplArtifactURL =
+    "https://ci.appveyor.com/api/projects/fable-compiler/Fable/artifacts/src/dotnet/Fable.JS/demo/repl/bundle.zip"
+    + AppveyorReplArtifactURLParams
+// TODO: Actually, version should come from the artifact
+let fableVersion = None // Some "1.3.14"
+let FCSExportFolderName = "FSharp.Compiler.Service_export"
+let FableFolderName = "Fable"
+let dotnetcliVersion = "2.1.4"
+
 // include Fake libs
 #r "./packages/build/FAKE/tools/FakeLib.dll"
 #r "System.IO.Compression.FileSystem"
@@ -13,9 +26,8 @@ open Fake.Git
 open Fake.YarnHelper
 open Fable.FakeHelpers
 
-let dotnetcliVersion = "2.1.4"
-
 let mutable dotnetExePath = "dotnet"
+
 let runDotnet dir =
     DotNetCli.RunCommand (fun p -> { p with ToolPath = dotnetExePath
                                             WorkingDir = dir
@@ -56,12 +68,8 @@ let downloadArtifact path (url: string) =
 let currentDir = __SOURCE_DIRECTORY__
 let sourceDir = currentDir </> "src"
 let rootDir = currentDir </> ".."
-let FCSExportFolderName = "FSharp.Compiler.Service_export"
-let FableFolderName = "Fable"
-
 let FCSExportFolderPath = rootDir </> FCSExportFolderName
 let FableFolderPath = rootDir </> FableFolderName
-let AppveyorReplArtifactURL = "https://ci.appveyor.com/api/projects/fable-compiler/Fable/artifacts/src/dotnet/Fable.JS/demo/repl/bundle.zip?branch=master"
 
 let rec waitUserResponse _ =
     let userInput = Console.ReadLine()
@@ -174,19 +182,24 @@ Target "DownloadReplArtifact" (fun _ ->
 )
 
 Target "UpdateVersion" (fun _ ->
-    ensureRepoSetup
-        { FolderPath = FableFolderPath
-          FolderName = FableFolderName
-          GithubLink = "git@github.com:fable-compiler/Fable.git"
-          GithubBranch = "master" }
+    let version =
+        match fableVersion with
+        | Some v -> v
+        | None ->
+            ensureRepoSetup
+                { FolderPath = FableFolderPath
+                  FolderName = FableFolderName
+                  GithubLink = "git@github.com:fable-compiler/Fable.git"
+                  GithubBranch = "master" }
+            let release =
+                FableFolderPath </> "src/dotnet/Fable.Compiler/RELEASE_NOTES.md"
+                |> ReleaseNotesHelper.LoadReleaseNotes
+            release.NugetVersion
 
     let reg = Regex(@"\bVERSION\s*=\s*""(.*?)""")
-    let release =
-        FableFolderPath </> "src/dotnet/Fable.Compiler/RELEASE_NOTES.md"
-        |> ReleaseNotesHelper.LoadReleaseNotes
     let mainFile = sourceDir </> "App/Widgets/About.fs"
     (reg, mainFile) ||> replaceLines (fun line m ->
-        let replacement = sprintf "VERSION = \"%s\"" release.NugetVersion
+        let replacement = sprintf "VERSION = \"%s\"" version
         reg.Replace(line, replacement) |> Some)
 )
 
