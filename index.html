@@ -13,7 +13,10 @@
     <div id="app-container" />
 
     <!-- Load Fable before loader and require so it's assigned to global variable -->
-    <script src="js/repl/bundle.js"></script>
+    <script src="js/repl/bundle.min.js"></script>
+
+    <!-- Babel stand-alone -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
 
     <!-- Monaco -->
     <script>var require = { paths: { 'vs': 'libs/vs' } };</script>
