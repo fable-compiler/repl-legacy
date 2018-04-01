@@ -131,4 +131,22 @@
         return [ListClass_2.ofArray(first), last];
     }
     exports.splitAt = splitAt;
+    function head(xs) {
+        if (xs.head !== undefined) {
+            return xs.head;
+        }
+        else {
+            throw new Error("The input list was empty.");
+        }
+    }
+    exports.head = head;
+    function tail(xs) {
+        if (xs.tail !== undefined) {
+            return xs.tail;
+        }
+        else {
+            throw new Error("The input list was empty.");
+        }
+    }
+    exports.tail = tail;
 });

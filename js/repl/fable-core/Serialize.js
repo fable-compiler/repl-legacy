@@ -25,9 +25,15 @@
     const Symbol_1 = require("./Symbol");
     const Symbol_2 = require("./Symbol");
     const Util_1 = require("./Util");
+    function isDate(v) {
+        return v instanceof Date;
+    }
+    function deflateDate(v) {
+        return Date_1.toString(v, "O");
+    }
     function deflateValue(v) {
-        if (v instanceof Date) {
-            return Date_1.toString(v, "O");
+        if (isDate(v)) {
+            return deflateDate(v);
         }
         return v;
     }
@@ -37,6 +43,9 @@
         }
         else if (ArrayBuffer.isView(v)) {
             return Array.from(v).map(deflateValue);
+        }
+        else if (isDate(v)) {
+            return deflateDate(v);
         }
         else if (v != null && typeof v === "object") {
             if (v instanceof List_1.default || v instanceof Set_1.default || v instanceof Set) {

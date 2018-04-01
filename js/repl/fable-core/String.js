@@ -117,9 +117,14 @@
     }
     exports.printf = printf;
     function toConsole(arg) {
+        // Don't remove the lambda here, see #1357
         return arg.cont((x) => { console.log(x); });
     }
     exports.toConsole = toConsole;
+    function toConsoleError(arg) {
+        return arg.cont((x) => { console.error(x); });
+    }
+    exports.toConsoleError = toConsoleError;
     function toText(arg) {
         return arg.cont((x) => x);
     }
