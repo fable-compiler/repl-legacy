@@ -20,7 +20,6 @@ data2.firstname <- "John"
 data2.surname <- "Doe"
 data2.age <- 25
 
-// Not available yet for REPL, need to regenerate the DLL
 let data3 = jsOptions<IUser>(fun o ->
     o.firstname <- "John"
     o.surname <- "Doe"

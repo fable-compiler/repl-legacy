@@ -498,10 +498,6 @@
         return digits ? r / m : r;
     }
     exports.round = round;
-    function sign(x) {
-        return x > 0 ? 1 : x < 0 ? -1 : 0;
-    }
-    exports.sign = sign;
     function randomNext(min, max) {
         return Math.floor(Math.random() * (max - min)) + min;
     }
@@ -558,6 +554,31 @@
         }
     }
     exports.applyOperator = applyOperator;
+    function parseNumber(v) {
+        return +v;
+    }
+    exports.parseNumber = parseNumber;
+    function tryParse(v, initial, parser, fn) {
+        if (v != null) {
+            const a = parser.exec(v);
+            if (a !== null) {
+                return [true, fn(a[1])];
+            }
+        }
+        return [false, initial];
+    }
+    exports.tryParse = tryParse;
+    function parse(v, initial, parser, fn) {
+        const a = tryParse(v, initial, parser, fn);
+        if (a[0]) {
+            return a[1];
+        }
+        else {
+            // TODO FormatException ?
+            throw new Error("Input string was not in a correct format.");
+        }
+    }
+    exports.parse = parse;
     function unescapeDataString(s) {
         // https://stackoverflow.com/a/4458580/524236
         return decodeURIComponent((s).replace(/\+/g, "%20"));
