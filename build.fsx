@@ -1,6 +1,3 @@
-// A regression for the REPL has been reported after 1.3.7
-// See https://github.com/fable-compiler/Fable/issues/1351
-// I tried to use 1.3.7 but tooltips failed cause Fable.JS.Interfaces was not in sync anymore
 let AppveyorReplArtifactURLParams = "?branch=master"
 let AppveyorReplArtifactURL =
     "https://ci.appveyor.com/api/projects/fable-compiler/Fable/artifacts/src/dotnet/Fable.JS/demo/repl/bundle.zip"
