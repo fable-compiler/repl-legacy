@@ -120,7 +120,7 @@ let w, h = getWindowDimensions()
 let rec update mario () =
     let mario = mario |> Physics.marioStep (Keyboard.arrows())
     render (w,h) mario
-    window.setTimeout(update mario, 1000. / 60.) |> ignore
+    window.setTimeout(update mario, 1000 / 60) |> ignore
 
 let mario = { x=0.; y=0.; vx=0.; vy=0.; dir="right" }
 update mario ()
